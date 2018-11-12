@@ -1,6 +1,6 @@
 # Shinsi2
 
-An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS devices.
+An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS devices. Written in Swift 4.2.
 
 
 ![](Screenshots/top.jpg)
@@ -9,6 +9,11 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 
 
 ## Feature
+
+### Modern and fast
+
+* Caches and pre load images, view without stress
+* Gesture to back, close
 
 ### Search / Search History
 * Support category filter
@@ -47,8 +52,11 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 
 * View comments
 * Pich in/out to change thumbnile size
+* 3D touch support. 
 
 ## Install
+
+### required iOS 11+
 
 ### XCode
 
