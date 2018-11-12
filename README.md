@@ -52,16 +52,15 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 
 ### XCode
 
-Support 
-Clone the project, run `pod install`. Use XCode build to your device.
+Clone the project, run `pod install`. Use XCode building to your device.
 
 
 ### Cydia Impactor
 
-Download ipa from release. Use Cydia Impactor to reassign ipa.
+Download ipa from [release](https://github.com/powhu/Shinsi2/releases). Use Cydia Impactor to reassign ipa.
 You can google "Cydia Impactor" for more information.
 
-### Support
+## Support
 
 You can ask me questions in English/Chinese/Japanese.
 
