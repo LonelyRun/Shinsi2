@@ -10,10 +10,13 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 
 ## Feature
 
-### Modern and fast
+### Modern and Fast 🚄
 
 * Caches and pre load images, view without stress
+* Thumbnail preview
+* Smooth transition between pages
 * Gesture to back, close
+* All orientation, and iPad Split View
 
 ### Search / Search History
 * Support category filter
@@ -52,7 +55,8 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 
 * View comments
 * Pich in/out to change thumbnile size
-* 3D touch support. 
+* 3D touch support, quick preview galleries
+* Quick scroll 
 
 ## Install
 
@@ -75,6 +79,8 @@ You can ask me questions in English/Chinese/Japanese.
 日本語で私に質問することができます。
 
 可以使用中文向我詢問。
+
+If you can help me check my gramma and spell, It will be very helpful.
 
 ## Change log
 
