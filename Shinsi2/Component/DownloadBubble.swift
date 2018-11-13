@@ -99,11 +99,11 @@ class DownloadBubble: UIView {
         guard let vc = viewController ,let queue = DownloadManager.shared.queues.first else { return }
         queue.isSuspended = true
         let alert = UIAlertController(title: "Cancel All Download", message: nil, preferredStyle: .alert)
-        let ok = UIAlertAction(title: "OK", style: .default) { a in
+        let ok = UIAlertAction(title: "Yes", style: .default) { a in
             self.cancelAllDownload()
             self.dismiss()
         }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { a in queue.isSuspended = false })
+        let cancel = UIAlertAction(title: "No", style: .cancel, handler: { a in queue.isSuspended = false })
         alert.addAction(ok)
         alert.addAction(cancel)
         vc.present(alert, animated: true, completion: nil)
