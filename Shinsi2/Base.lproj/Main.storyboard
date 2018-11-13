@@ -21,7 +21,7 @@
                             <textField opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="752" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="User" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Dh8-ge-teW">
                                 <rect key="frame" x="47.666666666666657" y="148" width="280" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="280" id="XTQ-ZR-gLO"/>
+                                    <constraint firstAttribute="width" constant="280" id="XTQ-ZR-gLO"/>
                                 </constraints>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -49,9 +49,9 @@
                         <constraints>
                             <constraint firstItem="9nB-eV-or4" firstAttribute="trailing" secondItem="Dh8-ge-teW" secondAttribute="trailing" id="3aN-9G-qA6"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="leading" secondItem="9nB-eV-or4" secondAttribute="leading" id="Ibd-p3-Yi6"/>
-                            <constraint firstItem="Dh8-ge-teW" firstAttribute="centerX" secondItem="mRJ-Cj-5Rp" secondAttribute="centerX" id="JBd-Km-7P6"/>
                             <constraint firstItem="Dh8-ge-teW" firstAttribute="top" secondItem="mRJ-Cj-5Rp" secondAttribute="top" constant="60" id="L1a-V3-9ST"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="top" secondItem="9nB-eV-or4" secondAttribute="bottom" constant="20" id="VEa-ed-F5c"/>
+                            <constraint firstItem="Dh8-ge-teW" firstAttribute="centerX" secondItem="mRJ-Cj-5Rp" secondAttribute="centerX" id="YUj-NP-srS"/>
                             <constraint firstItem="9nB-eV-or4" firstAttribute="leading" secondItem="Dh8-ge-teW" secondAttribute="leading" id="lWr-mc-rcq"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="trailing" secondItem="9nB-eV-or4" secondAttribute="trailing" id="ld4-Yb-zx0"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="9LE-qL-jNW" secondAttribute="leading" constant="20" symbolic="YES" id="nmW-BU-D38"/>
@@ -101,7 +101,7 @@
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                                 </imageView>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chinese　" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hDY-7k-p70" customClass="InsetLabel" customModule="Shinsi2" customModuleProvider="target">
-                                                    <rect key="frame" x="4" y="4" width="49.333333333333336" height="12"/>
+                                                    <rect key="frame" x="4" y="4" width="49.666666666666664" height="12"/>
                                                     <color key="backgroundColor" red="0.80000000000000004" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.79845355308219179" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -285,6 +285,11 @@
                                                 <view contentMode="scaleToFill" placeholderIntrinsicWidth="44" placeholderIntrinsicHeight="44" translatesAutoresizingMaskIntoConstraints="NO" id="YAS-Dy-82K" customClass="LoadingView" customModule="Shinsi2" customModuleProvider="target">
                                                     <rect key="frame" x="69.666666666666671" y="61" width="44" height="44"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="maxAlpha">
+                                                            <real key="value" value="0.20000000000000001"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
                                                 </view>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LAz-pu-4jG">
                                                     <rect key="frame" x="0.0" y="0.0" width="183" height="166"/>
@@ -330,7 +335,7 @@
                         <rightBarButtonItems>
                             <barButtonItem image="ic_local_offer" id="jlj-hj-nLv">
                                 <connections>
-                                    <segue destination="rQC-Nf-ZSg" kind="popoverPresentation" identifier="showPopover" popoverAnchorBarButtonItem="jlj-hj-nLv" id="C2u-EW-Ww7">
+                                    <segue destination="rQC-Nf-ZSg" kind="popoverPresentation" identifier="showTag" popoverAnchorBarButtonItem="jlj-hj-nLv" id="C2u-EW-Ww7">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                         <popoverPassthroughViews>
                                             <collectionView reference="f4O-W1-rDC"/>
@@ -491,6 +496,9 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="isHeroEnabled" value="YES"/>
+                    </userDefinedRuntimeAttributes>
                     <connections>
                         <segue destination="amt-22-JIX" kind="relationship" relationship="rootViewController" id="AvH-DP-dQY"/>
                     </connections>
@@ -510,6 +518,9 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="isHeroEnabled" value="YES"/>
+                    </userDefinedRuntimeAttributes>
                     <connections>
                         <segue destination="Wnt-nP-MuR" kind="relationship" relationship="rootViewController" id="B5u-Pf-3gv"/>
                     </connections>
@@ -602,19 +613,19 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NLt-vH-HFc">
-                                                    <rect key="frame" x="20" y="12" width="45" height="21"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
+                                                    <rect key="frame" x="20" y="12" width="48" height="21"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="2018/01/01 11:11" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IVH-hS-3by">
-                                                    <rect key="frame" x="253" y="14" width="102" height="17"/>
+                                                    <rect key="frame" x="198" y="14" width="102" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" weight="thin" pointSize="14"/>
-                                                    <nil key="textColor"/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ABC 123" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PSU-19-sA6">
-                                                    <rect key="frame" x="20" y="41" width="335" height="40.666666666666657"/>
+                                                    <rect key="frame" x="20" y="45" width="280" height="40.666666666666657"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
@@ -623,7 +634,7 @@
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="PSU-19-sA6" secondAttribute="trailing" constant="20" id="2ws-iq-cOV"/>
-                                                <constraint firstItem="PSU-19-sA6" firstAttribute="top" secondItem="NLt-vH-HFc" secondAttribute="bottom" constant="8" id="5ZT-h7-Ja0"/>
+                                                <constraint firstItem="PSU-19-sA6" firstAttribute="top" secondItem="NLt-vH-HFc" secondAttribute="bottom" constant="12" id="5ZT-h7-Ja0"/>
                                                 <constraint firstItem="PSU-19-sA6" firstAttribute="leading" secondItem="5WL-aH-sa5" secondAttribute="leading" constant="20" id="9gc-D0-BLN"/>
                                                 <constraint firstItem="NLt-vH-HFc" firstAttribute="leading" secondItem="5WL-aH-sa5" secondAttribute="leading" constant="20" id="CD5-yM-zzU"/>
                                                 <constraint firstAttribute="trailing" secondItem="IVH-hS-3by" secondAttribute="trailing" constant="20" id="VGq-mG-jPy"/>
@@ -682,6 +693,9 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="isHeroEnabled" value="YES"/>
+                    </userDefinedRuntimeAttributes>
                     <connections>
                         <segue destination="P6X-AM-Ewv" kind="relationship" relationship="rootViewController" id="08z-R4-8OQ"/>
                     </connections>

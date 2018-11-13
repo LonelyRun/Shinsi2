@@ -269,7 +269,12 @@ class ListVC: BaseViewController {
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
     }
     
-   
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: self)
+        if segue.identifier == "showSetting" {
+            segue.destination.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
+        }
+    }
 }
 
 extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource ,UICollectionViewDelegateFlowLayout , UICollectionViewDataSourcePrefetching {

@@ -4,9 +4,12 @@ class CommentVC: BaseViewController, UITableViewDelegate, UITableViewDataSource 
     
     var comments: [Comment] = []
     @IBOutlet weak var tableView: UITableView!
+    private var backGesture: InteractiveBackGesture?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.barTintColor = UIColor(white: 0, alpha: 0.5)
+        backGesture = InteractiveBackGesture(viewController: self, toView: tableView, mode: .modal, isSimultaneously: true)
     } 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -4,6 +4,7 @@ class LoadingView: UIView {
     
     private let leftBeard = UIImageView(image: #imageLiteral(resourceName: "beard_right_s"))
     private let rightBeard = UIImageView(image: #imageLiteral(resourceName: "beard_left_s"))
+    @IBInspectable var maxAlpha: CGFloat = 1
     
     override init(frame: CGRect) {
         super.init(frame: CGRect(origin: .zero, size: CGSize(width: 48, height: 48)))
@@ -49,7 +50,7 @@ class LoadingView: UIView {
             $0.element.layer.add(ani, forKey: "rotate")
         }
         UIView.animate(withDuration: animated ? 0.3 : 0, delay: 0, options: [.curveEaseOut], animations: {
-            self.alpha = 1
+            self.alpha = self.maxAlpha
             self.transform = .identity
         }, completion: nil)
     }
