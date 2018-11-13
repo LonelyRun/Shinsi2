@@ -185,21 +185,21 @@ class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
-            if mode == .push {
+            switch mode{
+            case .push:
                 let p = gestureRecognizer.location(in: nil)
                 let v = gestureRecognizer.velocity(in: nil)
                 return p.x < 44 && v.x > 0
-            } else {
-                let v = gestureRecognizer.velocity(in: nil)
+            case .modal:
+                let v = gestureRecognizer.velocity(in: nil) 
                 if let scrollView = view as? UIScrollView {
+                    if let vc = viewController as? BaseViewController, vc.isPopover { return false }
                     return scrollView.contentOffset.y <= -view.safeAreaInsets.top && v.y > 0
                 } else {
                     return v.y > abs(v.x) && v.y > 0
                 }
-                
             }
         }
-        
         return true
     }
 }
