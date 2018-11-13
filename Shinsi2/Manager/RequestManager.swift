@@ -82,8 +82,8 @@ class RequestManager {
                 if doujinshi.isFavorite == false {
                     doujinshi.isFavorite = doc.xpath("//div [@class='i']").count != 0
                 }
+                //Parse comments
                 if page == 0 {
-                    //Parse comments
                     let commentDateFormatter = DateFormatter()
                     commentDateFormatter.dateFormat = "dd MMMM  yyyy, HH:mm zzz"
                     for c in doc.xpath("//div [@id='cdiv'] //div [@class='c1']") {
@@ -147,7 +147,7 @@ class RequestManager {
     func getGData( doujinshi: Doujinshi , completeBlock block: ( (_ gdata : GData?) -> () )? ) {
         print(#function)
         //Api http://ehwiki.org/wiki/API
-        guard doujinshi.id != 999999999, doujinshi.token != "invalid_token" else { block?(nil); return}
+        guard doujinshi.isIdTokenValide else { block?(nil); return}
         
         let p: [String : Any] = [
             "method": "gdata",
@@ -168,7 +168,6 @@ class RequestManager {
                             let gid = metadata["gid"] as? Int
                         {
                             let gdata = GData(value : ["filecount": Int(count)!, "rating": Float(rating)! ,"title": title.isEmpty ? doujinshi.title : title , "title_jpn": title_jpn.isEmpty ? doujinshi.title : title_jpn , "coverUrl": thumb, "gid": String(gid)])
-                            //print("\(gdata)")
                             for t in tags {
                                 gdata.tags.append(Tag(value:["name" : t]))
                             }

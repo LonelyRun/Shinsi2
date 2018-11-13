@@ -88,12 +88,12 @@ struct Comment {
     var author: String
     var date: Date
     var text: String
-    var textHtml: NSAttributedString?
+    var htmlAttributedText: NSAttributedString?
     init(author: String, date: Date, text: String) {
         self.author = author
         self.date = date
         self.text = text
-        self.textHtml = text.htmlAttribute
+        self.htmlAttributedText = text.htmlAttribute
     }
 }
 

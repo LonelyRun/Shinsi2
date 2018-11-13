@@ -8,7 +8,7 @@ public extension Notification.Name {
     public static let settingChanged = Notification.Name("SS_SETTING_CHANGED")
 }
 
-class SettingVC: UIViewController {
+class SettingVC: BaseViewController {
     
     let stackView = AloeStackView()
     private var backGesture: InteractiveBackGesture?

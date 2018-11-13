@@ -2,7 +2,7 @@ import UIKit
 import Hero
 import AloeStackView
 
-class TagVC: UIViewController {
+class TagVC: BaseViewController {
     weak var doujinshi: Doujinshi!
     var clickBlock: ((String) -> Void)?
     struct TagItem {
