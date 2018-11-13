@@ -194,7 +194,8 @@ class GalleryVC: BaseViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
-        if segue.identifier == "showPopover", let nv = segue.destination as? UINavigationController, let vc = nv.viewControllers.first as? TagVC {
+        if segue.identifier == "showTag", let nv = segue.destination as? UINavigationController, let vc = nv.viewControllers.first as? TagVC {
+            segue.destination.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
             vc.doujinshi = doujinshi
             vc.clickBlock = {[unowned self,unowned vc] tag in
                 vc.dismiss(animated: true, completion: {
@@ -206,6 +207,7 @@ class GalleryVC: BaseViewController {
         }
         
         if segue.identifier == "showComment",  let nv = segue.destination as? UINavigationController, let vc = nv.viewControllers.first as? CommentVC {
+            segue.destination.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
             vc.comments = doujinshi.comments 
         }
     }

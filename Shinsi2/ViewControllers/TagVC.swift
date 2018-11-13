@@ -13,9 +13,12 @@ class TagVC: UIViewController {
     var sortedStrings = ["parody","artist","group","character","female","male","misc","language"]
     var items : [TagItem] = []
     let stackView = AloeStackView()
+    private var backGesture: InteractiveBackGesture?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.barTintColor = UIColor(white: 0, alpha: 0.5)
+        backGesture = InteractiveBackGesture(viewController: self, toView: stackView, mode: .modal, isSimultaneously: true)
         
         let gTag = doujinshi.gdata!.gTag
         let keys = gTag.allProperties().keys
