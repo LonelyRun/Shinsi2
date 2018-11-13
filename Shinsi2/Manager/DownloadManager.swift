@@ -63,6 +63,9 @@ class PageDownloadOperation: SSOperation {
                 }
                 Alamofire.download(imageUrl, to: destination).response { response in
                     self.state = .finished
+                    if let image = UIImage(contentsOfFile: fileURL.path) {
+                        SDWebImageManager.shared().imageCache?.store(image, forKey: imageUrl, completion: nil)
+                    }
                     if self.isCancelled {
                         try? FileManager.default.removeItem(at: documentsURL)
                     }
