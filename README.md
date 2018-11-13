@@ -15,8 +15,8 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 * Caches and pre load images, view without stress
 * Thumbnail preview
 * Smooth transition between pages
-* Gesture to back, close
-* All orientation, and iPad Split View
+* Gesture interactive
+* All orientation supported, iPad Split View supported
 
 ### Search / Search History
 * Support category filter
