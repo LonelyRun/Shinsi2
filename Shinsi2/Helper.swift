@@ -95,8 +95,8 @@ extension String {
     }
     
     var htmlAttribute: NSAttributedString {
-        let font = UIFont.systemFont(ofSize: 14)
-        let css = "<style>body{font-family: \(font.fontName); font-size: \(font.pointSize); color: #222222;}</style>%@"
+        let font = UIFont.systemFont(ofSize: 14) 
+        let css = "<style>body{font-family: '-apple-system', 'HelveticaNeue'; font-size: \(font.pointSize); color: #222222;}</style>%@"
         let modified = String(format:css, self)
         if let htmlData = modified.data(using: String.Encoding.unicode) , let html = try? NSAttributedString(data: htmlData, options: [.documentType : NSAttributedString.DocumentType.html], documentAttributes: nil) {
             return html
@@ -191,7 +191,12 @@ class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
                 return p.x < 44 && v.x > 0
             } else {
                 let v = gestureRecognizer.velocity(in: nil)
-                return v.y > abs(v.x) && v.y > 0
+                if let scrollView = view as? UIScrollView {
+                    return scrollView.contentOffset.y <= -view.safeAreaInsets.top && v.y > 0
+                } else {
+                    return v.y > abs(v.x) && v.y > 0
+                }
+                
             }
         }
         
