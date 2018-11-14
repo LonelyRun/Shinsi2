@@ -13,8 +13,10 @@ class Doujinshi : Object {
     @objc dynamic var localFolderPath = ""
     @objc dynamic var date = Date()
     
+    //Won't store
     var comments: [Comment] = []
     
+    //Computed property
     var id: Int { 
         guard let u = URL(string: url), u.pathComponents.indices.contains(2), let d = Int(u.pathComponents[2]) else {return 999999999}
         return d
@@ -28,7 +30,7 @@ class Doujinshi : Object {
     }
     
     override static func ignoredProperties() -> [String] {
-        return ["comments"]
+        return ["comments", "commentScrollPosition"]
     }
 }
 

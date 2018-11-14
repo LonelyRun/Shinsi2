@@ -19,7 +19,7 @@ class ListCell: ImageCell {
 class CommentCell: UITableViewCell {
     @IBOutlet weak var authorLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
-    @IBOutlet weak var commentLabel: UILabel!
+    @IBOutlet weak var commentTextView: UITextView!
 }
 
 class ScrollingImageCell: UICollectionViewCell { 

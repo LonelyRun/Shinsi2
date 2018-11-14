@@ -4,7 +4,7 @@ import SDWebImage
 import SVProgressHUD
 
 class GalleryVC: BaseViewController {
-    weak var doujinshi : Doujinshi!
+    var doujinshi : Doujinshi!
     private var currentPage = 0
     private var backGesture: InteractiveBackGesture!
     private var isPartDownloading = false {
@@ -205,10 +205,10 @@ class GalleryVC: BaseViewController {
                 })
             }
         }
-        
         if segue.identifier == "showComment",  let nv = segue.destination as? UINavigationController, let vc = nv.viewControllers.first as? CommentVC {
             segue.destination.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
-            vc.comments = doujinshi.comments 
+            vc.doujinshi = doujinshi
+            vc.delegate = self
         }
     }
     
@@ -251,7 +251,6 @@ class GalleryVC: BaseViewController {
     
     override var previewActionItems: [UIPreviewActionItem] { 
         var actions: [UIPreviewActionItem] = []
-        
         let artist = doujinshi.title.artist
         if let artist = artist {
             actions.append( UIPreviewAction(title: "Artist: \(artist)", style: .default) { (_, _) -> Void in
@@ -269,8 +268,30 @@ class GalleryVC: BaseViewController {
                 vc.addToFavorite()
             })
         }
-        
         return actions
+    }
+}
+
+extension GalleryVC: CommentVCDelegate {
+    func commentVC(_ vc: CommentVC, didTap url: URL) {
+        if url.absoluteString.contains(Defaults.URL.host) {
+            if url.absoluteString.contains(Defaults.URL.host+"/g/"), url.absoluteString != doujinshi.url {
+                //Gallery
+                vc.dismiss(animated: true) {
+                    let d = Doujinshi(value : ["url": url.absoluteString])
+                    let vc = self.storyboard!.instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
+                    vc.doujinshi = d
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            } else if url.absoluteString.contains(Defaults.URL.host+"/s/") {
+                //Page
+                if let page = doujinshi.pages.filter({ $0.url == url.absoluteString }).first, let index = doujinshi.pages.index(of: page) {
+                    vc.dismiss(animated: true) {
+                        self.collectionView.scrollToItem(at: IndexPath(item: index, section: 0) , at: .top, animated: false)
+                    }
+                }
+            }
+        }
     }
 }
 
