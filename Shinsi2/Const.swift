@@ -8,7 +8,7 @@ public let kHostEHentai = "https://e-hentai.org"
 //Shortcut
 public let documentURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 public let paperRatio = CGFloat(sqrt(2)) //A4 ratio
-public let isPad = UIDevice.current.userInterfaceIdiom == .pad
+public let isSizeClassRegular = UIApplication.shared.keyWindow?.rootViewController?.traitCollection.horizontalSizeClass ?? .compact == .regular
 
 //User default
 public let kUDHost = "kUDHost"
@@ -27,7 +27,7 @@ public let kUDGalleryWhitePage = "kUDGalleryWhitePage"
 public let kUDViewerMode = "kUDViewerMode"
 
 //Color
-public let kMainColor = #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)
+public let kMainColor = UIApplication.shared.keyWindow?.tintColor ?? #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)
 
 class Defaults {
     class App {
@@ -59,7 +59,7 @@ class Defaults {
             get { return UserDefaults.standard.string(forKey: kUDListLastSearchKeyword) ?? "" }
             set { UserDefaults.standard.set(newValue, forKey: kUDListLastSearchKeyword) }
         }
-        static var defaultCellWidth: CGFloat { return isPad ? CGFloat(200) : CGFloat(140)}
+        static var defaultCellWidth: CGFloat { return isSizeClassRegular ? CGFloat(200) : CGFloat(140)}
         static var cellWidth: CGFloat {
             get { return UserDefaults.standard.float(forKey: kUDListCellWidth) == 0 ? Defaults.List.defaultCellWidth : CGFloat(UserDefaults.standard.float(forKey: kUDListCellWidth)) }
             set { UserDefaults.standard.set(newValue, forKey: kUDListCellWidth) }
@@ -78,7 +78,7 @@ class Defaults {
             get { return UserDefaults.standard.bool(forKey: kUDGalleryWhitePage) }
             set { UserDefaults.standard.set(newValue, forKey: kUDGalleryWhitePage) }
         }
-        static var defaultCellWidth: CGFloat { return isPad ? CGFloat(200) : CGFloat(140)}
+        static var defaultCellWidth: CGFloat { return isSizeClassRegular ? CGFloat(200) : CGFloat(140)}
         static var cellWidth: CGFloat {
             get { return UserDefaults.standard.float(forKey: kUDGalleryCellWidth) == 0 ? Defaults.Gallery.defaultCellWidth : CGFloat(UserDefaults.standard.float(forKey: kUDGalleryCellWidth)) }
             set { UserDefaults.standard.set(newValue, forKey: kUDGalleryCellWidth) }
