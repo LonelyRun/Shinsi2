@@ -17,7 +17,6 @@ class LoginVC: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
         if checkCookie() {
             pustToList()
         } else {
@@ -41,7 +40,17 @@ class LoginVC: UIViewController {
             }
         }
     }
-
+    
+    @IBAction func webLoginButtonDidClick(_ sender: Any) {
+        let url = URL(string: "https://forums.e-hentai.org/index.php?act=Login&CODE=00")!
+        let vc = storyboard?.instantiateViewController(withIdentifier: "WebVC") as! WebVC
+        vc.url = url
+        let nvc = UINavigationController(rootViewController: vc)
+        nvc.hero.isEnabled = true
+        nvc.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
+        navigationController?.present(nvc, animated: true, completion: nil)
+    }
+    
     func pustToList() {
         let vc = storyboard?.instantiateViewController(withIdentifier: "ListVC") as! ListVC
         navigationController?.setViewControllers([vc], animated: false)
@@ -49,23 +58,17 @@ class LoginVC: UIViewController {
 
     func checkCookie() -> Bool {
         if let cookies = HTTPCookieStorage.shared.cookies(for: kEHentaiURL) {
-            for c in cookies {
-                if c.name == "ipb_pass_hash" {
-                    return true
-                }
-            }
+            return cookies.filter({$0.name == "ipb_pass_hash"}).count > 0
         }
         return false
     }
 
     func copyCookiesForEx() {
-        if let cookies = HTTPCookieStorage.shared.cookies(for: kEHentaiURL) { 
-            for c in cookies {
-                if var properties = c.properties {
-                    properties[HTTPCookiePropertyKey.domain] = ".exhentai.org"
-                    if let newCookie = HTTPCookie(properties: properties) {
-                        HTTPCookieStorage.shared.setCookie(newCookie)
-                    }
+        HTTPCookieStorage.shared.cookies(for: kEHentaiURL)?.forEach{
+            if var properties = $0.properties {
+                properties[HTTPCookiePropertyKey.domain] = ".exhentai.org"
+                if let newCookie = HTTPCookie(properties: properties) {
+                    HTTPCookieStorage.shared.setCookie(newCookie)
                 }
             }
         }

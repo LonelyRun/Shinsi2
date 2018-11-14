@@ -44,14 +44,24 @@
                                     <action selector="loginWithSender:" destination="ex9-dI-nnx" eventType="touchUpInside" id="st5-KA-TLY"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qd0-bu-Vb8">
+                                <rect key="frame" x="65" y="749" width="245" height="29"/>
+                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="14"/>
+                                <state key="normal" title="If you have login problem try web login"/>
+                                <connections>
+                                    <action selector="webLoginButtonDidClick:" destination="ex9-dI-nnx" eventType="touchUpInside" id="igh-j6-lFR"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="9nB-eV-or4" firstAttribute="trailing" secondItem="Dh8-ge-teW" secondAttribute="trailing" id="3aN-9G-qA6"/>
+                            <constraint firstItem="qd0-bu-Vb8" firstAttribute="centerX" secondItem="mRJ-Cj-5Rp" secondAttribute="centerX" id="4nn-sC-ssZ"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="leading" secondItem="9nB-eV-or4" secondAttribute="leading" id="Ibd-p3-Yi6"/>
                             <constraint firstItem="Dh8-ge-teW" firstAttribute="top" secondItem="mRJ-Cj-5Rp" secondAttribute="top" constant="60" id="L1a-V3-9ST"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="top" secondItem="9nB-eV-or4" secondAttribute="bottom" constant="20" id="VEa-ed-F5c"/>
                             <constraint firstItem="Dh8-ge-teW" firstAttribute="centerX" secondItem="mRJ-Cj-5Rp" secondAttribute="centerX" id="YUj-NP-srS"/>
+                            <constraint firstItem="mRJ-Cj-5Rp" firstAttribute="bottom" secondItem="qd0-bu-Vb8" secondAttribute="bottom" id="feU-VA-Cpp"/>
                             <constraint firstItem="9nB-eV-or4" firstAttribute="leading" secondItem="Dh8-ge-teW" secondAttribute="leading" id="lWr-mc-rcq"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="trailing" secondItem="9nB-eV-or4" secondAttribute="trailing" id="ld4-Yb-zx0"/>
                             <constraint firstItem="FX1-HI-TIc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="9LE-qL-jNW" secondAttribute="leading" constant="20" symbolic="YES" id="nmW-BU-D38"/>
@@ -580,7 +590,7 @@
                     <navigationItem key="navigationItem" title="Web" largeTitleDisplayMode="always" id="bfH-fn-MJE">
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="0nR-Xz-tQQ">
                             <connections>
-                                <action selector="hero_dismissViewController" destination="14b-v2-Re7" id="Jap-tx-khg"/>
+                                <action selector="doneButtonDidClickWithSender:" destination="14b-v2-Re7" id="Tbl-H4-XOY"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
