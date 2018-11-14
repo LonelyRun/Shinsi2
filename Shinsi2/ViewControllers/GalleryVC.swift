@@ -2,6 +2,7 @@ import UIKit
 import Hero
 import SDWebImage
 import SVProgressHUD
+import SafariServices
 
 class GalleryVC: BaseViewController {
     var doujinshi : Doujinshi!
@@ -291,6 +292,20 @@ extension GalleryVC: CommentVCDelegate {
                         self.collectionView.scrollToItem(at: IndexPath(item: index, section: 0) , at: .top, animated: false)
                     }
                 }
+            } else {
+                vc.dismiss(animated: true) {
+                    let webVC = self.storyboard?.instantiateViewController(withIdentifier: "WebVC") as! WebVC
+                    webVC.url = url
+                    let nvc = UINavigationController(rootViewController: webVC)
+                    nvc.hero.isEnabled = true
+                    nvc.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
+                    self.navigationController?.present(nvc, animated: true, completion: nil)
+                }
+            }
+        } else {
+            vc.dismiss(animated: true) {
+                let sfVC = SFSafariViewController(url: url)
+                self.navigationController?.present(sfVC, animated: true, completion: nil)
             }
         }
     }

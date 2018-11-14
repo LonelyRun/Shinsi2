@@ -640,6 +640,7 @@
                                                     <color key="textColor" red="0.25397524739999999" green="0.2763917025" blue="0.31830980330000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                    <dataDetectorType key="dataDetectorTypes" link="YES"/>
                                                     <connections>
                                                         <outlet property="delegate" destination="P6X-AM-Ewv" id="dGA-d4-LaL"/>
                                                     </connections>
