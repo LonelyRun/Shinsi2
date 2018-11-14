@@ -619,35 +619,39 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="2018/01/01 11:11" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IVH-hS-3by">
-                                                    <rect key="frame" x="198" y="14" width="102" height="17"/>
+                                                    <rect key="frame" x="253" y="14" width="102" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" weight="thin" pointSize="14"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ABC 123" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PSU-19-sA6">
-                                                    <rect key="frame" x="20" y="45" width="280" height="40.666666666666657"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="textview" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="jAn-TZ-ESN">
+                                                    <rect key="frame" x="20" y="45" width="335" height="33"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="textColor" red="0.25397524739999999" green="0.2763917025" blue="0.31830980330000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="P6X-AM-Ewv" id="dGA-d4-LaL"/>
+                                                    </connections>
+                                                </textView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="PSU-19-sA6" secondAttribute="trailing" constant="20" id="2ws-iq-cOV"/>
-                                                <constraint firstItem="PSU-19-sA6" firstAttribute="top" secondItem="NLt-vH-HFc" secondAttribute="bottom" constant="12" id="5ZT-h7-Ja0"/>
-                                                <constraint firstItem="PSU-19-sA6" firstAttribute="leading" secondItem="5WL-aH-sa5" secondAttribute="leading" constant="20" id="9gc-D0-BLN"/>
                                                 <constraint firstItem="NLt-vH-HFc" firstAttribute="leading" secondItem="5WL-aH-sa5" secondAttribute="leading" constant="20" id="CD5-yM-zzU"/>
+                                                <constraint firstItem="jAn-TZ-ESN" firstAttribute="top" secondItem="NLt-vH-HFc" secondAttribute="bottom" constant="12" id="Lz7-QP-3wh"/>
                                                 <constraint firstAttribute="trailing" secondItem="IVH-hS-3by" secondAttribute="trailing" constant="20" id="VGq-mG-jPy"/>
+                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="jAn-TZ-ESN" secondAttribute="bottom" constant="12" id="XgF-hk-SyT"/>
                                                 <constraint firstItem="IVH-hS-3by" firstAttribute="centerY" secondItem="NLt-vH-HFc" secondAttribute="centerY" id="fDv-ny-17B"/>
+                                                <constraint firstItem="jAn-TZ-ESN" firstAttribute="leading" secondItem="5WL-aH-sa5" secondAttribute="leading" constant="20" id="iE9-eO-dlC"/>
+                                                <constraint firstAttribute="trailing" secondItem="jAn-TZ-ESN" secondAttribute="trailing" constant="20" id="smY-yr-V14"/>
                                                 <constraint firstItem="IVH-hS-3by" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="NLt-vH-HFc" secondAttribute="trailing" constant="12" id="t4k-f3-W2m"/>
-                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="PSU-19-sA6" secondAttribute="bottom" constant="12" id="yqv-sn-zO0"/>
                                                 <constraint firstItem="NLt-vH-HFc" firstAttribute="top" secondItem="5WL-aH-sa5" secondAttribute="top" constant="12" id="zZ8-m0-DXb"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
                                             <outlet property="authorLabel" destination="NLt-vH-HFc" id="KtB-7K-e9W"/>
-                                            <outlet property="commentLabel" destination="PSU-19-sA6" id="fbU-HG-wVb"/>
+                                            <outlet property="commentTextView" destination="jAn-TZ-ESN" id="Xju-MP-hZa"/>
                                             <outlet property="dateLabel" destination="IVH-hS-3by" id="qil-Cz-ZOH"/>
                                         </connections>
                                     </tableViewCell>

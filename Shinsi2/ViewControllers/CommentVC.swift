@@ -1,31 +1,41 @@
 import UIKit
 
-class CommentVC: BaseViewController, UITableViewDelegate, UITableViewDataSource {
+protocol CommentVCDelegate: class {
+    func commentVC(_ vc: CommentVC, didTap url: URL)
+}
+
+class CommentVC: BaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate {
     
-    var comments: [Comment] = []
+    weak var doujinshi: Doujinshi!
     @IBOutlet weak var tableView: UITableView!
     private var backGesture: InteractiveBackGesture?
+    weak var delegate: CommentVCDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.barTintColor = UIColor(white: 0, alpha: 0.5)
         backGesture = InteractiveBackGesture(viewController: self, toView: tableView, mode: .modal, isSimultaneously: true)
-    } 
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return comments.count
+        return doujinshi.comments.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! CommentCell
-        let c = comments[indexPath.row]
+        let c = doujinshi.comments[indexPath.row]
         let df = DateFormatter()
         df.dateFormat = "yyyy/MM/dd HH:mm"
         cell.dateLabel.text = df.string(from: c.date)
         cell.authorLabel.text = c.author
-        cell.commentLabel.attributedText = c.htmlAttributedText
+        cell.commentTextView.attributedText = c.htmlAttributedText
         
         return cell
+    }
+    
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        delegate?.commentVC(self, didTap: URL)
+        return false
     }
 
 }
