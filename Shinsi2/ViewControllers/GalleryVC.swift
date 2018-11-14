@@ -115,10 +115,11 @@ class GalleryVC: BaseViewController {
             loadPages()
         } else {
             //Temp cover
-            let coverPage = Page()
-            coverPage.thumbUrl = doujinshi.coverUrl
-            doujinshi.pages.append(coverPage)
-            
+            if !doujinshi.coverUrl.isEmpty {
+                let coverPage = Page()
+                coverPage.thumbUrl = doujinshi.coverUrl
+                doujinshi.pages.append(coverPage)
+            }
             loadingView.show()
             RequestManager.shared.getGData(doujinshi: self.doujinshi) { [weak self] gdata in
                 guard let gdata = gdata , let self = self else { return }
