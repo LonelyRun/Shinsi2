@@ -74,9 +74,7 @@ You can google "Cydia Impactor" for more information.
 
 ## Support
 
-You can ask me questions in English/Chinese/Japanese.
-
-日本語で私に質問することができます。
+You can ask me questions in English/Chinese.
 
 可以使用中文向我詢問。
 
@@ -84,6 +82,10 @@ If you can help me check my gramma and spell, It will be very helpful.
 
 ## Change log
 
+* **ver 1.1** 2018/11/14
+	* Comment links
+	* Web login
+	* UI fix
 * **ver 1.0** First release. 2018/11/12
 
 ## Legal
