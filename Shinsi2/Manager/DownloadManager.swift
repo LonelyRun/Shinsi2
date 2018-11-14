@@ -93,7 +93,6 @@ class DownloadManager: NSObject {
         queue.isSuspended = queues.count != 0
         queue.name = gdata.gid
         queues.append(queue)
-        doujinshi.localFolderPath = path
         books[gdata.gid] = doujinshi
         
         for (i,p) in doujinshi.pages.enumerated() {
@@ -128,7 +127,7 @@ class DownloadManager: NSObject {
         
         if count == 0 {
             print("\(queue.name!): Finished!!!")
-            RealmManager.shared.saveDoujinshi(book: books[queue.name!]!)
+            RealmManager.shared.saveDownloadedDoujinshi(book: books[queue.name!]!)
             queues.remove(at: queues.index(of: queue)!)
             queue.removeObserver(self, forKeyPath: "operationCount")
             books.removeValue(forKey: queue.name!)

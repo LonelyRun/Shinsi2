@@ -9,8 +9,7 @@ class Doujinshi : Object {
     let pages = List<Page>()
     @objc dynamic var gdata : GData?
     @objc dynamic var isFavorite = false
-    @objc dynamic var isDownloaded = false
-    @objc dynamic var localFolderPath = ""
+    @objc dynamic var isDownloaded = false 
     @objc dynamic var date = Date()
     
     //Won't store
@@ -38,8 +37,11 @@ class Page : Object {
     @objc dynamic var thumbUrl = ""
     @objc dynamic var url = ""
     var photo: SSPhoto!
+    var localUrl: URL {
+        return documentURL.appendingPathComponent(thumbUrl)
+    }
     var localImage: UIImage? {
-        return UIImage(contentsOfFile: documentURL.appendingPathComponent(thumbUrl).path)
+        return UIImage(contentsOfFile: localUrl.path)
     }
 }
 

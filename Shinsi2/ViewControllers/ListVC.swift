@@ -210,7 +210,7 @@ class ListVC: BaseViewController {
         let title = mode == .download ? "Delete" : "Action"
         let actionTitle = mode == .download ? "Delete" : "Remove"
         let alert = UIAlertController(title: title, message: doujinshi.title, preferredStyle: .alert)
-        let ok = UIAlertAction(title: actionTitle, style: .destructive) { a in
+        let deleteAction = UIAlertAction(title: actionTitle, style: .destructive) { a in
             if self.mode == .download {
                 DownloadManager.shared.deleteDownloaded(doujinshi: doujinshi)
                 self.items = RealmManager.shared.downloaded.map{$0}
@@ -226,14 +226,24 @@ class ListVC: BaseViewController {
             }
         }
         if mode == .favorite {
-            let move = UIAlertAction(title: "Move", style: .default) { (_) in
+            let moveAction = UIAlertAction(title: "Move", style: .default) { (_) in
                 self.showFavoriteMoveSheet(with: indexPath)
             }
-            alert.addAction(move)
+            alert.addAction(moveAction)
         }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alert.addAction(ok)
-        alert.addAction(cancel)
+        if mode == .download {
+            let cell = collectionView.cellForItem(at: indexPath)!
+            let vc = UIActivityViewController(activityItems: doujinshi.pages.map{ $0.localUrl }, applicationActivities: nil)
+            vc.popoverPresentationController?.sourceView = collectionView
+            vc.popoverPresentationController?.sourceRect = cell.frame
+            let shareAction = UIAlertAction(title: "Share", style: .default) { (_) in
+                self.present(vc, animated: true, completion: nil)
+            }
+            alert.addAction(shareAction)
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
     }
     
