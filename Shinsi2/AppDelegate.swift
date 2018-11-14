@@ -24,8 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func setDefaultAppearance() {
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
-        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white,
-                                                                 NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
+        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
         UINavigationBar.appearance().tintColor = kMainColor
         UINavigationBar.appearance().barStyle = .blackTranslucent
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = #colorLiteral(red: 0.09966118171, green: 0.5230001833, blue: 0.8766457805, alpha: 1)

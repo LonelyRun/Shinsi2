@@ -14,7 +14,7 @@ class ListVC: BaseViewController {
     private var items : [Doujinshi] = []
     private var currentPage = -1
     private var loadingPage = -1
-    private var backGesture: InteractiveBackGesture!
+    private var backGesture: InteractiveBackGesture?
     private var rowCount: Int { return min(12,max(2, Int(floor(collectionView.bounds.width / Defaults.List.cellWidth)))) }
     @IBOutlet weak var loadingView: LoadingView!
     
@@ -45,12 +45,9 @@ class ListVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "title_icon"))
-        
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView)
         }
-        
-        backGesture = InteractiveBackGesture(viewController: self, toView: collectionView)
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(ges:)))
         longPressGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressGesture)
@@ -62,6 +59,7 @@ class ListVC: BaseViewController {
             searchController.searchBar.text = Defaults.List.lastSearchKeyword
         } else {
             Defaults.List.lastSearchKeyword = searchController.searchBar.text ?? ""
+            backGesture = InteractiveBackGesture(viewController: self, toView: collectionView)
         }
         historyVC.searchController = searchController
         historyVC.selectBlock = {[unowned self] text in
