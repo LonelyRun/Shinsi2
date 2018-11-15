@@ -22,7 +22,7 @@ public let kUDListFavoriteList = "kUDListFavoriteList"
 
 public let kUDGalleryCellWidth = "kUDGalleryCellWidth"
 public let kUDGalleryQuickScroll = "kUDGalleryQuickScroll"
-public let kUDGalleryWhitePage = "kUDGalleryWhitePage"
+public let kUDGalleryBlankPage = "kUDGalleryBlankPage"
 
 public let kUDViewerMode = "kUDViewerMode"
 
@@ -74,9 +74,9 @@ class Defaults {
             get { return UserDefaults.standard.bool(forKey: kUDGalleryQuickScroll) }
             set { UserDefaults.standard.set(newValue, forKey: kUDGalleryQuickScroll) }
         }
-        static var isAppendWhitePage: Bool {
-            get { return UserDefaults.standard.bool(forKey: kUDGalleryWhitePage) }
-            set { UserDefaults.standard.set(newValue, forKey: kUDGalleryWhitePage) }
+        static var isAppendBlankPage: Bool {
+            get { return UserDefaults.standard.bool(forKey: kUDGalleryBlankPage) }
+            set { UserDefaults.standard.set(newValue, forKey: kUDGalleryBlankPage) }
         }
         static var defaultCellWidth: CGFloat { return isSizeClassRegular ? CGFloat(200) : CGFloat(140)}
         static var cellWidth: CGFloat {

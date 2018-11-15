@@ -43,6 +43,11 @@ class Page : Object {
     var localImage: UIImage? {
         return UIImage(contentsOfFile: localUrl.path)
     }
+    static func blankPage() -> Page {
+        let p = Page()
+        p.photo = SSPhoto(URL: "")
+        return p
+    }
 }
 
 class GData : Object {

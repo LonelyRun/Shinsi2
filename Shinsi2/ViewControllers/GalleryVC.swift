@@ -38,7 +38,7 @@ class GalleryVC: BaseViewController {
         downloadButton.isEnabled = false
         favoriteButton.isEnabled = false
         commentButton.isEnabled = false
-        appendWhitePageButton.image = Defaults.Gallery.isAppendWhitePage ? #imageLiteral(resourceName: "ic_page_1") : #imageLiteral(resourceName: "ic_page_0")
+        appendWhitePageButton.image = Defaults.Gallery.isAppendBlankPage ? #imageLiteral(resourceName: "ic_page_1") : #imageLiteral(resourceName: "ic_page_0")
         if UIDevice.current.userInterfaceIdiom != .pad {
             navigationItem.rightBarButtonItems = navigationItem.rightBarButtonItems?.filter{ $0 != appendWhitePageButton}
         }
@@ -190,8 +190,8 @@ class GalleryVC: BaseViewController {
     
     @IBAction func appendWhitePageButtonDidClick(_ sender: UIBarButtonItem) {
         guard navigationController?.presentedViewController == nil else {return}
-        Defaults.Gallery.isAppendWhitePage.toggle()
-        sender.image = Defaults.Gallery.isAppendWhitePage ? #imageLiteral(resourceName: "ic_page_1") : #imageLiteral(resourceName: "ic_page_0")
+        Defaults.Gallery.isAppendBlankPage.toggle()
+        sender.image = Defaults.Gallery.isAppendBlankPage ? #imageLiteral(resourceName: "ic_page_1") : #imageLiteral(resourceName: "ic_page_0")
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -391,10 +391,8 @@ extension GalleryVC: HeroViewControllerDelegate {
     func heroWillStartAnimatingFrom(viewController: UIViewController) {
         if let vc = viewController as? ViewerVC, var originalCellIndex = vc.selectedIndexPath, var currentCellIndex = vc.collectionView?.indexPathsForVisibleItems.first {
             view.hero.modifiers = nil
-            if Defaults.Gallery.isAppendWhitePage {
-                originalCellIndex = IndexPath(item: originalCellIndex.item - 1, section: originalCellIndex.section)
-                currentCellIndex = IndexPath(item: currentCellIndex.item - 1, section: currentCellIndex.section)
-            }
+            originalCellIndex = IndexPath(item: min(originalCellIndex.item - (Defaults.Gallery.isAppendBlankPage ? 1 : 0), doujinshi.pages.count - 1), section: originalCellIndex.section)
+            currentCellIndex = IndexPath(item: min(currentCellIndex.item - (Defaults.Gallery.isAppendBlankPage ? 1 : 0), doujinshi.pages.count - 1), section: currentCellIndex.section)
             if !collectionView.indexPathsForVisibleItems.contains(currentCellIndex) {
                 collectionView.scrollToItem(at: currentCellIndex, at: originalCellIndex < currentCellIndex ? .bottom : .top, animated: false)
             }

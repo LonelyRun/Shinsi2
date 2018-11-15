@@ -8,33 +8,26 @@ class ViewerVC: UICollectionViewController {
     enum ViewerMode: Int {
         case horizontal = 0
         case vertical = 1
-        case twoPage = 2
+        case doublePage = 2
     }
     var selectedIndexPath: IndexPath? {
         set { _selectedIndexPath = newValue }
         get {
-            if let i = _selectedIndexPath { return IndexPath(item: i.item + (Defaults.Gallery.isAppendWhitePage ? 1 : 0), section: i.section) }
+            if let i = _selectedIndexPath { return IndexPath(item: i.item + (Defaults.Gallery.isAppendBlankPage ? 1 : 0), section: i.section) }
             return _selectedIndexPath
         }
     }
     private var _selectedIndexPath: IndexPath?
     weak var doujinshi : Doujinshi!
-    lazy var emptyPage: Page = {
-        let p = Page()
-        p.photo = SSPhoto(URL: "temp")
-        return p
-    }()
     var pages: [Page] {
         var ps = Array(doujinshi.pages)
-        if Defaults.Gallery.isAppendWhitePage {
-            ps.insert(emptyPage, at: 0)
-        }
+        if Defaults.Gallery.isAppendBlankPage { ps.insert(Page.blankPage(), at: 0) }
+        if ps.count % 2 != 0 { ps.append(Page.blankPage()) } // Fix 
         return ps
     }
-    
     var mode: ViewerMode {
         if collectionView!.bounds.width > 1000 && collectionView!.bounds.width > collectionView!.bounds.height {
-            return .twoPage
+            return .doublePage
         } else {
             return Defaults.Viewer.mode
         }
@@ -54,7 +47,7 @@ class ViewerVC: UICollectionViewController {
                 collectionView!.scrollToItem(at: selectedIndex, at: .right, animated: false)
             case .vertical:
                 collectionView!.scrollToItem(at: selectedIndex, at: .top, animated: false)
-            case .twoPage:
+            case .doublePage:
                 collectionView!.scrollToItem(at: selectedIndex.item % 2 != 0 ? selectedIndex : convertIndexPath(from:selectedIndex), at: .right, animated: false)
             }
         }
@@ -90,7 +83,7 @@ class ViewerVC: UICollectionViewController {
         coordinator.animate(alongsideTransition: {ctx in 
             if let indexPath = indexPath {
                 self.collectionView.reloadData()
-                let covertedIndexPath = self.mode == .twoPage ? self.convertIndexPath(from:indexPath) : indexPath
+                let covertedIndexPath = self.mode == .doublePage ? self.convertIndexPath(from:indexPath) : indexPath
                 let position: UICollectionView.ScrollPosition = self.mode == .vertical ? .top : (covertedIndexPath.item % 2 == 0 ? .left : .right)
                 self.collectionView!.scrollToItem(at: covertedIndexPath, at: position, animated: false)
             }
@@ -151,7 +144,7 @@ class ViewerVC: UICollectionViewController {
             for indexPath in collectionView!.indexPathsForVisibleItems {
                 let cell = collectionView!.cellForItem(at: indexPath) as! ScrollingImageCell
                 let currentPos = CGPoint(x: translation.x + view.center.x, y: translation.y + view.center.y)
-                if mode == .twoPage {
+                if mode == .doublePage {
                     let size = collectionView(collectionView!, layout: collectionView!.collectionViewLayout, sizeForItemAt: indexPath)
                     let pos = indexPath.item % 2 == 0 ?
                         CGPoint(x: currentPos.x - size.width/2, y: currentPos.y) :
@@ -215,7 +208,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     
     func convertIndexPath(from indexPath:IndexPath) -> IndexPath {
         var i = indexPath.item
-        if mode == .twoPage {
+        if mode == .doublePage {
             i = i % 2 == 0 ? i + 1 : i - 1
             i = min(i, pages.count - 1)
         }
@@ -223,7 +216,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     }
 
     func heroID(for indexPath: IndexPath) -> String {
-        let index = convertIndexPath(from: indexPath).item - (Defaults.Gallery.isAppendWhitePage ? 1 : 0)
+        let index = convertIndexPath(from: indexPath).item - (Defaults.Gallery.isAppendBlankPage ? 1 : 0)
         return "image_\(doujinshi.id)_\(index)"
     }
 
@@ -232,7 +225,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if mode == .twoPage {
+        if mode == .doublePage {
             return CGSize(width: collectionView.bounds.width/2, height: collectionView.bounds.height)
         } else if mode == .horizontal {
             return collectionView.bounds.size
