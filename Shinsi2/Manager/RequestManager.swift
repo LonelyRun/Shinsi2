@@ -22,7 +22,11 @@ class RequestManager {
                 }
                 cacheFavoritesTitles = page == 0
             } else if keyword.contains(",") {
-                getNewList(with: keyword.components(separatedBy: ","), completeBlock: block)
+                if page == 0 {
+                    getNewList(with: keyword.components(separatedBy: ","), completeBlock: block)
+                } else {
+                    block?([])
+                }
                 return
             } else {
                 var skipPage = 0
