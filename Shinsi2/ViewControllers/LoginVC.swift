@@ -2,7 +2,6 @@ import UIKit
 import SVProgressHUD
 
 class LoginVC: UIViewController {
-
     @IBOutlet var userNameField: UITextField!
     @IBOutlet var passwordField: UITextField!
     @IBOutlet var loginButton: UIButton!
@@ -18,6 +17,7 @@ class LoginVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if checkCookie() {
+            copyCookiesForEx(overwrite: false) //Copy if needed
             pustToList()
         } else {
             userNameField.isHidden = false
@@ -63,7 +63,9 @@ class LoginVC: UIViewController {
         return false
     }
 
-    func copyCookiesForEx() {
+    func copyCookiesForEx(overwrite: Bool = true) {
+        let exCookies = HTTPCookieStorage.shared.cookies(for: kEXHentaiURL) ?? []
+        guard overwrite || exCookies.count == 0 else {return}
         HTTPCookieStorage.shared.cookies(for: kEHentaiURL)?.forEach{
             if var properties = $0.properties {
                 properties[HTTPCookiePropertyKey.domain] = ".exhentai.org"

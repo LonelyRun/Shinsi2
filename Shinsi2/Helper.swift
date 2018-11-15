@@ -1,7 +1,7 @@
 import UIKit
 import Hero
-extension String {
-    
+
+extension String {    
     func matches(for regex: String) -> [String] {
         do {
             let regex = try NSRegularExpression(pattern: regex)
@@ -135,7 +135,6 @@ extension UIImage {
 }
 
 class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
-    
     weak var viewController: UIViewController!
     weak var view: UIView!
     enum Mode {

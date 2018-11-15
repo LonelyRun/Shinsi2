@@ -1,7 +1,8 @@
 import UIKit
 
 //URL
-public let kEHentaiURL = URL(string: "http://g.e-hentai.org")!
+public let kEHentaiURL = URL(string: "https://e-hentai.org")!
+public let kEXHentaiURL = URL(string: "https://exhentai.org")!
 public let kHostExHentai = "https://exhentai.org"
 public let kHostEHentai = "https://e-hentai.org"
 
