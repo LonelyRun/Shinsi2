@@ -104,14 +104,17 @@ class GalleryVC: BaseViewController {
             favoriteButton.isEnabled = !doujinshi.isFavorite
             title = gdata.getTitle()
             collectionView.reloadData()
-        } else if let gdata = doujinshi.gdata, doujinshi.pages.count > 0 {
+        } else if let gdata = doujinshi.gdata, doujinshi.pages.count > 0, let perPageCount = doujinshi.perPageCount {
             loadingView.hide()
             tagButton.isEnabled = true
+            commentButton.isEnabled = doujinshi.comments.count > 0
+            favoriteButton.isEnabled = !doujinshi.isFavorite
             title = gdata.getTitle()
-            currentPage = doujinshi.pages.count / 20
+            currentPage = doujinshi.pages.count / perPageCount
             loadPages()
         } else {
             //Temp cover
+            doujinshi.pages.removeAll()
             if !doujinshi.coverUrl.isEmpty {
                 let coverPage = Page()
                 coverPage.thumbUrl = doujinshi.coverUrl

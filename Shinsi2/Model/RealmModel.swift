@@ -12,6 +12,8 @@ class Doujinshi : Object {
     @objc dynamic var isDownloaded = false 
     @objc dynamic var date = Date()
     
+    var perPageCount: Int?
+    
     //Won't store
     var comments: [Comment] = []
     
@@ -29,7 +31,7 @@ class Doujinshi : Object {
     }
     
     override static func ignoredProperties() -> [String] {
-        return ["comments", "commentScrollPosition"]
+        return ["comments", "commentScrollPosition", "perPageCount"]
     }
 }
 

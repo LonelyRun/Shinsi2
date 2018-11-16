@@ -86,8 +86,8 @@ class RequestManager {
                 if doujinshi.isFavorite == false {
                     doujinshi.isFavorite = doc.xpath("//div [@class='i']").count != 0
                 }
-                //Parse comments
                 if page == 0 {
+                    //Parse comments
                     let commentDateFormatter = DateFormatter()
                     commentDateFormatter.dateFormat = "dd MMMM  yyyy, HH:mm zzz"
                     for c in doc.xpath("//div [@id='cdiv'] //div [@class='c1']") {
@@ -99,6 +99,7 @@ class RequestManager {
                             doujinshi.comments.append(r)
                         }
                     }
+                    doujinshi.perPageCount = pages.count
                 }
                 block?(pages)
             } else {
