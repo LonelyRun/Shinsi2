@@ -34,7 +34,8 @@ class GalleryVC: BaseViewController {
         favoriteButton.isEnabled = false
         commentButton.isEnabled = false
         appendWhitePageButton.image = Defaults.Gallery.isAppendBlankPage ? #imageLiteral(resourceName: "ic_page_1") : #imageLiteral(resourceName: "ic_page_0")
-        if isSizeClassRegular {
+        
+        if !isSizeClassRegular {
             navigationItem.rightBarButtonItems = navigationItem.rightBarButtonItems?.filter{ $0 != appendWhitePageButton}
         }
     
