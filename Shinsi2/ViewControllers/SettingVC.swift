@@ -105,10 +105,16 @@ class SettingVC: BaseViewController {
         //Gallery
         addTitle("Gallery")
         
+        let galleryFavLabel = createSubTitleLabel("Show Favorites List")
+        let galleryFavSwitch = UISwitch()
+        galleryFavSwitch.isOn = Defaults.Gallery.isShowFavoriteList
+        galleryFavSwitch.addTarget(self, action: #selector(galleryFavoriteSwitchVauleChanged(sender:)), for: .valueChanged)
+        stackView.addRow(createStackView([galleryFavLabel,galleryFavSwitch]))
+        
         let quickScrollLabel = createSubTitleLabel("Show Quick Scroll")
         let quickScrollSwitch = UISwitch()
         quickScrollSwitch.isOn = Defaults.Gallery.isShowQuickScroll
-        quickScrollSwitch.addTarget(self, action: #selector(viewerQuickScrollSwitchVauleChanged(sender:)), for: .valueChanged)
+        quickScrollSwitch.addTarget(self, action: #selector(galleryQuickScrollSwitchVauleChanged(sender:)), for: .valueChanged)
         stackView.addRow(createStackView([quickScrollLabel,quickScrollSwitch]))
         
         //Viewer
@@ -193,12 +199,16 @@ class SettingVC: BaseViewController {
         Defaults.List.isShowFavoriteList = sender.isOn
     }
     
-    @objc func viewerModeSegmentedControlVauleChanged(sender: UISegmentedControl) {
-        Defaults.Viewer.mode = sender.selectedSegmentIndex == 0 ? .horizontal : .vertical
+    @objc func galleryQuickScrollSwitchVauleChanged(sender: UISwitch) {
+        Defaults.Gallery.isShowQuickScroll = sender.isOn
     }
     
-    @objc func viewerQuickScrollSwitchVauleChanged(sender: UISwitch) {
-        Defaults.Gallery.isShowQuickScroll = sender.isOn
+    @objc func galleryFavoriteSwitchVauleChanged(sender: UISwitch) {
+        Defaults.Gallery.isShowFavoriteList = sender.isOn
+    }
+    
+    @objc func viewerModeSegmentedControlVauleChanged(sender: UISegmentedControl) {
+        Defaults.Viewer.mode = sender.selectedSegmentIndex == 0 ? .horizontal : .vertical
     }
     
     func presentWebViewController(url: URL) {

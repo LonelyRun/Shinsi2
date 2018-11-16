@@ -204,11 +204,11 @@ class RequestManager {
         }
     }
 
-    func addDoujinshiToFavorite(doujinshi : Doujinshi) {
+    func addDoujinshiToFavorite(doujinshi : Doujinshi, category: Int = 0) {
         guard doujinshi.isIdTokenValide else {return}
         doujinshi.isFavorite = true
         let url = Defaults.URL.host + "/gallerypopups.php?gid=\(doujinshi.id)&t=\(doujinshi.token)&act=addfav"
-        let parameters: [String : String] = ["favcat" : "0" , "favnote" : "" , "apply" : "Add to Favorites", "update" : "1"]
+        let parameters: [String : String] = ["favcat" : "\(category)" , "favnote" : "" , "apply" : "Add to Favorites", "update" : "1"]
         Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { response in
         }
     }
