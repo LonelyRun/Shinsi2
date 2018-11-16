@@ -8,12 +8,7 @@ class GalleryVC: BaseViewController {
     var doujinshi : Doujinshi!
     private var currentPage = 0
     private var backGesture: InteractiveBackGesture!
-    private var isPartDownloading = false {
-        didSet {
-            setEditing(isPartDownloading, animated: true)
-            navigationItem.rightBarButtonItems?.filter{ $0 != downloadButton }.forEach{ $0.isEnabled = !isPartDownloading }
-        }
-    }
+    private var isPartDownloading = false { didSet { handlePartDownload() } }
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tagButton: UIBarButtonItem!
     @IBOutlet weak var downloadButton: UIBarButtonItem!
@@ -39,7 +34,7 @@ class GalleryVC: BaseViewController {
         favoriteButton.isEnabled = false
         commentButton.isEnabled = false
         appendWhitePageButton.image = Defaults.Gallery.isAppendBlankPage ? #imageLiteral(resourceName: "ic_page_1") : #imageLiteral(resourceName: "ic_page_0")
-        if UIDevice.current.userInterfaceIdiom != .pad {
+        if isSizeClassRegular {
             navigationItem.rightBarButtonItems = navigationItem.rightBarButtonItems?.filter{ $0 != appendWhitePageButton}
         }
     
@@ -159,11 +154,26 @@ class GalleryVC: BaseViewController {
         }
     }
     
-    @IBAction func addToFavorite() {
+    @IBAction func addToFavorite(sender: UIBarButtonItem) {
         guard navigationController?.presentedViewController == nil else {return}
-        favoriteButton.isEnabled = false
-        RequestManager.shared.addDoujinshiToFavorite(doujinshi: doujinshi)
-        SVProgressHUD.show("♥".toIcon(), status: nil)
+        if Defaults.Gallery.isShowFavoriteList {
+            let sheet = UIAlertController(title: "Favorites", message: nil, preferredStyle: .actionSheet)
+            Defaults.List.favoriteTitles.enumerated().forEach{ (f) in
+                let a = UIAlertAction(title: f.element, style: .default, handler: { (_) in
+                    self.favoriteButton.isEnabled = false
+                    RequestManager.shared.addDoujinshiToFavorite(doujinshi: self.doujinshi, category: f.offset)
+                    SVProgressHUD.show("♥".toIcon(), status: nil)
+                })
+                sheet.addAction(a)
+            }
+            sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            sheet.popoverPresentationController?.barButtonItem = sender
+            present(sheet, animated: true, completion: nil)
+        } else {
+            favoriteButton.isEnabled = false
+            RequestManager.shared.addDoujinshiToFavorite(doujinshi: doujinshi)
+            SVProgressHUD.show("♥".toIcon(), status: nil)
+        }
     }
     
     @IBAction func downloadButtonDidClick(_ sender: UIBarButtonItem) {
@@ -220,12 +230,22 @@ class GalleryVC: BaseViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
     
+    func handlePartDownload() {
+        setEditing(isPartDownloading, animated: true)
+        navigationItem.rightBarButtonItems?.filter{ $0 != downloadButton }.forEach{ $0.isEnabled = !isPartDownloading }
+        navigationItem.leftBarButtonItem = isPartDownloading ? UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelPartDownload(sender:))) : nil
+    }
+    
     override func setEditing(_ editing: Bool, animated: Bool) {
         if !isPartDownloading, let selecteds = collectionView.indexPathsForSelectedItems , selecteds.count != 0  {
             selecteds.forEach{collectionView.deselectItem(at: $0, animated: animated)}
         }
         collectionView.allowsMultipleSelection = isPartDownloading
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
+    }
+    
+    @objc func cancelPartDownload(sender: UIBarButtonItem) {
+        isPartDownloading = false
     }
     
     func downloadAll() {
@@ -265,9 +285,9 @@ class GalleryVC: BaseViewController {
             })
         }
         if !doujinshi.isDownloaded && !doujinshi.isFavorite {
-            actions.append( UIPreviewAction(title: "♥", style: .default) { (_, vc) -> Void in
-                guard let vc = vc as? GalleryVC else {return}
-                vc.addToFavorite()
+            actions.append( UIPreviewAction(title: "♥", style: .default) { (_, _) -> Void in 
+                RequestManager.shared.addDoujinshiToFavorite(doujinshi: self.doujinshi)
+                SVProgressHUD.show("♥".toIcon(), status: nil)
             })
         }
         return actions

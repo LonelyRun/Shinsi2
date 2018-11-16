@@ -355,7 +355,7 @@
                             </barButtonItem>
                             <barButtonItem image="ic_favorite_border" id="wzi-88-69A">
                                 <connections>
-                                    <action selector="addToFavorite" destination="zOY-ve-4cz" id="tCY-d0-cYt"/>
+                                    <action selector="addToFavoriteWithSender:" destination="zOY-ve-4cz" id="23C-B5-Gus"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem image="ic_file_download" id="gVf-uw-Tzw" userLabel="Download">
