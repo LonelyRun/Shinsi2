@@ -1,35 +1,38 @@
 import UIKit
 
 //URL
-public let kEHentaiURL = URL(string: "https://e-hentai.org")!
-public let kEXHentaiURL = URL(string: "https://exhentai.org")!
-public let kHostExHentai = "https://exhentai.org"
-public let kHostEHentai = "https://e-hentai.org"
+let kEHentaiURL = URL(string: "https://e-hentai.org")!
+let kEXHentaiURL = URL(string: "https://exhentai.org")!
+let kHostExHentai = "https://exhentai.org"
+let kHostEHentai = "https://e-hentai.org"
 
 //Shortcut
-public let documentURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-public let paperRatio = CGFloat(sqrt(2)) //A4 ratio
-public let isSizeClassRegular = UIApplication.shared.keyWindow?.rootViewController?.traitCollection.horizontalSizeClass ?? .compact == .regular
+let documentURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+let paperRatio = CGFloat(sqrt(2)) //A4 ratio
+
+let kHorizontalSizeClass = UIApplication.shared.keyWindow?.rootViewController?.traitCollection.horizontalSizeClass ?? .compact
+let kkVerticalSizeClass = UIApplication.shared.keyWindow?.rootViewController?.traitCollection.verticalSizeClass ?? .compact
+let isSizeClassRegular = kHorizontalSizeClass == .regular && kkVerticalSizeClass == .regular
 
 //User default
-public let kUDHost = "kUDHost"
+let kUDHost = "kUDHost"
 
-public let kUDListCellWidth = "kUDListCellWidth"
-public let kUDListLastSearchKeyword = "kUDListLastSearchKeyword"
-public let kUDListHideTag = "kUDListHideTag"
-public let kUDListHideTitle = "kUDListHideTitle"
-public let kUDListFavoriteTitles = "kUDListFavoriteTitles"
-public let kUDListFavoriteList = "kUDListFavoriteList"
+let kUDListCellWidth = "kUDListCellWidth"
+let kUDListLastSearchKeyword = "kUDListLastSearchKeyword"
+let kUDListHideTag = "kUDListHideTag"
+let kUDListHideTitle = "kUDListHideTitle"
+let kUDListFavoriteTitles = "kUDListFavoriteTitles"
+let kUDListFavoriteList = "kUDListFavoriteList"
 
-public let kUDGalleryCellWidth = "kUDGalleryCellWidth"
-public let kUDGalleryQuickScroll = "kUDGalleryQuickScroll"
-public let kUDGalleryBlankPage = "kUDGalleryBlankPage"
-public let kUDGalleryFavoriteList = "kUDGalleryFavoriteList"
+let kUDGalleryCellWidth = "kUDGalleryCellWidth"
+let kUDGalleryQuickScroll = "kUDGalleryQuickScroll"
+let kUDGalleryBlankPage = "kUDGalleryBlankPage"
+let kUDGalleryFavoriteList = "kUDGalleryFavoriteList"
 
-public let kUDViewerMode = "kUDViewerMode"
+let kUDViewerMode = "kUDViewerMode"
 
 //Color
-public let kMainColor = UIApplication.shared.keyWindow?.tintColor ?? #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)
+let kMainColor = UIApplication.shared.keyWindow?.tintColor ?? #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)
 
 class Defaults {
     class App {

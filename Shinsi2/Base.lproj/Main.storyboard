@@ -74,6 +74,7 @@
                         <outlet property="loginButton" destination="FX1-HI-TIc" id="ef6-n2-V13"/>
                         <outlet property="passwordField" destination="9nB-eV-or4" id="Shf-B3-2m8"/>
                         <outlet property="userNameField" destination="Dh8-ge-teW" id="l1G-Ca-Gd3"/>
+                        <outlet property="webLoginButton" destination="qd0-bu-Vb8" id="ZjZ-i9-GJf"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="showListVC" id="0j9-la-71a"/>
                     </connections>
                 </viewController>
@@ -343,7 +344,7 @@
                     <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="e9r-Oa-sff">
                         <nil key="title"/>
                         <rightBarButtonItems>
-                            <barButtonItem image="ic_local_offer" id="jlj-hj-nLv">
+                            <barButtonItem enabled="NO" image="ic_local_offer" id="jlj-hj-nLv">
                                 <connections>
                                     <segue destination="rQC-Nf-ZSg" kind="popoverPresentation" identifier="showTag" popoverAnchorBarButtonItem="jlj-hj-nLv" id="C2u-EW-Ww7">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
@@ -353,17 +354,17 @@
                                     </segue>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem image="ic_favorite_border" id="wzi-88-69A">
+                            <barButtonItem enabled="NO" image="ic_favorite_border" id="wzi-88-69A">
                                 <connections>
                                     <action selector="addToFavoriteWithSender:" destination="zOY-ve-4cz" id="23C-B5-Gus"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem image="ic_file_download" id="gVf-uw-Tzw" userLabel="Download">
+                            <barButtonItem enabled="NO" image="ic_file_download" id="gVf-uw-Tzw" userLabel="Download">
                                 <connections>
                                     <action selector="downloadButtonDidClick:" destination="zOY-ve-4cz" id="PEy-Cx-CIp"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem image="ic_comment" id="yoz-kl-ykx" userLabel="Comment">
+                            <barButtonItem enabled="NO" image="ic_comment" id="yoz-kl-ykx" userLabel="Comment">
                                 <connections>
                                     <segue destination="9hd-Fr-quj" kind="popoverPresentation" identifier="showComment" popoverAnchorBarButtonItem="yoz-kl-ykx" id="M67-b9-RZ9">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
@@ -375,7 +376,7 @@
                             </barButtonItem>
                             <barButtonItem image="ic_page_0" id="j1T-7s-SWl" userLabel="White">
                                 <connections>
-                                    <action selector="appendWhitePageButtonDidClick:" destination="zOY-ve-4cz" id="94K-Ie-Bl7"/>
+                                    <action selector="appendBlankPageButtonDidClick:" destination="zOY-ve-4cz" id="94K-Ie-Bl7"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
