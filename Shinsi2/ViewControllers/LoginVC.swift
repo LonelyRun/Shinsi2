@@ -5,6 +5,7 @@ class LoginVC: UIViewController {
     @IBOutlet var userNameField: UITextField!
     @IBOutlet var passwordField: UITextField!
     @IBOutlet var loginButton: UIButton!
+    @IBOutlet weak var webLoginButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -12,6 +13,7 @@ class LoginVC: UIViewController {
         userNameField.isHidden = true
         passwordField.isHidden = true
         loginButton.isHidden = true
+        webLoginButton.isHidden = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -23,6 +25,7 @@ class LoginVC: UIViewController {
             userNameField.isHidden = false
             passwordField.isHidden = false
             loginButton.isHidden = false
+            webLoginButton.isHidden = false
         }
     }
     

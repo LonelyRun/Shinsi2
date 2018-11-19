@@ -83,10 +83,9 @@ class RequestManager {
                         }
                     }
                 }
-                if doujinshi.isFavorite == false {
-                    doujinshi.isFavorite = doc.xpath("//div [@class='i']").count != 0
-                }
+                
                 if page == 0 {
+                    doujinshi.isFavorite = doc.xpath("//div [@class='i']").count != 0
                     //Parse comments
                     let commentDateFormatter = DateFormatter()
                     commentDateFormatter.dateFormat = "dd MMMM  yyyy, HH:mm zzz"

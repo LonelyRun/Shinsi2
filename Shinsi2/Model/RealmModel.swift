@@ -29,6 +29,14 @@ class Doujinshi : Object {
     var isIdTokenValide: Bool {
         return id != 999999999 && token != "invalid_token"
     }
+    var canDownload: Bool {
+        if isDownloaded {
+            return false
+        } else if let gdata = gdata, gdata.filecount == pages.count {
+            return true
+        }
+        return false
+    }
     
     override static func ignoredProperties() -> [String] {
         return ["comments", "commentScrollPosition", "perPageCount"]
@@ -66,16 +74,11 @@ class GData : Object {
     lazy var gTag: GTag = {
         var g = GTag()
         let keys = g.allProperties().keys
-        for t in self.tags {
-            if t.name.contains(":") {
-                for key in keys {
-                    if t.name.hasPrefix("\(key):") {
-                        g[key].append(t.name.replacingOccurrences(of: "\(key):", with: ""))
-                        break
-                    }
-                }
+        tags.forEach{
+            if $0.name.contains(":"), let key = $0.name.components(separatedBy: ":").first, keys.contains(key) {
+                g[key].append($0.name.replacingOccurrences(of: "\(key):", with: ""))
             } else {
-                g["misc"].append(t.name)
+                g["misc"].append($0.name)
             }
         }
         return g

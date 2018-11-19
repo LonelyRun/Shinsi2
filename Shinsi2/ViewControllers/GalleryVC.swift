@@ -55,7 +55,7 @@ class GalleryVC: BaseViewController {
             scrollBar.draggingTextOffset = 40
         }
         
-        getGData()
+        checkGData()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -87,29 +87,14 @@ class GalleryVC: BaseViewController {
         }
     }
     
-    func getGData() {
-        if doujinshi.isDownloaded , let gdata = doujinshi.gdata {
+    func checkGData() {
+        updateNavigationItems()
+        if doujinshi.isDownloaded , let _ = doujinshi.gdata {
             loadingView.hide()
-            tagButton.isEnabled = true
-            downloadButton.isEnabled = false
-            commentButton.isEnabled = doujinshi.comments.count > 0
-            favoriteButton.isEnabled = !doujinshi.isFavorite
-            title = gdata.getTitle()
-            collectionView.reloadData()
         } else if let gdata = doujinshi.gdata , doujinshi.pages.count == gdata.filecount {
             loadingView.hide()
-            tagButton.isEnabled = true
-            downloadButton.isEnabled = true
-            commentButton.isEnabled = doujinshi.comments.count > 0
-            favoriteButton.isEnabled = !doujinshi.isFavorite
-            title = gdata.getTitle()
-            collectionView.reloadData()
-        } else if let gdata = doujinshi.gdata, doujinshi.pages.count > 0, let perPageCount = doujinshi.perPageCount {
+        } else if let _ = doujinshi.gdata, doujinshi.pages.count > 0, let perPageCount = doujinshi.perPageCount {
             loadingView.hide()
-            tagButton.isEnabled = true
-            commentButton.isEnabled = doujinshi.comments.count > 0
-            favoriteButton.isEnabled = !doujinshi.isFavorite
-            title = gdata.getTitle()
             currentPage = doujinshi.pages.count / perPageCount
             loadPages()
         } else {
@@ -124,13 +109,20 @@ class GalleryVC: BaseViewController {
             RequestManager.shared.getGData(doujinshi: self.doujinshi) { [weak self] gdata in
                 guard let gdata = gdata , let self = self else { return }
                 self.loadingView.hide()
-                self.tagButton.isEnabled = true
-                self.title = gdata.getTitle()
-                self.doujinshi.gdata = gdata
                 self.doujinshi.pages.removeAll()
+                self.doujinshi.gdata = gdata
+                self.updateNavigationItems()
                 self.loadPages()
             }
         }
+    }
+    
+    func updateNavigationItems() {
+        tagButton.isEnabled = doujinshi.gdata != nil
+        downloadButton.isEnabled = doujinshi.canDownload
+        commentButton.isEnabled = doujinshi.comments.count > 0
+        favoriteButton.isEnabled = !doujinshi.isFavorite && doujinshi.pages.count > 1
+        title = doujinshi.gdata?.getTitle() ?? doujinshi.title
     }
     
     func loadPages() {
@@ -202,7 +194,7 @@ class GalleryVC: BaseViewController {
         }
     }
     
-    @IBAction func appendWhitePageButtonDidClick(_ sender: UIBarButtonItem) {
+    @IBAction func appendBlankPageButtonDidClick(_ sender: UIBarButtonItem) {
         guard navigationController?.presentedViewController == nil else {return}
         Defaults.Gallery.isAppendBlankPage.toggle()
         sender.image = Defaults.Gallery.isAppendBlankPage ? #imageLiteral(resourceName: "ic_page_1") : #imageLiteral(resourceName: "ic_page_0")
