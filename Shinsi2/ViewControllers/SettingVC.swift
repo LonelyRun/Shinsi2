@@ -3,6 +3,7 @@ import AloeStackView
 import SDWebImage
 import SVProgressHUD
 import Hero
+import WebKit
 
 public extension Notification.Name {
     public static let settingChanged = Notification.Name("SS_SETTING_CHANGED")
@@ -69,16 +70,14 @@ class SettingVC: BaseViewController {
         ehSetting.isUserInteractionEnabled = true
         stackView.addRow(ehSetting)
         stackView.setTapHandler(forRow: ehSetting) { [weak self] (label) in
-            let url = URL(string: "https://e-hentai.org/uconfig.php")!
-            self?.presentWebViewController(url: url)
+            self?.presentWebViewController(url: Defaults.URL.configEH)
         }
         
         let exSetting = createTextLable("EX-Hentai settings")
         exSetting.isUserInteractionEnabled = true
         stackView.addRow(exSetting)
         stackView.setTapHandler(forRow: exSetting) { [weak self] (label) in
-            let url = URL(string: "https://exhentai.org/uconfig.php")!
-            self?.presentWebViewController(url: url)
+            self?.presentWebViewController(url: Defaults.URL.configEX)
         }
         
         //UI
@@ -172,6 +171,12 @@ class SettingVC: BaseViewController {
             parent.dismiss(animated: true, completion: {
                 parent.setViewControllers([vc], animated: false)
             })
+            let dataStore = WKWebsiteDataStore.default()
+            dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { (records) in
+                for record in records {
+                    dataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: [record], completionHandler: {})
+                }
+            }
         }
     }
 

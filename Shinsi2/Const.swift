@@ -1,10 +1,8 @@
 import UIKit
 
 //URL
-let kEHentaiURL = URL(string: "https://e-hentai.org")!
-let kEXHentaiURL = URL(string: "https://exhentai.org")!
-let kHostExHentai = "https://exhentai.org"
 let kHostEHentai = "https://e-hentai.org"
+let kHostExHentai = "https://exhentai.org"
 
 //Shortcut
 let documentURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -43,6 +41,11 @@ class Defaults {
             get {  return UserDefaults.standard.string(forKey: kUDHost) ?? kHostEHentai }
             set { UserDefaults.standard.set(newValue, forKey: kUDHost) }
         }
+        static var eHentai: Foundation.URL = Foundation.URL(string: "https://e-hentai.org")!
+        static var exHentai: Foundation.URL = Foundation.URL(string: "https://exhentai.org")!
+        static var login: Foundation.URL = Foundation.URL(string: "https://forums.e-hentai.org/index.php?act=Login")!
+        static var configEH: Foundation.URL = Foundation.URL(string: kHostEHentai + "/uconfig.php")!
+        static var configEX: Foundation.URL = Foundation.URL(string: kHostExHentai + "/uconfig.php")!
     }
     class Search {
         static var categories: [String] = ["doujinshi","manga","artistcg","gamecg","western","non-h","imageset","cosplay","asianporn","misc"]
