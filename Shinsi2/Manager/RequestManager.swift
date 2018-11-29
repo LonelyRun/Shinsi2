@@ -191,7 +191,7 @@ class RequestManager {
     }
 
     func login(username name: String , password pw: String , completeBlock block : (() -> ())? ) {
-        let url = "https://forums.e-hentai.org/index.php?act=Login&CODE=01"
+        let url = Defaults.URL.login.absoluteString + "&CODE=01"
         let parameters :[String:String] = [
             "CookieDate" : "1" ,
             "b" : "d",

@@ -45,9 +45,8 @@ class LoginVC: UIViewController {
     }
     
     @IBAction func webLoginButtonDidClick(_ sender: Any) {
-        let url = URL(string: "https://forums.e-hentai.org/index.php?act=Login&CODE=00")!
         let vc = storyboard?.instantiateViewController(withIdentifier: "WebVC") as! WebVC
-        vc.url = url
+        vc.url = Defaults.URL.login
         let nvc = UINavigationController(rootViewController: vc)
         nvc.hero.isEnabled = true
         nvc.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
@@ -60,16 +59,16 @@ class LoginVC: UIViewController {
     }
 
     func checkCookie() -> Bool {
-        if let cookies = HTTPCookieStorage.shared.cookies(for: kEHentaiURL) {
+        if let cookies = HTTPCookieStorage.shared.cookies(for: Defaults.URL.eHentai) {
             return cookies.filter({$0.name == "ipb_pass_hash"}).count > 0
         }
         return false
     }
 
     func copyCookiesForEx(overwrite: Bool = true) {
-        let exCookies = HTTPCookieStorage.shared.cookies(for: kEXHentaiURL) ?? []
+        let exCookies = HTTPCookieStorage.shared.cookies(for: Defaults.URL.exHentai) ?? []
         guard overwrite || exCookies.count == 0 else {return}
-        HTTPCookieStorage.shared.cookies(for: kEHentaiURL)?.forEach{
+        HTTPCookieStorage.shared.cookies(for: Defaults.URL.eHentai)?.forEach{
             if var properties = $0.properties {
                 properties[HTTPCookiePropertyKey.domain] = ".exhentai.org"
                 if let newCookie = HTTPCookie(properties: properties) {
