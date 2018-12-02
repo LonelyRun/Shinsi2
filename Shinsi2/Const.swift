@@ -9,8 +9,8 @@ let documentURL = try! FileManager.default.url(for: .documentDirectory, in: .use
 let paperRatio = CGFloat(sqrt(2)) //A4 ratio
 
 let kHorizontalSizeClass = UIApplication.shared.keyWindow?.rootViewController?.traitCollection.horizontalSizeClass ?? .compact
-let kkVerticalSizeClass = UIApplication.shared.keyWindow?.rootViewController?.traitCollection.verticalSizeClass ?? .compact
-let isSizeClassRegular = kHorizontalSizeClass == .regular && kkVerticalSizeClass == .regular
+let kVerticalSizeClass = UIApplication.shared.keyWindow?.rootViewController?.traitCollection.verticalSizeClass ?? .compact
+let isSizeClassRegular = kHorizontalSizeClass == .regular && kVerticalSizeClass == .regular
 
 //User default
 let kUDHost = "kUDHost"

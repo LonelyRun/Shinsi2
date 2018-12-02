@@ -11,7 +11,7 @@ class ListVC: BaseViewController {
     private lazy var historyVC: SearchHistoryVC = {
         return self.storyboard!.instantiateViewController(withIdentifier: "SearchHistoryVC") as! SearchHistoryVC
     }()
-    private var items : [Doujinshi] = []
+    private var items: [Doujinshi] = []
     private var currentPage = -1
     private var loadingPage = -1
     private var backGesture: InteractiveBackGesture?
