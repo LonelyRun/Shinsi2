@@ -45,8 +45,8 @@ class RequestManager {
             guard let html = response.result.value else { block?([]); return }
             if let doc = try? Kanna.HTML(html: html, encoding: .utf8) {
                 var items : [Doujinshi] = []
-                for link in doc.xpath("//div [@class='id3'] //a") {
-                    if let url = link["href"], let imgNode = link.at_css("img"), let imgUrl = imgNode["src"] , let title = imgNode["title"]  {
+                for link in doc.xpath("//div [@class='gl1t']") {
+                    if let url = link.xpath("div[1] //a").first?["href"], let imgUrl = link.xpath("div[2] //a //img").first?["src"] , let title = link.xpath("div[1] //a").first?.text  {
                         items.append(Doujinshi(value : ["coverUrl": imgUrl, "title": title , "url": url]))
                     }
                 }
