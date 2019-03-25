@@ -45,14 +45,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
-        checkoutTouchId()
+//        checkoutTouchId()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        if isFirstTime {
-            isFirstTime = false
-            checkoutTouchId()
-        }
+//        if isFirstTime {
+//            isFirstTime = false
+//            checkoutTouchId()
+//        }
     }
     
     func checkoutTouchId () {
