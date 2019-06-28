@@ -47,9 +47,20 @@ class RequestManager {
                 var items : [Doujinshi] = []
                 for link in doc.xpath("//div [@class='gl1t']") {
                     
-                    if let url = link.xpath("div[1] //a").first?["href"], let imgUrl = link.xpath("div[1] //a //img").first?["src"] , let title = link.xpath("a[1] //div").first?.text  {
-                        items.append(Doujinshi(value : ["coverUrl": imgUrl, "title": title , "url": url]))
+                    var imageUrl: String?
+                    var title: String?
+                    var url: String?
+                    
+                    if keyword?.contains("favorites") ?? false {
+                        url = link.xpath("div[1] //a").first?["href"]
+                        imageUrl = link.xpath("div[2] //a //img").first?["src"]
+                        title = link.xpath("div[1] //div //a //span").first?.text
+                    } else {
+                        imageUrl = link.xpath("div[1] //a //img").first?["src"]
+                        title = link.xpath("a[1] //div").first?.text
+                        url = link.xpath("div[1] //a").first?["href"]
                     }
+                    items.append(Doujinshi(value : ["coverUrl": imageUrl ?? "", "title": title ?? "", "url": url ?? ""]))
                 }
                 block?(items)
                 if cacheFavoritesTitles {
