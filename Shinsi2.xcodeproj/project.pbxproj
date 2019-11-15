@@ -35,8 +35,6 @@
 		547AF17C20DE4538003D2AF3 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547AF17B20DE4538003D2AF3 /* ImageManager.swift */; };
 		54AA5F482192B03C003E0FAD /* QuickScrollBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54AA5F472192B03C003E0FAD /* QuickScrollBar.swift */; };
 		54E1DADF1F1F38E00096A6D3 /* DownloadBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E1DADE1F1F38E00096A6D3 /* DownloadBubble.swift */; };
-		8499FAF721D1BEDB0024FE01 /* TouchIdVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FAF621D1BEDB0024FE01 /* TouchIdVC.swift */; };
-		8499FAF921D1C1F20024FE01 /* TouchIdTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FAF821D1C1F20024FE01 /* TouchIdTool.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,8 +69,6 @@
 		54AA5F472192B03C003E0FAD /* QuickScrollBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickScrollBar.swift; sourceTree = "<group>"; };
 		54E1DADE1F1F38E00096A6D3 /* DownloadBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadBubble.swift; sourceTree = "<group>"; };
 		84200A16D7CCE139324C1CC5 /* Pods-Shinsi2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shinsi2.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Shinsi2/Pods-Shinsi2.debug.xcconfig"; sourceTree = "<group>"; };
-		8499FAF621D1BEDB0024FE01 /* TouchIdVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchIdVC.swift; sourceTree = "<group>"; };
-		8499FAF821D1C1F20024FE01 /* TouchIdTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchIdTool.swift; sourceTree = "<group>"; };
 		D5F0FE681077CF06BA8C8011 /* Pods_Shinsi2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Shinsi2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -177,8 +173,6 @@
 				547AF17B20DE4538003D2AF3 /* ImageManager.swift */,
 				5466639B1F1DE67B003B9E36 /* RealmManager.swift */,
 				5466637E1F1DE44D003B9E36 /* DownloadManager.swift */,
-				8499FAF621D1BEDB0024FE01 /* TouchIdVC.swift */,
-				8499FAF821D1C1F20024FE01 /* TouchIdTool.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -268,7 +262,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Shinsi2/Pods-Shinsi2-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Shinsi2/Pods-Shinsi2-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/AloeStackView/AloeStackView.framework",
 				"${BUILT_PRODUCTS_DIR}/Hero/Hero.framework",
@@ -291,7 +285,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Shinsi2/Pods-Shinsi2-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Shinsi2/Pods-Shinsi2-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		77D54976A98463D5D5055289 /* [CP] Check Pods Manifest.lock */ = {
@@ -328,14 +322,12 @@
 				54433ECA21992FA1008313D4 /* CommentVC.swift in Sources */,
 				54E1DADF1F1F38E00096A6D3 /* DownloadBubble.swift in Sources */,
 				546663981F1DE511003B9E36 /* SSPhoto.swift in Sources */,
-				8499FAF721D1BEDB0024FE01 /* TouchIdVC.swift in Sources */,
 				546663911F1DE511003B9E36 /* LoginVC.swift in Sources */,
 				5466638E1F1DE50C003B9E36 /* RealmModel.swift in Sources */,
 				546663921F1DE511003B9E36 /* SearchHistoryVC.swift in Sources */,
 				540D1FED20DA3EB60044EC55 /* InsetLabel.swift in Sources */,
 				54AA5F482192B03C003E0FAD /* QuickScrollBar.swift in Sources */,
 				5466639C1F1DE67B003B9E36 /* RealmManager.swift in Sources */,
-				8499FAF921D1C1F20024FE01 /* TouchIdTool.swift in Sources */,
 				546663971F1DE511003B9E36 /* DownloadManager.swift in Sources */,
 				5466638D1F1DE509003B9E36 /* RequestManager.swift in Sources */,
 				546663961F1DE511003B9E36 /* Cells.swift in Sources */,
