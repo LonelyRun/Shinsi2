@@ -21,8 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //SDImageCache.shared().clearMemory()
         //SDImageCache.shared().clearDisk()
         #endif
-        isFirstTime = true
-        checkoutTouchId()
         
         return true
     }
@@ -42,27 +40,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SVProgressHUD.setDefaultMaskType(.black)
         SVProgressHUD.setMinimumDismissTimeInterval(3)
         SVProgressHUD.setImageViewSize(CGSize(width: 44, height: 44))
-    }
-    
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        checkoutTouchId()
-    }
-    
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        if isFirstTime {
-            isFirstTime = false
-            checkoutTouchId()
-        }
-    }
-    
-    func checkoutTouchId () {
-        if TouchIdTool.isEnableTouchId() {
-            if let vc = UIApplication.shared.keyWindow?.rootViewController {
-                if !(vc is TouchIdVC) {
-                    vc.present(TouchIdVC(), animated: true, completion: nil)
-                }
-            }
-        }
     }
 }
 
