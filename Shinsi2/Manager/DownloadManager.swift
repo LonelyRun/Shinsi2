@@ -61,7 +61,7 @@ class PageDownloadOperation: SSOperation {
                 let destination: DownloadRequest.DownloadFileDestination = { _, _ in
                     return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
                 }
-                Alamofire.download(imageUrl, to: destination).response { response in
+                Alamofire.download(imageUrl, to: destination).response { _ in
                     self.state = .finished
                     if let image = UIImage(contentsOfFile: fileURL.path) {
                         SDWebImageManager.shared().imageCache?.store(image, forKey: imageUrl, completion: nil)
@@ -77,14 +77,13 @@ class PageDownloadOperation: SSOperation {
     }
 }
 
-
 class DownloadManager: NSObject {
     static let shared = DownloadManager()
     var queues: [OperationQueue] = []
-    var books: [String:Doujinshi] = [:]
+    var books: [String: Doujinshi] = [:]
     
-    func download(doujinshi : Doujinshi!) {
-        guard let gdata = doujinshi.gdata , doujinshi.pages.count != 0 else {return}
+    func download(doujinshi: Doujinshi) {
+        guard let gdata = doujinshi.gdata, doujinshi.pages.count != 0 else {return}
         let folderName = gdata.gid
         let path = documentURL.appendingPathComponent(folderName).path
         
@@ -95,7 +94,7 @@ class DownloadManager: NSObject {
         queues.append(queue)
         books[gdata.gid] = doujinshi
         
-        for (i,p) in doujinshi.pages.enumerated() {
+        for (i, p) in doujinshi.pages.enumerated() {
             let o = PageDownloadOperation(url: p.url, folderPath: path, pageNumber: i)
             queue.addOperation(o)
         }
@@ -114,21 +113,21 @@ class DownloadManager: NSObject {
         books.removeAll()
     }
     
-    func deleteDownloaded(doujinshi:Doujinshi) {
+    func deleteDownloaded(doujinshi: Doujinshi) {
         try? FileManager.default.removeItem(at: documentURL.appendingPathComponent(doujinshi.gdata!.gid))
         RealmManager.shared.deleteDoujinshi(book: doujinshi)
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath, keyPath == "operationCount" ,
-              let change = change, let count = change[.newKey] as? Int ,
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+        guard let keyPath = keyPath, keyPath == "operationCount",
+              let change = change, let count = change[.newKey] as? Int,
               let queue = object as? OperationQueue
         else {return}
         
         if count == 0 {
             print("\(queue.name!): Finished!!!")
             RealmManager.shared.saveDownloadedDoujinshi(book: books[queue.name!]!)
-            queues.remove(at: queues.index(of: queue)!)
+            queues.remove(at: queues.firstIndex(of: queue)!)
             queue.removeObserver(self, forKeyPath: "operationCount")
             books.removeValue(forKey: queue.name!)
             if let nextQueue = queues.first {
@@ -138,4 +137,3 @@ class DownloadManager: NSObject {
         }
     }
 }
-

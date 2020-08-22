@@ -12,7 +12,9 @@ class BaseViewController: UIViewController, UIAdaptivePresentationControllerDele
     }
     
     //Hide navigationBar when viewController is in the popover
-    func presentationController(_ presentationController: UIPresentationController, willPresentWithAdaptiveStyle style: UIModalPresentationStyle, transitionCoordinator: UIViewControllerTransitionCoordinator?) {
+    func presentationController(_ presentationController: UIPresentationController,
+                                willPresentWithAdaptiveStyle style: UIModalPresentationStyle,
+                                transitionCoordinator: UIViewControllerTransitionCoordinator?) {
         if let nvc = presentationController.presentedViewController as? UINavigationController {
             nvc.navigationBar.isHidden = style == .none || style == .popover
             nvc.popoverPresentationController?.backgroundColor = .white

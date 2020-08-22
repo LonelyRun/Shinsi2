@@ -1,13 +1,25 @@
 import Foundation
 import RealmSwift
 
-class Doujinshi : Object {
+class BrowsingHistory: Object {
+    @objc dynamic var doujinshi: Doujinshi?
+    @objc dynamic var currentPage: Int = 0
+    @objc dynamic var id: Int = 999999999
+    @objc dynamic var createdAt: Date = Date()
+    @objc dynamic var updatedAt: Date = Date()
+    
+    override static func primaryKey() -> String? {
+        return "id"
+    }
+}
+
+class Doujinshi: Object {
     @objc dynamic var coverUrl = ""
     @objc dynamic var title = ""
     @objc dynamic var url = ""
 
     let pages = List<Page>()
-    @objc dynamic var gdata : GData?
+    @objc dynamic var gdata: GData?
     @objc dynamic var isFavorite = false
     @objc dynamic var isDownloaded = false 
     @objc dynamic var date = Date()
@@ -43,7 +55,7 @@ class Doujinshi : Object {
     }
 }
 
-class Page : Object {
+class Page: Object {
     @objc dynamic var thumbUrl = ""
     @objc dynamic var url = ""
     var photo: SSPhoto!
@@ -60,10 +72,10 @@ class Page : Object {
     }
 }
 
-class GData : Object {
+class GData: Object {
     @objc dynamic var gid = ""
     @objc dynamic var filecount = 0
-    @objc dynamic var rating : Float = 0.0
+    @objc dynamic var rating: Float = 0.0
     @objc dynamic var title = ""
     @objc dynamic var title_jpn = ""
     func getTitle() -> String {
@@ -74,7 +86,7 @@ class GData : Object {
     lazy var gTag: GTag = {
         var g = GTag()
         let keys = g.allProperties().keys
-        tags.forEach{
+        tags.forEach {
             if $0.name.contains(":"), let key = $0.name.components(separatedBy: ":").first, keys.contains(key) {
                 g[key].append($0.name.replacingOccurrences(of: "\(key):", with: ""))
             } else {
@@ -89,7 +101,7 @@ class GData : Object {
     }
 }
 
-class Tag : Object {
+class Tag: Object {
     @objc dynamic var name = ""
 }
 
@@ -111,7 +123,7 @@ struct Comment {
     }
 }
 
-struct GTag : PropertyLoopable {
+struct GTag: PropertyLoopable {
     var language: [String] = []
     var artist: [String] = []
     var group: [String] = []
@@ -121,7 +133,7 @@ struct GTag : PropertyLoopable {
     var female: [String] = []
     var misc: [String] = []
     
-    subscript(key:String) -> [String] {
+    subscript(key: String) -> [String] {
         get {
             switch key {
             case "language":

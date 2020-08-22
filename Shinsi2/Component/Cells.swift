@@ -14,6 +14,7 @@ class ListCell: ImageCell {
     @IBOutlet weak var languageLabel: UILabel!
     @IBOutlet weak var conventionLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel?
+    @IBOutlet weak var containerView: UIView!
 }
 
 class CommentCell: UITableViewCell {
@@ -129,7 +130,7 @@ extension ScrollingImageCell: UIScrollViewDelegate {
 
 extension ScrollingImageCell: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard let _ = gestureRecognizer as? UITapGestureRecognizer, let _ = otherGestureRecognizer as? UITapGestureRecognizer else {return false}
+        guard gestureRecognizer as? UITapGestureRecognizer != nil, otherGestureRecognizer as? UITapGestureRecognizer != nil else {return false}
         return true
     }
 }

@@ -2,17 +2,17 @@ import Foundation
 import SDWebImage
 
 public extension Notification.Name {
-    public static let photoLoaded = Notification.Name("SSPHOTO_LOADING_DID_END_NOTIFICATION")
+    static let photoLoaded = Notification.Name("SSPHOTO_LOADING_DID_END_NOTIFICATION")
 }
 
-class SSPhoto : NSObject {
+class SSPhoto: NSObject {
     
-    var underlyingImage :UIImage?
-    var urlString :String
+    var underlyingImage: UIImage?
+    var urlString: String
     var isLoading = false
     let imageCache = SDWebImageManager.shared().imageCache!
     
-    init(URL url : String) {
+    init(URL url: String) {
         urlString = url
         super.init()
     }
@@ -27,7 +27,7 @@ class SSPhoto : NSObject {
                 self.imageLoadComplete()
                 return
             }
-            SDWebImageDownloader.shared().downloadImage( with: URL(string: url)! , options: [.highPriority , .handleCookies , .useNSURLCache], progress:nil , completed: { [weak self] image, data, error, success in
+            SDWebImageDownloader.shared().downloadImage( with: URL(string: url)!, options: [.highPriority, .handleCookies, .useNSURLCache], progress: nil, completed: { [weak self] image, _, _, _ in
                 guard let self = self else { return }
                 self.imageCache.store(image, forKey: self.urlString)
                 self.underlyingImage = image
@@ -45,8 +45,8 @@ class SSPhoto : NSObject {
             return
         }
         
-        imageCache.queryCacheOperation(forKey: urlString) { [weak self] image, _,_ in
-            if let diskCache = image ,let self = self {
+        imageCache.queryCacheOperation(forKey: urlString) { [weak self] image, _, _ in
+            if let diskCache = image, let self = self {
                 self.underlyingImage = diskCache
                 self.imageLoadComplete()
             }

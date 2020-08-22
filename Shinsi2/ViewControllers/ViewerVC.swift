@@ -18,7 +18,10 @@ class ViewerVC: UICollectionViewController {
         }
     }
     private var _selectedIndexPath: IndexPath?
-    weak var doujinshi : Doujinshi!
+    weak var doujinshi: Doujinshi!
+    private lazy var browsingHistory: BrowsingHistory? = {
+        return RealmManager.shared.browsingHistory(for: doujinshi)
+    }()
     var pages: [Page] {
         var ps = Array(doujinshi.pages)
         if Defaults.Gallery.isAppendBlankPage { ps.insert(Page.blankPage(), at: 0) }
@@ -36,7 +39,7 @@ class ViewerVC: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if !doujinshi.isDownloaded {
-            pages.forEach{$0.photo.checkCache()}
+            pages.forEach { $0.photo.checkCache() }
         }
         view.layoutIfNeeded()
         collectionView?.reloadData()
@@ -48,7 +51,7 @@ class ViewerVC: UICollectionViewController {
             case .vertical:
                 collectionView!.scrollToItem(at: selectedIndex, at: .top, animated: false)
             case .doublePage:
-                collectionView!.scrollToItem(at: selectedIndex.item % 2 != 0 ? selectedIndex : convertIndexPath(from:selectedIndex), at: .right, animated: false)
+                collectionView!.scrollToItem(at: selectedIndex.item % 2 != 0 ? selectedIndex : convertIndexPath(from: selectedIndex), at: .right, animated: false)
             }
         }
         
@@ -68,11 +71,21 @@ class ViewerVC: UICollectionViewController {
         
         setNeedsUpdateOfHomeIndicatorAutoHidden()
         NotificationCenter.default.addObserver(self, selector: #selector(handleSKPhotoLoadingDidEndNotification(notification:)), name: .photoLoaded, object: nil)
+        
+        if #available(iOS 13.0, *) {
+            NotificationCenter.default.addObserver(self, selector: #selector(willResignActive), name: UIScene.willDeactivateNotification, object: nil)
+        } else {
+            NotificationCenter.default.addObserver(self, selector: #selector(willResignActive), name: UIApplication.willResignActiveNotification, object: nil)
+        }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        updateBrowsingHistory()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -80,10 +93,10 @@ class ViewerVC: UICollectionViewController {
         let indexPath = collectionView.indexPathsForVisibleItems.first
         super.viewWillTransition(to: size, with: coordinator)
         collectionView?.collectionViewLayout.invalidateLayout()
-        coordinator.animate(alongsideTransition: {ctx in 
+        coordinator.animate(alongsideTransition: { _ in
             if let indexPath = indexPath {
                 self.collectionView.reloadData()
-                let covertedIndexPath = self.mode == .doublePage ? self.convertIndexPath(from:indexPath) : indexPath
+                let covertedIndexPath = self.mode == .doublePage ? self.convertIndexPath(from: indexPath) : indexPath
                 let position: UICollectionView.ScrollPosition = self.mode == .vertical ? .top : (covertedIndexPath.item % 2 == 0 ? .left : .right)
                 self.collectionView!.scrollToItem(at: covertedIndexPath, at: position, animated: false)
             }
@@ -102,7 +115,7 @@ class ViewerVC: UICollectionViewController {
     
     override var prefersHomeIndicatorAutoHidden: Bool { return true }
     
-    @objc func longPress(ges:UILongPressGestureRecognizer) {
+    @objc func longPress(ges: UILongPressGestureRecognizer) {
         guard ges.state == .began else {return}
         let p = ges.location(in: collectionView)
         if let indexPath = collectionView!.indexPathForItem(at: p) {
@@ -111,7 +124,7 @@ class ViewerVC: UICollectionViewController {
             let image = doujinshi.isDownloaded ? item.localImage! : item.photo.underlyingImage!
             
             let alert = UIAlertController(title: "Save to camera roll", message: nil, preferredStyle: .alert)
-            let ok = UIAlertAction(title: "OK", style: .default) { a in
+            let ok = UIAlertAction(title: "OK", style: .default) { _ in
                 PHPhotoLibrary.requestAuthorization({ s in
                     if s == .authorized {
                         PHPhotoLibrary.shared().performChanges({
@@ -128,7 +141,7 @@ class ViewerVC: UICollectionViewController {
         }
     }
     
-    @objc func tapToClose(ges:UITapGestureRecognizer) {
+    @objc func tapToClose(ges: UITapGestureRecognizer) {
         dismiss(animated: true, completion: nil)
     }
     
@@ -161,6 +174,16 @@ class ViewerVC: UICollectionViewController {
                 Hero.shared.cancel()
             }
         }
+    }
+    
+    @objc func willResignActive(_ notification: Notification) {
+        updateBrowsingHistory()
+    }
+    
+    private func updateBrowsingHistory() {
+        guard let browsingHistory = browsingHistory, let currentPage = selectedIndexPath?.item else { return }
+        RealmManager.shared.updateBrowsingHistory(browsingHistory, currentPage: currentPage)
+        print("currentPage: \(currentPage)")
     }
 }
 
@@ -206,7 +229,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
         return cell
     } 
     
-    func convertIndexPath(from indexPath:IndexPath) -> IndexPath {
+    func convertIndexPath(from indexPath: IndexPath) -> IndexPath {
         var i = indexPath.item
         if mode == .doublePage {
             i = i % 2 == 0 ? i + 1 : i - 1
@@ -237,17 +260,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     @objc func handleSKPhotoLoadingDidEndNotification(notification: Notification) {
         guard let photo = notification.object as? SSPhoto else { return }
         if photo.underlyingImage != nil {
-            reloadVisibleCell(photo:photo)
-        }
-    }
-    
-    func reloadVisibleCell(photo:SSPhoto) {
-        for indexPath in collectionView!.indexPathsForVisibleItems {
-            let page = getPage(for: indexPath)
-            if page.photo.urlString == photo.urlString , let image = photo.underlyingImage, let cell = collectionView?.cellForItem(at: indexPath) as? ScrollingImageCell {
-                cell.image = image
-                break
-            }
+            collectionView.reloadData()
         }
     }
     

@@ -20,7 +20,7 @@ extension String {
     }
     
     func removeSymbol() -> String {
-        let set = CharacterSet(charactersIn:"()[]")
+        let set = CharacterSet(charactersIn: "()[]")
         return self.trimmingCharacters(in: set)
     }
     
@@ -68,7 +68,10 @@ extension String {
         if let match = self.matches(for: pattern).first?.removeSymbol() {
             return match
         } else {
-            let ls = ["albanian","arabic","bengali","catalan","chinese","czech","danish","dutch","english","esperanto","estonian","finnish","french","german","greek","hebrew","hindi","hungarian","indonesian","italian","japanese","korean","latin","mongolian","polish","portuguese","romanian","russian","slovak","slovenian","spanish","swedish","tagalog","thai","turkish","ukrainian","vietnamese"]
+            let ls = ["albanian", "arabic", "bengali", "catalan", "chinese", "czech", "danish", "dutch", "english", "esperanto",
+                      "estonian", "finnish", "french", "german", "greek", "hebrew", "hindi", "hungarian", "indonesian", "italian",
+                      "japanese", "korean", "latin", "mongolian", "polish", "portuguese", "romanian", "russian", "slovak",
+                      "slovenian", "spanish", "swedish", "tagalog", "thai", "turkish", "ukrainian", "vietnamese"]
             for l in ls {
                 if self.lowercased().contains(l) {
                     return l
@@ -97,8 +100,8 @@ extension String {
     var htmlAttribute: NSAttributedString {
         let font = UIFont.systemFont(ofSize: 14) 
         let css = "<style>body{font-family: '-apple-system', 'HelveticaNeue'; font-size: \(font.pointSize); color: #222222;}</style>%@"
-        let modified = String(format:css, self)
-        if let htmlData = modified.data(using: String.Encoding.unicode) , let html = try? NSAttributedString(data: htmlData, options: [.documentType : NSAttributedString.DocumentType.html], documentAttributes: nil) {
+        let modified = String(format: css, self)
+        if let htmlData = modified.data(using: String.Encoding.unicode), let html = try? NSAttributedString(data: htmlData, options: [.documentType: NSAttributedString.DocumentType.html], documentAttributes: nil) {
             return html
         }
         return NSAttributedString(string: self)
@@ -134,7 +137,8 @@ extension UIImage {
     }
 }
 
-class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
+class InteractiveBackGesture: NSObject, UIGestureRecognizerDelegate {
+    
     weak var viewController: UIViewController!
     weak var view: UIView!
     enum Mode {
@@ -143,7 +147,8 @@ class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
     }
     var mode: Mode
     var isSimultaneously = true
-    init(viewController: UIViewController, toView: UIView, mode:Mode = .push, isSimultaneously:Bool = true ) {
+    
+    init(viewController: UIViewController, toView: UIView, mode: Mode = .push, isSimultaneously: Bool = true ) {
         self.viewController = viewController
         self.view = toView
         self.mode = mode
@@ -154,7 +159,7 @@ class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
         ges.delegate = self
     }
     
-    @objc func pan(gesture:UIPanGestureRecognizer) {
+    @objc func pan(gesture: UIPanGestureRecognizer) {
         let v = gesture.velocity(in: nil)
         let t = gesture.translation(in: nil)
         let progress = mode == .push ? t.x / (viewController.view.bounds.width * 0.8) : t.y / (viewController.view.bounds.height * 0.8)
@@ -184,7 +189,7 @@ class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
-            switch mode{
+            switch mode {
             case .push:
                 let p = gestureRecognizer.location(in: nil)
                 let v = gestureRecognizer.velocity(in: nil)
@@ -202,4 +207,3 @@ class InteractiveBackGesture : NSObject, UIGestureRecognizerDelegate {
         return true
     }
 }
-
