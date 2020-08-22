@@ -26,6 +26,7 @@ let kUDGalleryCellWidth = "kUDGalleryCellWidth"
 let kUDGalleryQuickScroll = "kUDGalleryQuickScroll"
 let kUDGalleryBlankPage = "kUDGalleryBlankPage"
 let kUDGalleryFavoriteList = "kUDGalleryFavoriteList"
+let kUDGalleryAutomaticallyScrollToHistory = "kUDGalleryAutomaticallyScrollToHistory"
 
 let kUDViewerMode = "kUDViewerMode"
 
@@ -48,7 +49,7 @@ class Defaults {
         static var configEX: Foundation.URL = Foundation.URL(string: kHostExHentai + "/uconfig.php")!
     }
     class Search {
-        static var categories: [String] = ["doujinshi","manga","artistcg","gamecg","western","non-h","imageset","cosplay","asianporn","misc"]
+        static var categories: [String] = ["doujinshi", "manga", "artistcg", "gamecg", "western", "non-h", "imageset", "cosplay", "asianporn", "misc"]
     }
     class List {
         static var isHideTitle: Bool {
@@ -73,7 +74,7 @@ class Defaults {
             set { UserDefaults.standard.set(newValue, forKey: kUDListCellWidth) }
         }
         static var favoriteTitles: [String] {
-            get { return UserDefaults.standard.array(forKey: kUDListFavoriteTitles) as? [String] ?? "0123456789".map{ "Favorites \($0)"}}
+            get { return UserDefaults.standard.array(forKey: kUDListFavoriteTitles) as? [String] ?? "0123456789".map { "Favorites \($0)"}}
             set { UserDefaults.standard.set(newValue, forKey: kUDListFavoriteTitles)}
         }
     }
@@ -81,6 +82,10 @@ class Defaults {
         static var isShowQuickScroll: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDGalleryQuickScroll) }
             set { UserDefaults.standard.set(newValue, forKey: kUDGalleryQuickScroll) }
+        }
+        static var isAutomaticallyScrollToHistory: Bool {
+            get { return UserDefaults.standard.bool(forKey: kUDGalleryAutomaticallyScrollToHistory) }
+            set { UserDefaults.standard.set(newValue, forKey: kUDGalleryAutomaticallyScrollToHistory) }
         }
         static var isAppendBlankPage: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDGalleryBlankPage) }

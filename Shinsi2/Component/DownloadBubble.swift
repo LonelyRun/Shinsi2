@@ -61,7 +61,7 @@ class DownloadBubble: UIView {
         transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
     }
     
-    func show(on vc:UIViewController) {
+    func show(on vc: UIViewController) {
         if superview != nil { removeFromSuperview() }
         
         viewController = vc
@@ -76,7 +76,13 @@ class DownloadBubble: UIView {
             bottomAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.bottomAnchor, constant: -inset)
         ])
         
-        UIView.animate(withDuration: 1.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1, options: [.curveEaseInOut], animations: {
+        UIView.animate(
+            withDuration: 1.5,
+            delay: 0,
+            usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 1,
+            options: [.curveEaseInOut],
+            animations: {
             self.alpha = 1
             self.transform = .identity
         }, completion: nil)
@@ -85,10 +91,16 @@ class DownloadBubble: UIView {
     }
     
     func dismiss() {
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: [.curveEaseOut], animations: {
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            usingSpringWithDamping: 0.5,
+            initialSpringVelocity: 0.5,
+            options: [.curveEaseOut],
+            animations: {
             self.alpha = 0
             self.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-        }, completion: {f in
+        }, completion: { _ in
             self.viewController = nil
             self.circleLayer.strokeEnd = 0
             self.removeFromSuperview()
@@ -96,14 +108,16 @@ class DownloadBubble: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let vc = viewController ,let queue = DownloadManager.shared.queues.first else { return }
+        guard let vc = viewController,
+            let queue = DownloadManager.shared.queues.first
+            else { return }
         queue.isSuspended = true
         let alert = UIAlertController(title: "Cancel All Download", message: nil, preferredStyle: .alert)
-        let ok = UIAlertAction(title: "Yes", style: .default) { a in
+        let ok = UIAlertAction(title: "Yes", style: .default) { _ in
             self.cancelAllDownload()
             self.dismiss()
         }
-        let cancel = UIAlertAction(title: "No", style: .cancel, handler: { a in queue.isSuspended = false })
+        let cancel = UIAlertAction(title: "No", style: .cancel, handler: { _ in queue.isSuspended = false })
         alert.addAction(ok)
         alert.addAction(cancel)
         vc.present(alert, animated: true, completion: nil)
@@ -119,7 +133,7 @@ class DownloadBubble: UIView {
         badgeLabel.text = String(count)
         badgeLabel.sizeToFit()
         let r = badgeLabel.bounds.insetBy(dx: -2, dy: -2)
-        let f = CGRect(origin: .zero, size: CGSize(width: max(r.width,r.height), height: max(r.width,r.height)))
+        let f = CGRect(origin: .zero, size: CGSize(width: max(r.width, r.height), height: max(r.width, r.height)))
         badgeLabel.frame = f
         badgeLabel.layer.cornerRadius = f.width/2
         badgeLabel.center = CGPoint(x: bounds.maxX, y: bounds.minY)
@@ -136,9 +150,9 @@ class DownloadBubble: UIView {
         }
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath, keyPath == "operationCount" ,
-            let change = change, let count = change[.newKey] as? Int ,
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+        guard let keyPath = keyPath, keyPath == "operationCount",
+            let change = change, let count = change[.newKey] as? Int,
             let queue = object as? OperationQueue,
             let doujinshi = DownloadManager.shared.books[queue.name!]
             else {return}

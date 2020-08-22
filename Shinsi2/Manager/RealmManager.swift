@@ -4,7 +4,7 @@ import RealmSwift
 class RealmManager {
     static let shared = RealmManager()
     let realm: Realm = {
-        let config = Realm.Configuration( schemaVersion: 7, migrationBlock: { migration, oldSchemaVersion in
+        let config = Realm.Configuration( schemaVersion: 7, migrationBlock: { _, _ in
             
         })
         Realm.Configuration.defaultConfiguration = config
@@ -16,8 +16,37 @@ class RealmManager {
     }()
     
     lazy var downloaded: Results<Doujinshi> = {
-        return self.realm.objects(Doujinshi.self).sorted(byKeyPath: "date", ascending: false)
+        return self.realm.objects(Doujinshi.self).filter("isDownloaded == true").sorted(byKeyPath: "date", ascending: false)
     }()
+    
+    func browsingHistory(for doujinshi: Doujinshi) -> BrowsingHistory? {
+        return realm.objects(BrowsingHistory.self).filter("id == %d", doujinshi.id).first
+    }
+    
+    func createBrowsingHistory(for doujinshi: Doujinshi) {
+        try! realm.write {
+            realm.create(BrowsingHistory.self, value: ["doujinshi": doujinshi, "id": doujinshi.id], update: .modified)
+        }
+    }
+    
+    func updateBrowsingHistory(_ browsingHistory: BrowsingHistory, currentPage: Int) {
+        try! realm.write {
+            browsingHistory.updatedAt = Date()
+            browsingHistory.currentPage = currentPage
+        }
+    }
+    
+    var browsedDoujinshi: [Doujinshi] {
+        let hs = realm.objects(BrowsingHistory.self).sorted(byKeyPath: "updatedAt", ascending: false)
+        var results: [Doujinshi] = []
+        let maxHistory = min(30, hs.count)
+        for i in 0..<maxHistory {
+            if let d = hs[i].doujinshi {
+                results.append(Doujinshi(value: d))
+            }
+        }
+        return results
+    }
     
     func saveSearchHistory(text: String?) {
         guard let text = text else {return}
@@ -47,7 +76,7 @@ class RealmManager {
         }
     }
     
-    func saveDownloadedDoujinshi(book:Doujinshi) {
+    func saveDownloadedDoujinshi(book: Doujinshi) {
         book.pages.removeAll()
         for i in 0..<book.gdata!.filecount {
             let p = Page()
@@ -67,13 +96,13 @@ class RealmManager {
         }
     }
     
-    func deleteDoujinshi(book:Doujinshi) {
+    func deleteDoujinshi(book: Doujinshi) {
         try! realm.write {
             realm.delete(book)
         }
     }
     
-    func isDounjinshiDownloaded(doujinshi:Doujinshi) -> Bool {
+    func isDounjinshiDownloaded(doujinshi: Doujinshi) -> Bool {
         return downloaded.filter("gdata.gid = '\(doujinshi.gdata!.gid)'").count != 0
     }
 }

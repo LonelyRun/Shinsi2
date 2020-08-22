@@ -1,6 +1,8 @@
+[![Build Status](https://app.bitrise.io/app/e86f4f4671dc9fef/status.svg?token=QvpljE9s8D1RLn5wjrCdyQ&branch=master)](https://app.bitrise.io/app/e86f4f4671dc9fef)
+
 # Shinsi2
 
-An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS devices. Written in Swift 4.2.
+An unofficial iOS app for E-Hentai / EX-Hentai. Fully supporting iOS devices of any size. Written in Swift 5.0
 
 
 ![](Screenshots/top.jpg)
@@ -8,36 +10,36 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 
 
 
-## Feature
+## Features
 
 ### Modern and Fast 🚄
 
-* Caches and pre load images, view without stress
+* Caches and pre-loaded images, view without stress
 * Thumbnail preview
-* Smooth transition between pages
-* Gesture interactive
-* All orientation supported, iPad Split View supported
+* Smooth transitions between pages
+* Interactive gestures
+* All orientations supported, iPad Split View supported
 
 ### Search / Search History
-* Support category filter
+* Supporting category filter
 * `keyword p:10` to skip 10 pages
-* `artist1, artist2, artist3` to search multiple keywords (Only get first page result)
 * `favorites` to get all favorites, or `favorites0~9` to get specific favorite folder
+* `popular` to show popular galleries
 * `download` to get downloaded galleries
 * Swipe left to delete history
 
-### Favorite
+### Favorites
 * Enter `favorites` in search bar, or click right top ❤︎
-* In galley page, click right top ❤︎ to add gallery to favorite (Always add to Favorites0)
-* In favorites, long press to move/remove favorites
-* Support custonm folder name
+* In a gallery page, click right top ❤︎ to add the gallery to Favorites (always adding to Favorites0)
+* In Favorites, long press to move/remove favorites
+* Supporting custonm folder name
 
 ![](Screenshots/f02.jpg)
 
 ### Downlaod
 * Download
-* Download part of gallery
-* Backgroud download not supported
+* Download part of a gallery
+* Background downloading not supported
 
 ### Tag
 * Tap to search tag
@@ -46,7 +48,7 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 
 ### Viewer
 
-* Vertical/Horizontal Viewer
+* View in portrait or landscape
 * Double Page Viewer (iPad only)
 
 ![](Screenshots/f04.jpg)
@@ -54,17 +56,24 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully support any sizes of iOS d
 ### More
 
 * View comments
-* Pich in/out to change thumbnile size
+* Links in comments supported
+* Pinch in/out to change thumbnail size
 * 3D touch support, quick preview galleries
 * Quick scroll 
 
-## Install
+## Enviroment
 
-### required iOS 11+
+* XCode 11.4
+* Swift 5
+* Cocoapods
+
+## Installation
+
+### iOS 11+ required
 
 ### XCode
 
-Clone the project, run `pod install`. Use XCode building to your device.
+Clone the project, run `pod install`. Use XCode to build it to your device.
 
 
 ### Cydia Impactor
@@ -78,9 +87,20 @@ You can ask me questions in English/Chinese.
 
 可以使用中文向我詢問。
 
-If you can help me check my gramma and spell, It will be very helpful.
+It would be very helpful if you could help me with my grammar and spelling.
 
 ## Change log
+
+* **ver 1.4.1** 2020/4/20
+  * Bug fix
+
+* **ver 1.4** 2020/4/20
+  * Reading History
+  * Add shortcut
+
+* **ver 1.3** 2020/4/3
+  * iOS 13 support
+  * Bug fix
 
 * **ver 1.1** 2018/11/14
 	* Comment links
@@ -94,7 +114,7 @@ Copyright © 2018 PowHu Yang. Released under the MIT license.
 
 ## Third Party Library
 
-Shinsi2 uses those awesome open sources.
+Shinsi2 uses the following awesome open sources.
 
 * RealmSwift
 * Alamofire

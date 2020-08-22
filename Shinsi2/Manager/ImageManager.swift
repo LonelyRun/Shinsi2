@@ -20,9 +20,9 @@ class ImageManager {
         }
         
         let prefetcher = SDWebImagePrefetcher()
-        prefetcher.options = [.highPriority , .handleCookies]
-        prefetcher.prefetchURLs(urls, progress: nil) { (compeltedCount, skipCount) in
-            prefetchUrls.forEach{ self.downloadingUrls.remove($0) }
+        prefetcher.options = [.highPriority, .handleCookies]
+        prefetcher.prefetchURLs(urls, progress: nil) { (_, _) in
+            prefetchUrls.forEach { self.downloadingUrls.remove($0) }
         }
         
     }

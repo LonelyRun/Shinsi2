@@ -23,7 +23,7 @@ class WebVC: UIViewController {
     
     @IBAction func doneButtonDidClick(sender: UIBarButtonItem) {
         //copy back
-        webView.configuration.websiteDataStore.httpCookieStore.getAllCookies{ cookies in
+        webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { cookies in
             cookies.forEach {
                 HTTPCookieStorage.shared.setCookie($0)
             }

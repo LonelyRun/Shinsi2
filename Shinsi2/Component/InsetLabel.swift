@@ -42,4 +42,3 @@ class InsetLabel: UILabel {
         super.drawText(in: rect.inset(by: insets))
     }
 }
-

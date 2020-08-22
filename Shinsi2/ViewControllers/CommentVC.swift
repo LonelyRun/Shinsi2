@@ -8,13 +8,11 @@ class CommentVC: BaseViewController, UITableViewDelegate, UITableViewDataSource,
     
     weak var doujinshi: Doujinshi!
     @IBOutlet weak var tableView: UITableView!
-    private var backGesture: InteractiveBackGesture?
     weak var delegate: CommentVCDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.barTintColor = UIColor(white: 0, alpha: 0.5)
-        backGesture = InteractiveBackGesture(viewController: self, toView: tableView, mode: .modal, isSimultaneously: true)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

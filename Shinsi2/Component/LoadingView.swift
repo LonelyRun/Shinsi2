@@ -29,7 +29,7 @@ class LoadingView: UIView {
             leftBeard.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
             leftBeard.rightAnchor.constraint(equalTo: centerXAnchor, constant: 1),
             rightBeard.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 0),
-            rightBeard.leftAnchor.constraint(equalTo: centerXAnchor, constant: -1),
+            rightBeard.leftAnchor.constraint(equalTo: centerXAnchor, constant: -1)
         ])
         
        show(animated: false)
@@ -40,7 +40,7 @@ class LoadingView: UIView {
     }
     
     func show(animated: Bool = true) {
-        [leftBeard,rightBeard].enumerated().forEach {
+        [leftBeard, rightBeard].enumerated().forEach {
             $0.element.layer.removeAllAnimations()
             let ani = CABasicAnimation(keyPath: "transform.rotation.z")
             ani.toValue = CGFloat.pi * 0.13 * ($0.offset == 0 ? 1 : -1)

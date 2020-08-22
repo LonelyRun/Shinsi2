@@ -6,32 +6,32 @@ import SVProgressHUD
 class ListVC: BaseViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     private(set) lazy var searchController: UISearchController = {
-        return UISearchController(searchResultsController: historyVC)
+        return UISearchController(searchResultsController: searchHistoryVC)
     }()
-    private lazy var historyVC: SearchHistoryVC = {
+    private lazy var searchHistoryVC: SearchHistoryVC = {
         return self.storyboard!.instantiateViewController(withIdentifier: "SearchHistoryVC") as! SearchHistoryVC
     }()
     private var items: [Doujinshi] = []
     private var currentPage = -1
     private var loadingPage = -1
     private var backGesture: InteractiveBackGesture?
-    private var rowCount: Int { return min(12,max(2, Int(floor(collectionView.bounds.width / Defaults.List.cellWidth)))) }
+    private var rowCount: Int { return min(12, max(2, Int(floor(collectionView.bounds.width / Defaults.List.cellWidth)))) }
     @IBOutlet weak var loadingView: LoadingView!
     
     enum Mode: String {
         case normal = "normal"
         case download = "download"
         case favorite = "favorites"
-        case news = "news"
+        case history = "history"
     }
     private var mode: Mode {
         let text = searchController.searchBar.text?.lowercased() ?? ""
         if text == Mode.download.rawValue {
             return .download
+        } else if text == Mode.history.rawValue {
+            return .history
         } else if text.contains("favorites") {
             return .favorite
-        } else if text.contains(",") {
-            return .news
         } else {
             return .normal
         }
@@ -44,6 +44,7 @@ class ListVC: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "title_icon"))
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView)
@@ -61,15 +62,14 @@ class ListVC: BaseViewController {
             Defaults.List.lastSearchKeyword = searchController.searchBar.text ?? ""
             backGesture = InteractiveBackGesture(viewController: self, toView: collectionView)
         }
-        historyVC.searchController = searchController
-        historyVC.selectBlock = {[unowned self] text in
+        searchHistoryVC.searchController = searchController
+        searchHistoryVC.selectBlock = {[unowned self] text in
             self.searchController.isActive = false
             self.searchController.searchBar.text = text
             self.reloadData()
         }
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        searchController.hidesNavigationBarDuringPresentation = false
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
         searchController.searchBar.showsCancelButton = false
@@ -80,10 +80,16 @@ class ListVC: BaseViewController {
         loadNextPage()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(settingChanged(notification:)), name: .settingChanged, object: nil)
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
+        view.layoutIfNeeded()
+        collectionView.collectionViewLayout.invalidateLayout()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -91,17 +97,15 @@ class ListVC: BaseViewController {
         if searchController.isActive {
             searchController.dismiss(animated: false, completion: nil)
         }
-        NotificationCenter.default.removeObserver(self)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         let indexPath = collectionView.indexPathsForVisibleItems.first
-        super.viewWillTransition(to: size, with: coordinator)
         collectionView?.collectionViewLayout.invalidateLayout()
-        coordinator.animate(alongsideTransition: {ctx in
+        coordinator.animate(alongsideTransition: { _ in
             if let indexPath = indexPath {
-                self.collectionView!.scrollToItem(at: indexPath, at:.top, animated: true)
+                self.collectionView!.scrollToItem(at: indexPath, at: .top, animated: true)
             }
         })
     }
@@ -114,7 +118,6 @@ class ListVC: BaseViewController {
             let scale = ges.scale - 1
             let dx = initCellWidth * scale
             let width = min(max(initCellWidth + dx, 80), view.bounds.width)
-            print("\(width)")
             if width != Defaults.List.cellWidth {
                 Defaults.List.cellWidth = width
                 collectionView.performBatchUpdates({
@@ -127,7 +130,11 @@ class ListVC: BaseViewController {
     func loadNextPage() {
         if mode == .download {
             loadingView.hide()
-            items = RealmManager.shared.downloaded.map{$0}
+            items = RealmManager.shared.downloaded.map { $0 }
+            collectionView.reloadData()
+        } else if mode == .history {
+            loadingView.hide()
+            items = RealmManager.shared.browsedDoujinshi
             collectionView.reloadData()
         } else {
             guard loadingPage != currentPage + 1 else {return}
@@ -138,7 +145,7 @@ class ListVC: BaseViewController {
                 self.loadingView.hide()
                 guard books.count > 0 else {return}
                 let lastIndext = max(0, self.items.count - 1)
-                let insertIndexPaths = books.enumerated().map{ IndexPath(item: $0.offset + lastIndext, section: 0) }
+                let insertIndexPaths = books.enumerated().map { IndexPath(item: $0.offset + lastIndext, section: 0) }
                 self.items += books
                 self.collectionView.performBatchUpdates({
                     self.collectionView.insertItems(at: insertIndexPaths)
@@ -152,13 +159,13 @@ class ListVC: BaseViewController {
     func reloadData() {
         currentPage = -1
         loadingPage = -1
-        let deleteIndexPaths = items.enumerated().map{ IndexPath(item: $0.offset, section: 0)}
+        let deleteIndexPaths = items.enumerated().map { IndexPath(item: $0.offset, section: 0)}
         items = []
         collectionView.performBatchUpdates({
             self.collectionView.deleteItems(at: deleteIndexPaths)
-        }) { (_) in
+        }, completion: { _ in
             self.loadNextPage()
-        }
+        })
     }
 
     @IBAction func showFavorites(sender: UIBarButtonItem) {
@@ -170,7 +177,7 @@ class ListVC: BaseViewController {
                 Defaults.List.lastSearchKeyword = self.searchController.searchBar.text ?? ""
             })
             sheet.addAction(all)
-            Defaults.List.favoriteTitles.enumerated().forEach{ (f) in
+            Defaults.List.favoriteTitles.enumerated().forEach { f in
                 let a = UIAlertAction(title: f.element, style: .default, handler: { (_) in
                     self.showSearch(with: "favorites\(f.offset)")
                     Defaults.List.lastSearchKeyword = self.searchController.searchBar.text ?? ""
@@ -200,7 +207,7 @@ class ListVC: BaseViewController {
         reloadData()
     }
 
-    @objc func longPress(ges:UILongPressGestureRecognizer) {
+    @objc func longPress(ges: UILongPressGestureRecognizer) {
         guard mode == .download || mode == .favorite else {return}
         guard ges.state == .began, let indexPath = collectionView.indexPathForItem(at: ges.location(in: collectionView)) else {return}
 
@@ -208,10 +215,10 @@ class ListVC: BaseViewController {
         let title = mode == .download ? "Delete" : "Action"
         let actionTitle = mode == .download ? "Delete" : "Remove"
         let alert = UIAlertController(title: title, message: doujinshi.title, preferredStyle: .alert)
-        let deleteAction = UIAlertAction(title: actionTitle, style: .destructive) { a in
+        let deleteAction = UIAlertAction(title: actionTitle, style: .destructive) { _ in
             if self.mode == .download {
                 DownloadManager.shared.deleteDownloaded(doujinshi: doujinshi)
-                self.items = RealmManager.shared.downloaded.map{$0}
+                self.items = RealmManager.shared.downloaded.map { $0 }
                 self.collectionView.performBatchUpdates({
                     self.collectionView.deleteItems(at: [indexPath])
                 }, completion: nil)
@@ -231,7 +238,7 @@ class ListVC: BaseViewController {
         }
         if mode == .download {
             let cell = collectionView.cellForItem(at: indexPath)!
-            let vc = UIActivityViewController(activityItems: doujinshi.pages.map{ $0.localUrl }, applicationActivities: nil)
+            let vc = UIActivityViewController(activityItems: doujinshi.pages.map { $0.localUrl }, applicationActivities: nil)
             vc.popoverPresentationController?.sourceView = collectionView
             vc.popoverPresentationController?.sourceRect = cell.frame
             let shareAction = UIAlertAction(title: "Share", style: .default) { (_) in
@@ -249,7 +256,7 @@ class ListVC: BaseViewController {
         let doujinshi = items[indexPath.item]
         let sheet = UIAlertController(title: "Move to", message: doujinshi.title, preferredStyle: .actionSheet)
         let displayingFavCategory = favoriteCategory ?? -1
-        Defaults.List.favoriteTitles.enumerated().forEach{ (f) in
+        Defaults.List.favoriteTitles.enumerated().forEach { f in
             if displayingFavCategory != f.offset {
                 let a = UIAlertAction(title: f.element, style: .default, handler: { (_) in
                     RequestManager.shared.moveFavorite(doujinshi: doujinshi, to: f.offset)
@@ -280,12 +287,11 @@ class ListVC: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: self)
         if segue.identifier == "showSetting" {
-            segue.destination.hero.modalAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
         }
     }
 }
 
-extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource ,UICollectionViewDelegateFlowLayout , UICollectionViewDataSourcePrefetching {
+extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSourcePrefetching {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
@@ -297,15 +303,15 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource ,UICollec
         let doujinshi = items[indexPath.item]
         cell.imageView.hero.id = "image_\(doujinshi.id)_0"
         cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
-        cell.imageView.isOpaque = true
+        cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
         
         if doujinshi.isDownloaded {
-            if let image = UIImage(contentsOfFile:documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
+            if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
                 cell.imageView.image = image
                 cell.imageView.contentMode = image.preferContentMode
             }
         } else {
-            cell.imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies], completed: { (image,_,_,_) in
+            cell.imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies], completed: { (image, _, _, _) in
                 guard let image = image else {return}
                 cell.imageView.contentMode = image.preferContentMode
             })
@@ -338,14 +344,13 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource ,UICollec
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard mode != .download else {return}
-        let urls = indexPaths.map{URL(string:items[$0.item].coverUrl)!}
+        let urls = indexPaths.map { URL(string: items[$0.item].coverUrl)! }
         ImageManager.shared.prefetch(urls: urls)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = storyboard!.instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
-        let item = items[indexPath.item]
-        vc.doujinshi = item
+        vc.doujinshi = items[indexPath.item]
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -391,7 +396,7 @@ extension ListVC: GalleryVCPreviewActionDelegate {
 extension ListVC: UISearchBarDelegate, UISearchControllerDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        navigationItem.rightBarButtonItems?.forEach{ $0.isEnabled = true }
+        navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = true }
         searchController.dismiss(animated: true, completion: nil)
         reloadData()
         RealmManager.shared.saveSearchHistory(text: searchBar.text)
@@ -405,7 +410,7 @@ extension ListVC: UISearchBarDelegate, UISearchControllerDelegate {
     }
     
     func willPresentSearchController(_ searchController: UISearchController) {
-        navigationItem.rightBarButtonItems?.forEach{ $0.isEnabled = false }
+        navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = false }
         DispatchQueue.main.async {
             searchController.searchResultsController?.view.isHidden = false
         }
@@ -416,16 +421,22 @@ extension ListVC: UISearchBarDelegate, UISearchControllerDelegate {
     }
     
     func didDismissSearchController(_ searchController: UISearchController) {
-        navigationItem.rightBarButtonItems?.forEach{ $0.isEnabled = true }
+        navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = true }
         Defaults.List.lastSearchKeyword = searchController.searchBar.text ?? ""
     }
 }
 
 extension ListVC: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard mode != .download else {return}
-        if let indexPath = collectionView.indexPathsForVisibleItems.sorted().last , indexPath.item > items.count - max(rowCount * 2, 10) {
-            loadNextPage()
+        switch mode {
+        case .favorite, .normal:
+            if let indexPath = collectionView.indexPathsForVisibleItems.sorted().last,
+                indexPath.item > items.count - max(rowCount * 2, 10) {
+                loadNextPage()
+            }
+        default:
+            break
         }
+        
     }
 } 

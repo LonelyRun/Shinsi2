@@ -1,5 +1,5 @@
 import UIKit
-import LocalAuthentication
+
 import SVProgressHUD
 import SDWebImage
 
@@ -7,14 +7,11 @@ import SDWebImage
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    
-    var isFirstTime: Bool = true
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         setDefaultAppearance()
         setDefaultHudAppearance()
-        Defaults.Search.categories.map{ [$0:true] }.forEach{ UserDefaults.standard.register(defaults: $0) }
+        Defaults.Search.categories.map { [$0: true] }.forEach { UserDefaults.standard.register(defaults: $0) }
         
         #if DEBUG
         //RealmManager.shared.deleteSearchHistory()
@@ -26,8 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func setDefaultAppearance() {
-        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white]
-        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.white, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16)]
         UINavigationBar.appearance().tintColor = kMainColor
         UINavigationBar.appearance().barStyle = .blackTranslucent
         UIView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = #colorLiteral(red: 0.09966118171, green: 0.5230001833, blue: 0.8766457805, alpha: 1)
@@ -42,4 +39,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SVProgressHUD.setImageViewSize(CGSize(width: 44, height: 44))
     }
 }
-

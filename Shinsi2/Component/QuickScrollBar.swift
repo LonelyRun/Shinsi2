@@ -102,7 +102,7 @@ class QuickScrollBar: NSObject {
     private func setup() {
         scrollView.delegate = self
         scrollView.showsVerticalScrollIndicator = false
-        let contentSizeObservation = scrollView.observe(\.contentSize, options: [.new]) {[unowned self] (_, value) in
+        let contentSizeObservation = scrollView.observe(\.contentSize, options: [.new]) {[unowned self] (_, _) in
             self.updatePosition(animated: true)
             self.updateText()
         }
@@ -172,10 +172,10 @@ class QuickScrollBar: NSObject {
         let transformY = min(max(0, (safeAreaHeight - indicatorView.bounds.height) * percentage), safeAreaHeight - indicatorView.bounds.height)
         if animated {
             UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseInOut], animations: {
-                self.indicatorView.layer.transform = CATransform3DMakeTranslation(0, transformY , 0)
+                self.indicatorView.layer.transform = CATransform3DMakeTranslation(0, transformY, 0)
             }, completion: nil)
         } else {
-            indicatorView.layer.transform = CATransform3DMakeTranslation(0, transformY , 0)
+            indicatorView.layer.transform = CATransform3DMakeTranslation(0, transformY, 0)
         }
     }
     
@@ -256,7 +256,7 @@ extension QuickScrollBar: UIScrollViewDelegate {
 
 extension QuickScrollBar: UIGestureRecognizerDelegate {
     
-    @objc private func pan(ges:UIPanGestureRecognizer) {
+    @objc private func pan(ges: UIPanGestureRecognizer) {
         switch ges.state {
         case .began:
             hideTimer?.invalidate()
@@ -334,7 +334,7 @@ class BadgeLabel: UILabel {
 }
 
 fileprivate extension UIView {
-    func getConstraint(with identifier:String) -> NSLayoutConstraint? {
-        return constraints.filter{ $0.identifier == identifier }.first
+    func getConstraint(with identifier: String) -> NSLayoutConstraint? {
+        return constraints.filter { $0.identifier == identifier }.first
     }
 }
