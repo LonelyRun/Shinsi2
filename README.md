@@ -75,6 +75,11 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully supporting iOS devices of 
 
 Clone the project, run `pod install`. Use XCode to build it to your device.
 
+By default, a Cocoapods mirror in Tsinghua University is used. If you are out of China, you may comment out the following line in [Podfile](Podfile) for faster Cocoapods installation:
+
+```
+source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
+```
 
 ### Cydia Impactor
 
