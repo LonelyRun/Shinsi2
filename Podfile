@@ -1,5 +1,3 @@
-source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
-
 
 project 'Shinsi2.xcodeproj'
 platform :ios, '10.0'
