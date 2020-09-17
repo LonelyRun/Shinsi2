@@ -183,7 +183,6 @@ class ViewerVC: UICollectionViewController {
     private func updateBrowsingHistory() {
         guard let browsingHistory = browsingHistory, let currentPage = selectedIndexPath?.item else { return }
         RealmManager.shared.updateBrowsingHistory(browsingHistory, currentPage: currentPage)
-        print("currentPage: \(currentPage)")
     }
 }
 

@@ -14,7 +14,6 @@ extension String {
             }
             return rs
         } catch let error {
-            print("invalid regex: \(error.localizedDescription)")
             return []
         }
     }
