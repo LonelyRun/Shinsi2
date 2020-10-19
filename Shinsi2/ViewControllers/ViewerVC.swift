@@ -10,6 +10,10 @@ class ViewerVC: UICollectionViewController {
         case vertical = 1
         case doublePage = 2
     }
+    enum ViewerReadDirection: Int {
+        case L2R = 0
+        case R2L = 1
+    }
     var selectedIndexPath: IndexPath? {
         set { _selectedIndexPath = newValue }
         get {
@@ -35,7 +39,9 @@ class ViewerVC: UICollectionViewController {
             return Defaults.Viewer.mode
         }
     }
-    
+    var readDirection : ViewerReadDirection {
+        return Defaults.Viewer.readDirection
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         if !doujinshi.isDownloaded {
@@ -43,7 +49,9 @@ class ViewerVC: UICollectionViewController {
         }
         view.layoutIfNeeded()
         collectionView?.reloadData()
-        
+        if readDirection == .R2L {
+            collectionView?.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+        }
         if let selectedIndex = selectedIndexPath {
             switch mode {
             case .horizontal:
@@ -160,8 +168,8 @@ class ViewerVC: UICollectionViewController {
                 if mode == .doublePage {
                     let size = collectionView(collectionView!, layout: collectionView!.collectionViewLayout, sizeForItemAt: indexPath)
                     let pos = indexPath.item % 2 == 0 ?
-                        CGPoint(x: currentPos.x - size.width/2, y: currentPos.y) :
-                        CGPoint(x: currentPos.x + size.width/2, y: currentPos.y)
+                        CGPoint(x: currentPos.x + size.width/2, y: currentPos.y) :
+                        CGPoint(x: currentPos.x - size.width/2, y: currentPos.y)
                     Hero.shared.apply(modifiers: [.position(pos)], to: cell.imageView)
                 } else {
                     Hero.shared.apply(modifiers: [.position(currentPos)], to: cell.imageView)
@@ -194,6 +202,9 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? ScrollingImageCell)!
+        if readDirection == .R2L {
+            cell.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+        }
         cell.imageView.hero.id = heroID(for: indexPath)
         cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
         cell.imageView.isOpaque = true
@@ -230,10 +241,6 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     
     func convertIndexPath(from indexPath: IndexPath) -> IndexPath {
         var i = indexPath.item
-        if mode == .doublePage {
-            i = i % 2 == 0 ? i + 1 : i - 1
-            i = min(i, pages.count - 1)
-        }
         return IndexPath(item: i, section: indexPath.section)
     }
 
