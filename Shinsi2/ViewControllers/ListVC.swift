@@ -303,18 +303,15 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         let doujinshi = items[indexPath.item]
         cell.imageView.hero.id = "image_\(doujinshi.id)_0"
         cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
+        cell.imageView.contentMode = .scaleAspectFill
         cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
         
         if doujinshi.isDownloaded {
             if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
                 cell.imageView.image = image
-                cell.imageView.contentMode = image.preferContentMode
             }
         } else {
-            cell.imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies], completed: { (image, _, _, _) in
-                guard let image = image else {return}
-                cell.imageView.contentMode = image.preferContentMode
-            })
+            cell.imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies], completed: nil)
         }
         
         if let language = doujinshi.title.language {
