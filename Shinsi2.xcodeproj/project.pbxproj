@@ -222,6 +222,7 @@
 					546663681F1DE3B8003B9E36 = {
 						CreatedOnToolsVersion = 9.0;
 						LastSwiftMigration = 1020;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -478,13 +479,16 @@
 			baseConfigurationReference = 84200A16D7CCE139324C1CC5 /* Pods-Shinsi2.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PJJUWGR6V8;
 				INFOPLIST_FILE = Shinsi2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.4.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.Shinsi;
+				MARKETING_VERSION = 1.5.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -495,13 +499,16 @@
 			baseConfigurationReference = 07CE087BB77CAC2F3F8A5D79 /* Pods-Shinsi2.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PJJUWGR6V8;
 				INFOPLIST_FILE = Shinsi2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.4.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.Shinsi;
+				MARKETING_VERSION = 1.5.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

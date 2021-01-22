@@ -47,11 +47,18 @@ class RequestManager {
             guard let html = response.result.value else { block?([]); return }
             if let doc = try? Kanna.HTML(html: html, encoding: .utf8) {
                 var items: [Doujinshi] = []
-                for link in doc.xpath("//div [@class='gl3t'] //a") {
-                    if let url = link["href"], let imgNode = link.at_css("img"), let imgUrl = imgNode["src"], let title = imgNode["title"] {
-                        items.append(Doujinshi(value: ["coverUrl": imgUrl, "title": title, "url": url]))
+                for link in doc.xpath("//div [@class='gl1t']") {
+                    if let aNode = link.at_css("div[class='gl3t'] a") {
+                        if let href = aNode["href"], let imgUrl = aNode.at_css("img")?["src"], let title = aNode.at_css("img")?["title"] {
+                            var page = 0
+                            if let pageStr = link.css("div[class='gl5t'] div")[3].text {
+                                page = Int((pageStr as NSString).intValue)
+                            }
+                            items.append(Doujinshi(value: ["coverUrl": imgUrl, "title": title, "url": href, "pageCount": "\(page)"]))
+                        }
                     }
                 }
+
                 block?(items)
                 if cacheFavoritesTitles {
                     DispatchQueue.global(qos: .userInteractive).async {

@@ -4,11 +4,14 @@ import RealmSwift
 class RealmManager {
     static let shared = RealmManager()
     let realm: Realm = {
-        let config = Realm.Configuration( schemaVersion: 7, migrationBlock: { _, _ in
-            
+        let config = Realm.Configuration( schemaVersion: 8, migrationBlock: { migration, oldSchemaVersion in
+            if oldSchemaVersion < 8 {
+                
+            }
         })
         Realm.Configuration.defaultConfiguration = config
         return try! Realm()
+        
     }()
     
     lazy var searchHistory: Results<SearchHistory> = {

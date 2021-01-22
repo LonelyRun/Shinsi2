@@ -17,6 +17,8 @@ class Doujinshi: Object {
     @objc dynamic var coverUrl = ""
     @objc dynamic var title = ""
     @objc dynamic var url = ""
+    @objc dynamic var pageCount = ""
+
 
     let pages = List<Page>()
     @objc dynamic var gdata: GData?

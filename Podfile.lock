@@ -25,7 +25,7 @@ DEPENDENCIES:
   - SwiftLint
 
 SPEC REPOS:
-  https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
+  trunk:
     - Alamofire
     - AloeStackView
     - Hero
@@ -47,6 +47,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   SwiftLint: 22ccbbe3b8008684be5955693bab135e0ed6a447
 
-PODFILE CHECKSUM: 0d410905583166ba44d86242484e58621d84656a
+PODFILE CHECKSUM: f9d3220f2334e665aa0404219864677f73a3859f
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.10.0
