@@ -314,6 +314,13 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
             cell.imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies], completed: nil)
         }
         
+        if mode == .download {
+            cell.pageCountLabel.text = "\(doujinshi.pages.count)"
+        } else {
+            cell.pageCountLabel.text = doujinshi.pageCount
+        }
+        cell.pageCountLabel.layer.cornerRadius = cell.pageCountLabel.bounds.height/2
+        
         if let language = doujinshi.title.language {
             cell.languageLabel.isHidden = Defaults.List.isHideTag
             cell.languageLabel.text = language.capitalized
