@@ -407,6 +407,7 @@ extension ListVC: UISearchBarDelegate, UISearchControllerDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+
         navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = true }
         searchController.dismiss(animated: true, completion: nil)
         reloadData()
