@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //SDImageCache.shared().clearDisk()
         #endif
         
+        
         return true
     }
     
@@ -37,5 +38,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SVProgressHUD.setDefaultMaskType(.black)
         SVProgressHUD.setMinimumDismissTimeInterval(3)
         SVProgressHUD.setImageViewSize(CGSize(width: 44, height: 44))
+    }
+    
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        handleUrl(url: url)
+        return true
+    }
+    
+    func handleUrl (url: URL) {
+        if let nav = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+            if let listVC = nav.children.first as? ListVC {
+                if let query = url.query?.removingPercentEncoding {
+                    listVC.schemeOpen(q: query.replacingOccurrences(of: "&", with: " "))
+                }
+            }
+        }
     }
 }

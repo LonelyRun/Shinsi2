@@ -399,6 +399,13 @@ extension ListVC: GalleryVCPreviewActionDelegate {
 
 extension ListVC: UISearchBarDelegate, UISearchControllerDelegate {
     
+    func schemeOpen(q: String) {
+        searchController.searchBar.text = q
+        reloadData()
+        RealmManager.shared.saveSearchHistory(text: q)
+        Defaults.List.lastSearchKeyword = searchController.searchBar.text ?? ""
+    }
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = true }
         searchController.dismiss(animated: true, completion: nil)
