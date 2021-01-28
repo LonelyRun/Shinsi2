@@ -4,6 +4,7 @@ import SVProgressHUD
 class LoginVC: UIViewController {
     @IBOutlet var userNameField: UITextField!
     @IBOutlet var passwordField: UITextField!
+    @IBOutlet var exkeyField: UITextField!
     @IBOutlet var loginButton: UIButton!
     @IBOutlet weak var webLoginButton: UIButton!
     
@@ -30,7 +31,11 @@ class LoginVC: UIViewController {
     }
     
     @IBAction func login(sender: AnyObject) {
-        guard let name = userNameField.text, let pw = passwordField.text else { return }
+        if let exkey = exkeyField.text , !exkey.isEmpty {
+            exkeyLogin(exkey)
+            return
+        }
+        guard let name = userNameField.text , let pw = passwordField.text else { return }
         SVProgressHUD.show()
         RequestManager.shared.login(username: name, password: pw) {
             if self.checkCookie() {
@@ -41,6 +46,17 @@ class LoginVC: UIViewController {
                 SVProgressHUD.showError(withStatus: "Login failed")
                 SVProgressHUD.dismiss(withDelay: 3)
             }
+        }
+    }
+    
+    func exkeyLogin(_ exkey: String) {
+        self.manuallyAddCookie(exKey: exkey)
+        if self.checkCookie() {
+            SVProgressHUD.dismiss()
+            self.pustToList()
+        } else {
+            SVProgressHUD.showError(withStatus: "Login failed")
+            SVProgressHUD.dismiss(withDelay: 3)
         }
     }
     
@@ -66,7 +82,8 @@ class LoginVC: UIViewController {
     func copyCookiesForEx(overwrite: Bool = true) {
         let exCookies = HTTPCookieStorage.shared.cookies(for: Defaults.URL.exHentai) ?? []
         guard overwrite || exCookies.count == 0 else {return}
-        HTTPCookieStorage.shared.cookies(for: Defaults.URL.eHentai)?.forEach {
+        let eCookies = HTTPCookieStorage.shared.cookies(for: Defaults.URL.eHentai) ?? []
+        eCookies.forEach{
             if var properties = $0.properties {
                 properties[HTTPCookiePropertyKey.domain] = ".exhentai.org"
                 if let newCookie = HTTPCookie(properties: properties) {
@@ -74,5 +91,40 @@ class LoginVC: UIViewController {
                 }
             }
         }
+    }
+    
+    func manuallyAddCookie(exKey: String) {
+        let exKeySplitted = exKey.components(separatedBy: "x")
+        guard exKeySplitted.count == 2 else {
+            return
+        }
+        
+        let memberPart = exKeySplitted[0]
+        let memberIdStartIndex = memberPart.index(memberPart.startIndex, offsetBy: 32)
+        let memberIdCookie = createCookie(name: "ipb_member_id", value: String(memberPart[memberIdStartIndex...]))
+        let passHashCookie = createCookie(name: "ipb_pass_hash", value: String(memberPart.prefix(32)))
+        let igneous = createCookie(name: "igneous", value: exKeySplitted[1])
+        
+        let cookieList = [memberIdCookie, passHashCookie, igneous]
+        
+        for theCookie in cookieList {
+            HTTPCookieStorage.shared.setCookie(theCookie)
+            guard var properties = theCookie.properties else {
+                continue
+            }
+            
+            properties[.domain] = ".e-hentai.org" // 將同樣的Cookie也添加到表站
+            if let newCookie = HTTPCookie(properties: properties) {
+                HTTPCookieStorage.shared.setCookie(newCookie)
+            }
+        }
+    }
+    
+    func createCookie(name: String, value: String) -> HTTPCookie {
+        return HTTPCookie(properties: [.domain: ".exhentai.org",
+        HTTPCookiePropertyKey.name: name,
+        HTTPCookiePropertyKey.value: value,
+        HTTPCookiePropertyKey.path: "/",
+        HTTPCookiePropertyKey.expires: Date(timeInterval: TimeInterval(Int.max), since: Date())])!
     }
 }
