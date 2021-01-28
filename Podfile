@@ -11,5 +11,4 @@ target 'Shinsi2' do
     pod 'SVProgressHUD'
     pod 'Hero'
     pod 'AloeStackView'
-    pod 'SwiftLint'
 end

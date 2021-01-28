@@ -12,7 +12,6 @@ PODS:
     - SDWebImage/Core (= 4.4.8)
   - SDWebImage/Core (4.4.8)
   - SVProgressHUD (2.2.5)
-  - SwiftLint (0.39.2)
 
 DEPENDENCIES:
   - Alamofire (~> 4)
@@ -22,7 +21,6 @@ DEPENDENCIES:
   - RealmSwift (> 3.16.2)
   - SDWebImage (~> 4)
   - SVProgressHUD
-  - SwiftLint
 
 SPEC REPOS:
   trunk:
@@ -34,7 +32,6 @@ SPEC REPOS:
     - RealmSwift
     - SDWebImage
     - SVProgressHUD
-    - SwiftLint
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
@@ -45,8 +42,7 @@ SPEC CHECKSUMS:
   RealmSwift: 3eb8924ff7100df5928c7602f71d0fec51e7c9c5
   SDWebImage: 783af2c3fa36291a250030c4752ee370a9a51d13
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
-  SwiftLint: 22ccbbe3b8008684be5955693bab135e0ed6a447
 
-PODFILE CHECKSUM: f9d3220f2334e665aa0404219864677f73a3859f
+PODFILE CHECKSUM: 0b156129baec195d2763908f01502f0f6948d354
 
 COCOAPODS: 1.10.0
