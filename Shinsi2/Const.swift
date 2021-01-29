@@ -30,6 +30,8 @@ let kUDGalleryAutomaticallyScrollToHistory = "kUDGalleryAutomaticallyScrollToHis
 
 let kUDViewerMode = "kUDViewerMode"
 
+let kUDViewerReadDirection = "kUDViewerReadDirection"
+
 //Color
 let kMainColor = UIApplication.shared.keyWindow?.tintColor ?? #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)
 
@@ -106,6 +108,11 @@ class Defaults {
             get { return ViewerVC.ViewerMode(rawValue: UserDefaults.standard.integer(forKey: kUDViewerMode))! }
             set { UserDefaults.standard.set(newValue.rawValue, forKey: kUDViewerMode) }
         }
+        static var readDirection : ViewerVC.ViewerReadDirection{
+            get { return ViewerVC.ViewerReadDirection(rawValue: UserDefaults.standard.integer(forKey: kUDViewerReadDirection))!}
+            set {UserDefaults.standard.set(newValue.rawValue, forKey: kUDViewerReadDirection)}
+        }
     }
+    
     
 }
