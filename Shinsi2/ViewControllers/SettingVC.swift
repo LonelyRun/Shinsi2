@@ -126,8 +126,12 @@ class SettingVC: BaseViewController {
         addSubTitle("Scroll Direction")
         let viewerModeSeg = UISegmentedControl(items: ["Horizontal", "Vertical"])
         viewerModeSeg.selectedSegmentIndex = Defaults.Viewer.mode == .horizontal ? 0 : 1
-        viewerModeSeg.addTarget(self, action: #selector(viewerModeSegmentedControlVauleChanged(sender:)), for: .valueChanged)
+        viewerModeSeg.addTarget(self, action: #selector(viewerModeSegmentedControlValueChanged(sender:)), for: .valueChanged)
+        let viewerReadDirectionSeg = UISegmentedControl(items: ["Left to Right", "Right to Left"])
+        viewerReadDirectionSeg.selectedSegmentIndex = Defaults.Viewer.readDirection == .L2R ? 0 : 1
+        viewerReadDirectionSeg.addTarget(self, action: #selector(viewerReadDirectionSegmentedControlValueChanged(sender:)), for: .valueChanged)
         stackView.addRow(viewerModeSeg)
+        stackView.addRow(viewerReadDirectionSeg)
         
         //Cache+
         addTitle("Cache")
@@ -221,8 +225,12 @@ class SettingVC: BaseViewController {
         Defaults.Gallery.isAutomaticallyScrollToHistory = sender.isOn
     }
     
-    @objc func viewerModeSegmentedControlVauleChanged(sender: UISegmentedControl) {
+    @objc func viewerModeSegmentedControlValueChanged(sender: UISegmentedControl) {
         Defaults.Viewer.mode = sender.selectedSegmentIndex == 0 ? .horizontal : .vertical
+    }
+    
+    @objc func viewerReadDirectionSegmentedControlValueChanged(sender:UISegmentedControl){
+        Defaults.Viewer.readDirection = sender.selectedSegmentIndex == 0 ? .L2R : .R2L
     }
     
     func presentWebViewController(url: URL) {
