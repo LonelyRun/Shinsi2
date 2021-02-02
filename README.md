@@ -63,7 +63,7 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully supporting iOS devices of 
 
 ## Enviroment
 
-* XCode 11.4
+* XCode 12.3
 * Swift 5
 * Cocoapods
 
@@ -75,12 +75,6 @@ An unofficial iOS app for E-Hentai / EX-Hentai. Fully supporting iOS devices of 
 
 Clone the project, run `pod install`. Use XCode to build it to your device.
 
-
-### Cydia Impactor
-
-Download ipa from [release](https://github.com/powhu/Shinsi2/releases). Use Cydia Impactor to reassign ipa.
-You can google "Cydia Impactor" for more information.
-
 ## Support
 
 You can ask me questions in English/Chinese.
@@ -89,37 +83,7 @@ You can ask me questions in English/Chinese.
 
 It would be very helpful if you could help me with my grammar and spelling.
 
-## Change log
-
-* **ver 1.4.1** 2020/4/20
-  * Bug fix
-
-* **ver 1.4** 2020/4/20
-  * Reading History
-  * Add shortcut
-
-* **ver 1.3** 2020/4/3
-  * iOS 13 support
-  * Bug fix
-
-* **ver 1.1** 2018/11/14
-	* Comment links
-	* Web login
-	* UI fix
-* **ver 1.0** First release. 2018/11/12
-
 ## Legal
 
 Copyright © 2018 PowHu Yang. Released under the MIT license.
 
-## Third Party Library
-
-Shinsi2 uses the following awesome open sources.
-
-* RealmSwift
-* Alamofire
-* Kanna
-* SDWebImage
-* SVProgressHUD
-* Hero
-* AloeStackView
