@@ -39,12 +39,19 @@ class AuthorVC: UITableViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name.init(kUDViewerReloadData), object: nil)
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(showFile))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: UIImage(named: "import"), style: .plain, target: self, action: #selector(importFile)),
+            UIBarButtonItem(image: UIImage(named: "export"), style: .plain, target: self, action: #selector(exportFile))]
     }
     
-    @objc private func showFile () {
+    @objc private func importFile () {
         present(FileAppManager.default.documentPickerVC, animated: true, completion: nil)
     }
+    
+    @objc private func exportFile () {
+        
+    }
+
     
     @objc private func reloadData () {
         modelArr = RealmManager.shared.author.map{$0}
