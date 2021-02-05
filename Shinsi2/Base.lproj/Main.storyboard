@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fD2-PE-NKt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fD2-PE-NKt">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -41,7 +41,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qd0-bu-Vb8">
-                                <rect key="frame" x="69" y="749" width="237" height="29"/>
+                                <rect key="frame" x="67.666666666666686" y="749" width="240" height="29"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="14"/>
                                 <state key="normal" title="If you have login problem try web login"/>
                                 <connections>
@@ -268,6 +268,11 @@
                             <barButtonItem image="ic_folder" id="3H6-uZ-Ywz" userLabel="Download">
                                 <connections>
                                     <action selector="showDownloads" destination="BYZ-38-t0r" id="c9i-7d-ed7"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem image="people" id="dKr-9O-ifR" userLabel="Author">
+                                <connections>
+                                    <action selector="navigateToAuthor:" destination="BYZ-38-t0r" id="zJe-Hw-ota"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -719,7 +724,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="2018/01/01 11:11" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IVH-hS-3by">
-                                                    <rect key="frame" x="256.66666666666669" y="14" width="98.333333333333314" height="17"/>
+                                                    <rect key="frame" x="258" y="14" width="97" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" weight="thin" pointSize="14"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
@@ -820,5 +825,6 @@
         <image name="ic_local_offer" width="24" height="24"/>
         <image name="ic_menu" width="24" height="24"/>
         <image name="ic_page_0" width="24" height="24"/>
+        <image name="people" width="24" height="24"/>
     </resources>
 </document>

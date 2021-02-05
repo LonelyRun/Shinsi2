@@ -31,6 +31,7 @@ let kUDGalleryAutomaticallyScrollToHistory = "kUDGalleryAutomaticallyScrollToHis
 let kUDViewerMode = "kUDViewerMode"
 
 let kUDViewerReadDirection = "kUDViewerReadDirection"
+let kUDViewerReloadData = "kUDViewerReloadData"
 
 //Color
 let kMainColor = UIApplication.shared.keyWindow?.tintColor ?? #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)

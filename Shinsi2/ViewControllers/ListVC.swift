@@ -45,7 +45,7 @@ class ListVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "title_icon"))
+//        navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "title_icon"))
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView)
         }
@@ -199,6 +199,14 @@ class ListVC: BaseViewController {
         Defaults.List.lastSearchKeyword = searchController.searchBar.text ?? ""
     }
     
+    @IBAction func navigateToAuthor(_ sender: Any) {
+        let authorVC = AuthorVC.shareInstance
+        authorVC.selectHandler = {[weak self] author in
+            self?.schemeOpen(q: author)
+        }
+        navigationController?.pushViewController(authorVC, animated: true)
+    }
+    
     func showSearch(with shotcut: String) {
         searchController.searchBar.text = shotcut
         if searchController.isActive {
@@ -208,13 +216,22 @@ class ListVC: BaseViewController {
     }
 
     @objc func longPress(ges: UILongPressGestureRecognizer) {
-        guard mode == .download || mode == .favorite else {return}
+        
         guard ges.state == .began, let indexPath = collectionView.indexPathForItem(at: ges.location(in: collectionView)) else {return}
 
         let doujinshi = items[indexPath.item]
         let title = mode == .download ? "Delete" : "Action"
         let actionTitle = mode == .download ? "Delete" : "Remove"
         let alert = UIAlertController(title: title, message: doujinshi.title, preferredStyle: .alert)
+        let addAuthorAction = UIAlertAction.init(title: "AddAuthor", style: .default, handler: { (_) in
+            RealmManager.shared.saveAuthor(doujinshi: doujinshi)
+        })
+        guard mode == .download || mode == .favorite else {
+            alert.addAction(addAuthorAction)
+            alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
         let deleteAction = UIAlertAction(title: actionTitle, style: .destructive) { _ in
             if self.mode == .download {
                 DownloadManager.shared.deleteDownloaded(doujinshi: doujinshi)
@@ -247,6 +264,7 @@ class ListVC: BaseViewController {
             alert.addAction(shareAction)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(addAuthorAction)
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
