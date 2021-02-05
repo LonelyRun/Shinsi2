@@ -11,4 +11,7 @@ target 'Shinsi2' do
     pod 'SVProgressHUD'
     pod 'Hero'
     pod 'AloeStackView'
+    pod 'Then'
+    pod 'HandyJSON', '~> 5.0.2'
+    
 end

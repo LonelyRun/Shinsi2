@@ -1,6 +1,7 @@
 PODS:
   - Alamofire (4.9.1)
   - AloeStackView (1.2.0)
+  - HandyJSON (5.0.2)
   - Hero (1.5.0)
   - Kanna (5.2.2)
   - Realm (4.4.1):
@@ -12,37 +13,44 @@ PODS:
     - SDWebImage/Core (= 4.4.8)
   - SDWebImage/Core (4.4.8)
   - SVProgressHUD (2.2.5)
+  - Then (2.7.0)
 
 DEPENDENCIES:
   - Alamofire (~> 4)
   - AloeStackView
+  - HandyJSON (~> 5.0.2)
   - Hero
   - Kanna
   - RealmSwift (> 3.16.2)
   - SDWebImage (~> 4)
   - SVProgressHUD
+  - Then
 
 SPEC REPOS:
   trunk:
     - Alamofire
     - AloeStackView
+    - HandyJSON
     - Hero
     - Kanna
     - Realm
     - RealmSwift
     - SDWebImage
     - SVProgressHUD
+    - Then
 
 SPEC CHECKSUMS:
   Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
   AloeStackView: 8a4ce0efa08128dd78d538372f60c76c224034bb
+  HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   Hero: b7385b75e7259da62f4f85462f59a5082d66b058
   Kanna: 2c4eddaaa4bfb9a1ed19e53c0b3d42ef02838046
   Realm: 4eb04d7487bd43c0581256f40b424eafb711deff
   RealmSwift: 3eb8924ff7100df5928c7602f71d0fec51e7c9c5
   SDWebImage: 783af2c3fa36291a250030c4752ee370a9a51d13
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  Then: acfe0be7e98221c6204e12f8161459606d5d822d
 
-PODFILE CHECKSUM: 0b156129baec195d2763908f01502f0f6948d354
+PODFILE CHECKSUM: cb563df1b7ea7a33facd761afb8dbe7eb2eead58
 
 COCOAPODS: 1.10.0

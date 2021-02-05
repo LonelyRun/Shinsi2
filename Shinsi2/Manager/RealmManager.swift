@@ -4,14 +4,13 @@ import RealmSwift
 class RealmManager {
     static let shared = RealmManager()
     let realm: Realm = {
-        let config = Realm.Configuration( schemaVersion: 8, migrationBlock: { migration, oldSchemaVersion in
+        let config = Realm.Configuration( schemaVersion: 9, migrationBlock: { migration, oldSchemaVersion in
             if oldSchemaVersion < 8 {
                 
             }
         })
         Realm.Configuration.defaultConfiguration = config
         return try! Realm()
-        
     }()
     
     lazy var searchHistory: Results<SearchHistory> = {
@@ -20,6 +19,10 @@ class RealmManager {
     
     lazy var downloaded: Results<Doujinshi> = {
         return self.realm.objects(Doujinshi.self).filter("isDownloaded == true").sorted(byKeyPath: "date", ascending: false)
+    }()
+    
+    lazy var author: Results<Author> = {
+        return self.realm.objects(Author.self).sorted(byKeyPath: "author")
     }()
     
     func browsingHistory(for doujinshi: Doujinshi) -> BrowsingHistory? {
@@ -50,6 +53,38 @@ class RealmManager {
         }
         return results
     }
+    
+    
+    func saveAuthor(doujinshi: Doujinshi) {
+        let title = doujinshi.author
+        let cover = doujinshi.coverUrl
+        let list = realm.objects(Author.self).filter("author = '\(title)'")
+        if list.count > 0 {
+            let authorModel = list[0]
+            guard authorModel.covers.index(of: cover) == nil else {
+                return
+            }
+            try! realm.write {
+                authorModel.covers.append(cover)
+            }
+            return
+        }
+        
+        try! realm.write {
+            realm.add(Author().then {
+                $0.author = title
+                $0.covers.append(cover)
+            })
+        }
+    }
+
+    
+    func deleteAuthor(author: Author) {
+        try! realm.write {
+            realm.delete(author)
+        }
+    }
+    
     
     func saveSearchHistory(text: String?) {
         guard let text = text else {return}

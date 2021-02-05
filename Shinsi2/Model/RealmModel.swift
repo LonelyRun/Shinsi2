@@ -1,4 +1,5 @@
 import Foundation
+import HandyJSON
 import RealmSwift
 
 class BrowsingHistory: Object {
@@ -52,6 +53,25 @@ class Doujinshi: Object {
         return false
     }
     
+    
+    var author: String {
+        do {
+            var regex = try NSRegularExpression(pattern: "\\[.+?\\]", options: [])
+            guard let outRange = regex.matches(in: title, options: [], range: NSMakeRange(0, title.count)).first?.range else {
+                return ""
+            }
+            let string = (title as NSString).substring(with: NSMakeRange(outRange.location + 1, outRange.length - 2))
+            regex = try NSRegularExpression(pattern: "\\(.+?\\)", options: [])
+            guard let innerRange = regex.matches(in: string, options: [], range: NSMakeRange(0, string.count)).first?.range else {
+                return string
+            }
+            return (string as NSString).substring(with: NSMakeRange(innerRange.location + 1, innerRange.length - 2))
+        }
+        catch {
+            return ""
+        }
+    }
+    
     override static func ignoredProperties() -> [String] {
         return ["comments", "commentScrollPosition", "perPageCount"]
     }
@@ -71,6 +91,26 @@ class Page: Object {
         let p = Page()
         p.photo = SSPhoto(URL: "")
         return p
+    }
+}
+
+class Author: Object, HandyJSON {
+    @objc dynamic var author: String = ""
+    var covers = List<String>()
+    
+    func mapping(mapper: HelpingMapper) {
+        mapper <<<
+            self.covers <-- TransformOf<List<String>, [String]>(fromJSON: { (jsonArr) -> List<String>? in
+                let list = List<String>()
+                if let jsonArr = jsonArr, jsonArr.count > 0 {
+                    for item in jsonArr {
+                        list.append(item)
+                    }
+                }
+                return list
+            }, toJSON: { (list) -> [String]? in
+                return []
+            })
     }
 }
 
@@ -111,6 +151,8 @@ class SearchHistory: Object {
     @objc dynamic var text: String = ""
     @objc dynamic var date: Date = Date()
 }
+
+
 
 struct Comment {
     var author: String
