@@ -73,7 +73,7 @@ class AuthorVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectHandler?("artist:\(modelArr[indexPath.row].author)")
+        selectHandler?("\(modelArr[indexPath.row].author)")
         navigationController?.popViewController(animated: true)
     }
     
