@@ -133,6 +133,12 @@ class SettingVC: BaseViewController {
         stackView.addRow(viewerModeSeg)
         stackView.addRow(viewerReadDirectionSeg)
         
+        let tapToScrollLabel = createSubTitleLabel("Tap To Scroll")
+        let tapToScrollSwitch = UISwitch()
+        tapToScrollSwitch.isOn = Defaults.Viewer.tapToScroll
+        tapToScrollSwitch.addTarget(self, action: #selector(viewerTapToScrollValueChanged), for: .valueChanged)
+        stackView.addRow(createStackView([tapToScrollLabel, tapToScrollSwitch]))
+        
         //Cache+
         addTitle("Cache")
         let cacheSizeLable = createSubTitleLabel("size: counting...")
@@ -231,6 +237,10 @@ class SettingVC: BaseViewController {
     
     @objc func viewerReadDirectionSegmentedControlValueChanged(sender:UISegmentedControl){
         Defaults.Viewer.readDirection = sender.selectedSegmentIndex == 0 ? .L2R : .R2L
+    }
+    
+    @objc func viewerTapToScrollValueChanged(sender: UISwitch) {
+        Defaults.Viewer.tapToScroll = sender.isOn
     }
     
     func presentWebViewController(url: URL) {

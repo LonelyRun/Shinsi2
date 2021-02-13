@@ -33,6 +33,8 @@ let kUDViewerMode = "kUDViewerMode"
 let kUDViewerReadDirection = "kUDViewerReadDirection"
 let kUDViewerReloadData = "kUDViewerReloadData"
 
+let kUDViewerTapToScroll = "kUDViewerTapToScroll"
+
 //Color
 let kMainColor = UIApplication.shared.keyWindow?.tintColor ?? #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)
 
@@ -112,6 +114,10 @@ class Defaults {
         static var readDirection : ViewerVC.ViewerReadDirection{
             get { return ViewerVC.ViewerReadDirection(rawValue: UserDefaults.standard.integer(forKey: kUDViewerReadDirection))!}
             set {UserDefaults.standard.set(newValue.rawValue, forKey: kUDViewerReadDirection)}
+        }
+        static var tapToScroll : Bool {
+            get { return UserDefaults.standard.bool(forKey: kUDViewerTapToScroll)}
+            set { UserDefaults.standard.setValue(newValue, forKey: kUDViewerTapToScroll)}
         }
     }
     
