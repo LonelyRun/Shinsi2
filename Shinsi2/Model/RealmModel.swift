@@ -109,7 +109,11 @@ class Author: Object, HandyJSON {
                 }
                 return list
             }, toJSON: { (list) -> [String]? in
-                return []
+                var result: [String] = []
+                list?.forEach({ (covers) in
+                    result.append(covers)
+                })
+                return result
             })
     }
 }

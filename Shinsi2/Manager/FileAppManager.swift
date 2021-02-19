@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FileAppManager:NSObject, UIDocumentPickerDelegate {
+class FileAppManager: NSObject, UIDocumentPickerDelegate {
 
     static let `default` = FileAppManager()
     
@@ -17,9 +17,32 @@ class FileAppManager:NSObject, UIDocumentPickerDelegate {
         $0.modalPresentationStyle = .formSheet
     }
 
-    func downLoadWithFilePath(filePath: String) {
+    static func exportToFile () {
         
-        
+        var modelArr: [Author] = []
+        let dataArr = RealmManager.shared.author.map{$0}
+        dataArr.forEach { (author) in
+            modelArr.append(author)
+        }
+        guard var dataString = modelArr.toJSONString(prettyPrint: true) else {
+            return
+        }
+        dataString = (dataString as NSString).replacingOccurrences(of: "\\", with: "")
+        guard let data = dataString.data(using: .utf8) else {
+            return
+        }
+        guard let cacheDirectory = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first  else {
+            return
+        }
+        let filePath = (cacheDirectory as NSString).appendingPathComponent("shinsi.json")
+        let fileManager = FileManager.default
+        if (fileManager.fileExists(atPath: filePath)) {
+            try? fileManager.removeItem(atPath: filePath)
+        }
+        fileManager.createFile(atPath: filePath, contents: data, attributes: nil)
+
+        let documentPicker = UIDocumentPickerViewController(url: URL.init(fileURLWithPath: filePath), in: .exportToService)
+        UIApplication.shared.keyWindow?.rootViewController?.present(documentPicker, animated: true, completion: nil)
     }
     
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
