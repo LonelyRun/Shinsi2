@@ -49,7 +49,7 @@ class AuthorVC: UITableViewController {
     }
     
     @objc private func exportFile () {
-        
+        FileAppManager.exportToFile()
     }
 
     
