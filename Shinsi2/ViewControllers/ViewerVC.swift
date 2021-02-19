@@ -14,6 +14,7 @@ class ViewerVC: UICollectionViewController {
         case L2R = 0
         case R2L = 1
     }
+    
     var selectedIndexPath: IndexPath? {
         set { _selectedIndexPath = newValue }
         get {
@@ -42,6 +43,9 @@ class ViewerVC: UICollectionViewController {
     var readDirection : ViewerReadDirection {
         return Defaults.Viewer.readDirection
     }
+    var tapToScroll: Bool {
+        return Defaults.Viewer.tapToScroll
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         if !doujinshi.isDownloaded {
@@ -63,15 +67,14 @@ class ViewerVC: UICollectionViewController {
             }
         }
         
-        //Close gesture
         let panGR = UIPanGestureRecognizer()
         panGR.addTarget(self, action: #selector(pan(ges:)))
         panGR.delegate = self
         collectionView?.addGestureRecognizer(panGR)
         
-        let tapToCloseGesture = UITapGestureRecognizer(target: self, action: #selector(tapToClose(ges:)))
-        tapToCloseGesture.numberOfTapsRequired = 1
-        collectionView?.addGestureRecognizer(tapToCloseGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tap(ges:)))
+        tapGesture.numberOfTapsRequired = 1
+        collectionView?.addGestureRecognizer(tapGesture)
         
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(ges:)))
         longPressGesture.delaysTouchesBegan = true
@@ -149,8 +152,36 @@ class ViewerVC: UICollectionViewController {
         }
     }
     
-    @objc func tapToClose(ges: UITapGestureRecognizer) {
-        dismiss(animated: true, completion: nil)
+    @objc func tap(ges: UITapGestureRecognizer) {
+        if ges.state != .ended {
+            return
+        }
+        if !tapToScroll || mode == .vertical {
+            // tap to close
+            self.dismiss(animated: true, completion: nil)
+            return
+        }
+        
+        let touchLocation: CGPoint = ges.location(in: view.superview)
+        let xOffset = touchLocation.x - view.frame.origin.x
+        let tapRight = xOffset > view.frame.width * (2/3)
+        let tapLeft = xOffset < view.frame.width * (1/3)
+        if !tapLeft && !tapRight {
+            return
+        }
+        var pageOffset = 0
+        if tapRight && readDirection == .L2R || tapLeft && readDirection == .R2L {
+            pageOffset = 1
+        } else if tapRight && readDirection == .R2L || tapLeft && readDirection == .L2R {
+            pageOffset = -1
+        }
+        let currentIndex = collectionView.indexPathsForVisibleItems.first
+        let nextIndexPath = IndexPath(item: currentIndex!.item + pageOffset, section: currentIndex!.section)
+        if nextIndexPath.item < 0 || nextIndexPath.item >= doujinshi.pages.count {
+            return
+        }
+        
+        collectionView!.scrollToItem(at: nextIndexPath, at: .right, animated: false)
     }
     
     @objc func pan(ges: UIPanGestureRecognizer) {
