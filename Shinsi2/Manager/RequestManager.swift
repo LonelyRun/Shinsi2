@@ -5,7 +5,7 @@ class RequestManager {
     
     static let shared = RequestManager()
 
-    func getList(page: Int, search keyword: String? = nil, completeBlock block: (([Doujinshi]) -> Void)?) {
+    func getList(page: Int, search keyword: String? = nil, completeBlock block: (([Doujinshi], Int) -> Void)?) {
         
         let categoryFilters = Defaults.Search.categories.map {"f_\($0)=\(UserDefaults.standard.bool(forKey: $0) ? 1 : 0)"}.joined(separator: "&")
         var url = Defaults.URL.host + "/?"
@@ -25,7 +25,7 @@ class RequestManager {
                 if page == 0 {
                     url = Defaults.URL.host + "/popular"
                 } else {
-                    block?([])
+                    block?([], 0)
                     return
                 }
             } else if keyword.contains("watched") {
@@ -44,9 +44,17 @@ class RequestManager {
         }
         
         Alamofire.request(url, method: .get).responseString { response in
-            guard let html = response.result.value else { block?([]); return }
+            guard let html = response.result.value else { block?([], 0); return }
             if let doc = try? Kanna.HTML(html: html, encoding: .utf8) {
                 var items: [Doujinshi] = []
+                var lastLabel: Int = 0
+                
+                let tdNode = doc.xpath("//table //td")
+                if (tdNode.count > 2) {
+                    let countNode = tdNode[tdNode.count - 2]
+                    lastLabel = Int(countNode.text ?? "") ?? 0
+                }
+                
                 for link in doc.xpath("//div [@class='gl1t']") {
                     if let aNode = link.at_css("div[class='gl3t'] a") {
                         if let href = aNode["href"], let imgUrl = aNode.at_css("img")?["src"], let title = aNode.at_css("img")?["title"] {
@@ -58,8 +66,8 @@ class RequestManager {
                         }
                     }
                 }
-
-                block?(items)
+                
+                block?(items, lastLabel)
                 if cacheFavoritesTitles {
                     DispatchQueue.global(qos: .userInteractive).async {
                         let favTitles = doc.xpath("//option [contains(@value, 'fav')]").filter { $0.text != nil }.map { $0.text! }
@@ -67,7 +75,7 @@ class RequestManager {
                     }
                 }
             } else {
-                block?([])
+                block?([], 0)
             }
         }
     }
@@ -134,28 +142,7 @@ class RequestManager {
             block?(nil)
         }
     }
-    
-    private func getNewList(with keywords: [String], completeBlock block: (([Doujinshi]) -> Void)?) {
-        print(#function)
-        guard keywords.count > 0 else {
-            block?([])
-            return
-        }
-        var results: [Doujinshi] = []
-        let totalCount = keywords.count
-        var completedCount = 0
-        for (index, keyword) in keywords.enumerated() {
-            DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + .milliseconds(333 * index) ) {
-                RequestManager.shared.getList(page: 0, search: keyword, completeBlock: { (books) in
-                    results.append(contentsOf: books)
-                    completedCount += 1
-                    if completedCount == totalCount {
-                        block?(results.sorted(by: { $0.id > $1.id }))
-                    }
-                })
-            }
-        }
-    }
+
 
     func getGData( doujinshi: Doujinshi, completeBlock block: ((GData?) -> Void)? ) {
         print(#function)
