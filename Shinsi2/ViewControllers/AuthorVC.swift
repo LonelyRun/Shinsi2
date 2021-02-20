@@ -14,12 +14,14 @@ let LabelHeight = 50.0
 let CollectionViewWidth = 130.0
 let CollectionViewHeight = 137.0
 
+
 class AuthorVC: UITableViewController {
     
     static let shareInstance = AuthorVC()
     
     var modelArr: [Author] = []
     var selectHandler: ((_ author: String) -> Void)?
+    private var backGesture: InteractiveBackGesture?
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.init(kUDViewerReloadData), object: nil)
@@ -36,6 +38,8 @@ class AuthorVC: UITableViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(AuthorTableViewCell.self, forCellReuseIdentifier: "cell")
+        backGesture = InteractiveBackGesture(viewController: self, toView: tableView)
+
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name.init(kUDViewerReloadData), object: nil)
         

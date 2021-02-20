@@ -14,6 +14,7 @@ class ListVC: BaseViewController {
     private var items: [Doujinshi] = []
     private var currentPage = -1
     private var loadingPage = -1
+    private var pageCount = 0
     private var backGesture: InteractiveBackGesture?
     private var rowCount: Int { return min(12, max(2, Int(floor(collectionView.bounds.width / Defaults.List.cellWidth)))) }
     @IBOutlet weak var loadingView: LoadingView!
@@ -143,8 +144,9 @@ class ListVC: BaseViewController {
             guard loadingPage != currentPage + 1 else {return}
             loadingPage = currentPage + 1
             if loadingPage == 0 { loadingView.show() }
-            RequestManager.shared.getList(page: loadingPage, search: searchController.searchBar.text) {[weak self] books in
+            RequestManager.shared.getList(page: loadingPage, search: searchController.searchBar.text) {[weak self] books, pageCount  in
                 guard let self = self else {return}
+                self.pageCount = pageCount
                 self.loadingView.hide()
                 guard books.count > 0 else {return}
                 let lastIndext = max(0, self.items.count - 1)
@@ -172,7 +174,7 @@ class ListVC: BaseViewController {
     }
     
     @IBAction func setPage(_ sender: Any) {
-        let controller = UIAlertController(title: "skip", message: "", preferredStyle: .alert)
+        let controller = UIAlertController(title: "skip", message: "total \(self.pageCount - 1)", preferredStyle: .alert)
         controller.addTextField {[weak self] (textFeild) in
             textFeild.placeholder = "page number"
             textFeild.text = "\(self?.currentPage ?? 1)"
