@@ -13,7 +13,8 @@ Pods/
 *.perspectivev3
 !default.perspectivev3
 xcuserdata/
-
+AutoPacking/
+build/
 
 ## 
 Psd/

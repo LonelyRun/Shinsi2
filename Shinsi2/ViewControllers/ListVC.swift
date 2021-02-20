@@ -17,6 +17,7 @@ class ListVC: BaseViewController {
     private var backGesture: InteractiveBackGesture?
     private var rowCount: Int { return min(12, max(2, Int(floor(collectionView.bounds.width / Defaults.List.cellWidth)))) }
     @IBOutlet weak var loadingView: LoadingView!
+    @IBOutlet weak var findPageButton: UIButton!
     
     enum Mode: String {
         case normal = "normal"
@@ -90,6 +91,7 @@ class ListVC: BaseViewController {
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
         view.layoutIfNeeded()
         collectionView.collectionViewLayout.invalidateLayout()
+        findPageButton.isHidden = Defaults.List.isHidePageSkip
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -126,6 +128,7 @@ class ListVC: BaseViewController {
             }
         }
     }
+    
 
     func loadNextPage() {
         if mode == .download {
@@ -156,9 +159,9 @@ class ListVC: BaseViewController {
         }
     }
 
-    func reloadData() {
-        currentPage = -1
-        loadingPage = -1
+    func reloadData(pageIndex: Int = -1) {
+        currentPage = pageIndex
+        loadingPage = pageIndex
         let deleteIndexPaths = items.enumerated().map { IndexPath(item: $0.offset, section: 0)}
         items = []
         collectionView.performBatchUpdates({
@@ -167,6 +170,26 @@ class ListVC: BaseViewController {
             self.loadNextPage()
         })
     }
+    
+    @IBAction func setPage(_ sender: Any) {
+        let controller = UIAlertController(title: "skip", message: "", preferredStyle: .alert)
+        controller.addTextField {[weak self] (textFeild) in
+            textFeild.placeholder = "page number"
+            textFeild.text = "\(self?.currentPage ?? 1)"
+            textFeild.keyboardType = .numberPad
+        }
+        controller.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        controller.addAction(UIAlertAction(title: "Sure", style: .default, handler: {[weak self] (_) in
+            if let pageStr = controller.textFields?.first?.text, let page = Int(pageStr) {
+                self?.reloadData(pageIndex: page - 1)
+            }
+        }))
+        controller.addAction(UIAlertAction(title: "Reset", style: .default, handler: {[weak self] (_) in
+            self?.reloadData()
+        }))
+        present(controller, animated: true, completion: nil)
+    }
+    
 
     @IBAction func showFavorites(sender: UIBarButtonItem) {
         guard navigationController?.presentedViewController == nil else {return}
@@ -300,6 +323,7 @@ class ListVC: BaseViewController {
     
     @objc func settingChanged(notification: Notification) {
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
+        findPageButton.isHidden = Defaults.List.isHidePageSkip
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

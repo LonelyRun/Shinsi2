@@ -133,6 +133,12 @@ class SettingVC: BaseViewController {
         stackView.addRow(viewerModeSeg)
         stackView.addRow(viewerReadDirectionSeg)
         
+        let showPageSkipLabel = createSubTitleLabel("Show PageSkip")
+        let pageSkipSwitch = UISwitch()
+        pageSkipSwitch.isOn = !Defaults.List.isHidePageSkip
+        pageSkipSwitch.addTarget(self, action: #selector(listPageSkipSwitchVauleChanged), for: .valueChanged)
+        stackView.addRow(createStackView([showPageSkipLabel, pageSkipSwitch]))
+        
         let tapToScrollLabel = createSubTitleLabel("Tap To Scroll")
         let tapToScrollSwitch = UISwitch()
         tapToScrollSwitch.isOn = Defaults.Viewer.tapToScroll
@@ -219,6 +225,11 @@ class SettingVC: BaseViewController {
         Defaults.List.isShowFavoriteList = sender.isOn
     }
     
+    @objc func listPageSkipSwitchVauleChanged(sender: UISwitch) {
+        Defaults.List.isHidePageSkip = !sender.isOn
+        NotificationCenter.default.post(name: .settingChanged, object: nil)
+    }
+    
     @objc func galleryQuickScrollSwitchVauleChanged(sender: UISwitch) {
         Defaults.Gallery.isShowQuickScroll = sender.isOn
     }
@@ -238,6 +249,7 @@ class SettingVC: BaseViewController {
     @objc func viewerReadDirectionSegmentedControlValueChanged(sender:UISegmentedControl){
         Defaults.Viewer.readDirection = sender.selectedSegmentIndex == 0 ? .L2R : .R2L
     }
+    
     
     @objc func viewerTapToScrollValueChanged(sender: UISwitch) {
         Defaults.Viewer.tapToScroll = sender.isOn
