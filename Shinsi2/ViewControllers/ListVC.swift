@@ -19,6 +19,7 @@ class ListVC: BaseViewController {
     private var rowCount: Int { return min(12, max(2, Int(floor(collectionView.bounds.width / Defaults.List.cellWidth)))) }
     @IBOutlet weak var loadingView: LoadingView!
     @IBOutlet weak var findPageButton: UIButton!
+    @IBOutlet weak var authorButton: UIButton!
     
     enum Mode: String {
         case normal = "normal"
@@ -47,7 +48,6 @@ class ListVC: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        navigationItem.titleView = UIImageView(image: #imageLiteral(resourceName: "title_icon"))
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView)
         }
@@ -93,6 +93,7 @@ class ListVC: BaseViewController {
         view.layoutIfNeeded()
         collectionView.collectionViewLayout.invalidateLayout()
         findPageButton.isHidden = Defaults.List.isHidePageSkip
+        authorButton.isHidden = !Defaults.List.isShowAuthorList
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -247,16 +248,28 @@ class ListVC: BaseViewController {
         let doujinshi = items[indexPath.item]
         let title = mode == .download ? "Delete" : "Action"
         let actionTitle = mode == .download ? "Delete" : "Remove"
-        let alert = UIAlertController(title: title, message: doujinshi.title, preferredStyle: .alert)
-        let addAuthorAction = UIAlertAction.init(title: "AddAuthor", style: .default, handler: { (_) in
-            RealmManager.shared.saveAuthor(doujinshi: doujinshi)
-        })
         guard mode == .download || mode == .favorite else {
-            alert.addAction(addAuthorAction)
-            alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
-            present(alert, animated: true, completion: nil)
+            if Defaults.List.isShowAuthorList {
+                let addAlert = UIAlertController(title: "AddToAuthor", message: nil, preferredStyle: .alert)
+                addAlert.addTextField {(textFeild) in
+                    textFeild.text = doujinshi.author.lowercased()
+                }
+                addAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                addAlert.addAction(UIAlertAction(title: "Sure", style: .default, handler: {(_) in
+                    if let text = addAlert.textFields?.first?.text {
+                        if let doujinshiString = doujinshi.toJSONString(), let newModel = Doujinshi.deserialize(from: doujinshiString) {
+                            newModel.title = "[\(text)]"
+                            RealmManager.shared.saveAuthor(doujinshi: newModel)
+                        }
+                    }
+                }))
+                present(addAlert, animated: true, completion: nil)
+
+            }
             return
         }
+        
+        let alert = UIAlertController(title: title, message: doujinshi.title, preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: actionTitle, style: .destructive) { _ in
             if self.mode == .download {
                 DownloadManager.shared.deleteDownloaded(doujinshi: doujinshi)
@@ -289,7 +302,6 @@ class ListVC: BaseViewController {
             alert.addAction(shareAction)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alert.addAction(addAuthorAction)
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
@@ -326,6 +338,7 @@ class ListVC: BaseViewController {
     @objc func settingChanged(notification: Notification) {
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
         findPageButton.isHidden = Defaults.List.isHidePageSkip
+        authorButton.isHidden = !Defaults.List.isShowAuthorList
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

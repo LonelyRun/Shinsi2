@@ -145,6 +145,12 @@ class SettingVC: BaseViewController {
         tapToScrollSwitch.addTarget(self, action: #selector(viewerTapToScrollValueChanged), for: .valueChanged)
         stackView.addRow(createStackView([tapToScrollLabel, tapToScrollSwitch]))
         
+        let showAuthorListLabel = createSubTitleLabel("Show AuthorList")
+        let authorListSwitch = UISwitch()
+        authorListSwitch.isOn = Defaults.List.isShowAuthorList
+        authorListSwitch.addTarget(self, action: #selector(listAuthorListSwitchVauleChanged), for: .valueChanged)
+        stackView.addRow(createStackView([showAuthorListLabel, authorListSwitch]))
+        
         //Cache+
         addTitle("Cache")
         let cacheSizeLable = createSubTitleLabel("size: counting...")
@@ -223,6 +229,11 @@ class SettingVC: BaseViewController {
     
     @objc func listFavoriteSwitchVauleChanged(sender: UISwitch) {
         Defaults.List.isShowFavoriteList = sender.isOn
+    }
+    
+    @objc func listAuthorListSwitchVauleChanged(sender: UISwitch) {
+        Defaults.List.isShowAuthorList = sender.isOn
+        NotificationCenter.default.post(name: .settingChanged, object: nil)
     }
     
     @objc func listPageSkipSwitchVauleChanged(sender: UISwitch) {
