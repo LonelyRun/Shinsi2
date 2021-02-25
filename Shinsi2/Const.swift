@@ -20,6 +20,7 @@ let kUDListLastSearchKeyword = "kUDListLastSearchKeyword"
 let kUDListHideTag = "kUDListHideTag"
 let kUDListHideTitle = "kUDListHideTitle"
 let kUDListHidePageSkip = "kUDListHidePageSkip"
+let kUDShowAuthorListSkip = "kUDShowAuthorListSkip"
 let kUDListFavoriteTitles = "kUDListFavoriteTitles"
 let kUDListFavoriteList = "kUDListFavoriteList"
 
@@ -69,6 +70,10 @@ class Defaults {
         static var isHidePageSkip: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDListHidePageSkip) }
             set { UserDefaults.standard.set(newValue, forKey: kUDListHidePageSkip) }
+        }
+        static var isShowAuthorList: Bool {
+            get { return UserDefaults.standard.bool(forKey: kUDShowAuthorListSkip) }
+            set { UserDefaults.standard.set(newValue, forKey: kUDShowAuthorListSkip) }
         }
         static var isShowFavoriteList: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDListFavoriteList) }

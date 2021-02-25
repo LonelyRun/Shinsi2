@@ -14,7 +14,7 @@ class BrowsingHistory: Object {
     }
 }
 
-class Doujinshi: Object {
+class Doujinshi: Object, HandyJSON {
     @objc dynamic var coverUrl = ""
     @objc dynamic var title = ""
     @objc dynamic var url = ""

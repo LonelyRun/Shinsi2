@@ -253,6 +253,24 @@
                                     <action selector="setPage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YHP-FT-UFT"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y3g-4C-SPy">
+                                <rect key="frame" x="319" y="651" width="36" height="36"/>
+                                <color key="backgroundColor" red="0.85596281289999998" green="0.28140765429999998" blue="0.23919877410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="36" id="sAn-gN-cPe"/>
+                                    <constraint firstAttribute="width" constant="36" id="taR-6f-PMZ"/>
+                                </constraints>
+                                <state key="normal" image="ic_author"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="18"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.maskToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="navigateToAuthor:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Fmg-ab-tFo"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="I4h-vP-2yu"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -262,9 +280,11 @@
                             <constraint firstItem="I4h-vP-2yu" firstAttribute="trailing" secondItem="fdW-OE-AIe" secondAttribute="trailing" id="8dS-mk-NmC"/>
                             <constraint firstItem="Lva-IT-2ZZ" firstAttribute="centerX" secondItem="I4h-vP-2yu" secondAttribute="centerX" id="KfP-FB-IDL"/>
                             <constraint firstItem="fdW-OE-AIe" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="NRj-Ju-WZc"/>
+                            <constraint firstItem="pVJ-zX-TZT" firstAttribute="top" secondItem="Y3g-4C-SPy" secondAttribute="bottom" constant="15" id="U5n-FF-Kev"/>
                             <constraint firstItem="I4h-vP-2yu" firstAttribute="trailing" secondItem="pVJ-zX-TZT" secondAttribute="trailing" constant="20" id="cJU-Uw-4YJ"/>
                             <constraint firstItem="I4h-vP-2yu" firstAttribute="bottom" secondItem="pVJ-zX-TZT" secondAttribute="bottom" constant="40" id="efP-7H-Ze9"/>
                             <constraint firstAttribute="bottom" secondItem="fdW-OE-AIe" secondAttribute="bottom" id="jyd-xL-Loe"/>
+                            <constraint firstItem="Y3g-4C-SPy" firstAttribute="trailing" secondItem="pVJ-zX-TZT" secondAttribute="trailing" id="kaD-Me-oY1"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="TD4-h2-wtW">
@@ -290,14 +310,10 @@
                                     <action selector="showDownloads" destination="BYZ-38-t0r" id="c9i-7d-ed7"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem image="people" id="dKr-9O-ifR" userLabel="Author">
-                                <connections>
-                                    <action selector="navigateToAuthor:" destination="BYZ-38-t0r" id="zJe-Hw-ota"/>
-                                </connections>
-                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="authorButton" destination="Y3g-4C-SPy" id="zFW-zN-gVR"/>
                         <outlet property="collectionView" destination="fdW-OE-AIe" id="JGQ-b9-7cP"/>
                         <outlet property="findPageButton" destination="pVJ-zX-TZT" id="jkv-f2-oXp"/>
                         <outlet property="loadingView" destination="Lva-IT-2ZZ" id="xTh-QZ-iYg"/>
@@ -838,6 +854,7 @@
     </scenes>
     <color key="tintColor" red="0.80000000000000004" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
     <resources>
+        <image name="ic_author" width="24" height="24"/>
         <image name="ic_comment" width="24" height="24"/>
         <image name="ic_favorite" width="24" height="24"/>
         <image name="ic_favorite_border" width="24" height="24"/>
@@ -847,6 +864,5 @@
         <image name="ic_local_offer" width="24" height="24"/>
         <image name="ic_menu" width="24" height="24"/>
         <image name="ic_page_0" width="24" height="24"/>
-        <image name="people" width="24" height="24"/>
     </resources>
 </document>
