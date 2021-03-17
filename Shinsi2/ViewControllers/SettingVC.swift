@@ -133,6 +133,11 @@ class SettingVC: BaseViewController {
         stackView.addRow(viewerModeSeg)
         stackView.addRow(viewerReadDirectionSeg)
         
+        let viewerReadPageSeg = UISegmentedControl(items: ["Default", "DoublePage"])
+        viewerReadPageSeg.selectedSegmentIndex = Defaults.Viewer.pageType ? 0 : 1
+        viewerReadPageSeg.addTarget(self, action: #selector(viewerPageTypeValueChanged(sender:)), for: .valueChanged)
+        stackView.addRow(viewerReadPageSeg)
+        
         let showPageSkipLabel = createSubTitleLabel("Show PageSkip")
         let pageSkipSwitch = UISwitch()
         pageSkipSwitch.isOn = !Defaults.List.isHidePageSkip
@@ -264,6 +269,10 @@ class SettingVC: BaseViewController {
     
     @objc func viewerTapToScrollValueChanged(sender: UISwitch) {
         Defaults.Viewer.tapToScroll = sender.isOn
+    }
+    
+    @objc func viewerPageTypeValueChanged(sender: UISwitch) {
+        Defaults.Viewer.pageType = sender.isOn
     }
     
     func presentWebViewController(url: URL) {

@@ -490,11 +490,11 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = PJJUWGR6V8;
+				DEVELOPMENT_TEAM = 37P57H34PQ;
 				INFOPLIST_FILE = Shinsi2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.7.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -510,11 +510,11 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = PJJUWGR6V8;
+				DEVELOPMENT_TEAM = 37P57H34PQ;
 				INFOPLIST_FILE = Shinsi2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.7.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
