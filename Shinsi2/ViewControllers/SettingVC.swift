@@ -133,10 +133,11 @@ class SettingVC: BaseViewController {
         stackView.addRow(viewerModeSeg)
         stackView.addRow(viewerReadDirectionSeg)
         
-        let viewerReadPageSeg = UISegmentedControl(items: ["Default", "DoublePage"])
-        viewerReadPageSeg.selectedSegmentIndex = Defaults.Viewer.pageType ? 0 : 1
+        let readPageLabel = createSubTitleLabel("DoublePage")
+        let viewerReadPageSeg = UISwitch()
+        viewerReadPageSeg.isOn = Defaults.Viewer.pageType
         viewerReadPageSeg.addTarget(self, action: #selector(viewerPageTypeValueChanged(sender:)), for: .valueChanged)
-        stackView.addRow(viewerReadPageSeg)
+        stackView.addRow(createStackView([readPageLabel, viewerReadPageSeg]))
         
         let showPageSkipLabel = createSubTitleLabel("Show PageSkip")
         let pageSkipSwitch = UISwitch()
