@@ -34,7 +34,7 @@ class ViewerVC: UICollectionViewController {
         return ps
     }
     var mode: ViewerMode {
-        if collectionView!.bounds.width > 1000 && collectionView!.bounds.width > collectionView!.bounds.height {
+        if Defaults.Viewer.pageType && collectionView!.bounds.width > 1000 && collectionView!.bounds.width > collectionView!.bounds.height {
             return .doublePage
         } else {
             return Defaults.Viewer.mode
