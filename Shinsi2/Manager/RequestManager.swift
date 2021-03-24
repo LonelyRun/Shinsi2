@@ -42,42 +42,47 @@ class RequestManager {
         } else {
             url += "&page=\(page)"
         }
-        
-        Alamofire.request(url, method: .get).responseString { response in
-            guard let html = response.result.value else { block?([], 0); return }
-            if let doc = try? Kanna.HTML(html: html, encoding: .utf8) {
-                var items: [Doujinshi] = []
-                var lastLabel: Int = 0
-                
-                let tdNode = doc.xpath("//table //td")
-                if (tdNode.count > 2) {
-                    let countNode = tdNode[tdNode.count - 2]
-                    lastLabel = Int(countNode.text ?? "") ?? 0
-                }
-                
-                for link in doc.xpath("//div [@class='gl1t']") {
-                    if let aNode = link.at_css("div[class='gl3t'] a") {
-                        if let href = aNode["href"], let imgUrl = aNode.at_css("img")?["src"], let title = aNode.at_css("img")?["title"] {
-                            var page = 0
-                            if let pageStr = link.css("div[class='gl5t'] div")[3].text {
-                                page = Int((pageStr as NSString).intValue)
+    
+        AF.request(url, method: .get).responseString { response in
+            switch response.result {
+            case .success(let value):
+                let html = value
+                if let doc = try? Kanna.HTML(html: html, encoding: .utf8) {
+                    var items: [Doujinshi] = []
+                    var lastLabel: Int = 0
+                    
+                    let tdNode = doc.xpath("//table //td")
+                    if (tdNode.count > 2) {
+                        let countNode = tdNode[tdNode.count - 2]
+                        lastLabel = Int(countNode.text ?? "") ?? 0
+                    }
+                    
+                    for link in doc.xpath("//div [@class='gl1t']") {
+                        if let aNode = link.at_css("div[class='gl3t'] a") {
+                            if let href = aNode["href"], let imgUrl = aNode.at_css("img")?["src"], let title = aNode.at_css("img")?["title"] {
+                                var page = 0
+                                if let pageStr = link.css("div[class='gl5t'] div")[3].text {
+                                    page = Int((pageStr as NSString).intValue)
+                                }
+                                items.append(Doujinshi(value: ["coverUrl": imgUrl, "title": title, "url": href, "pageCount": "\(page)"]))
                             }
-                            items.append(Doujinshi(value: ["coverUrl": imgUrl, "title": title, "url": href, "pageCount": "\(page)"]))
                         }
                     }
-                }
-                
-                block?(items, lastLabel)
-                if cacheFavoritesTitles {
-                    DispatchQueue.global(qos: .userInteractive).async {
-                        let favTitles = doc.xpath("//option [contains(@value, 'fav')]").filter { $0.text != nil }.map { $0.text! }
-                        if favTitles.count == 10 { Defaults.List.favoriteTitles = favTitles }
+                    
+                    block?(items, lastLabel)
+                    if cacheFavoritesTitles {
+                        DispatchQueue.global(qos: .userInteractive).async {
+                            let favTitles = doc.xpath("//option [contains(@value, 'fav')]").filter { $0.text != nil }.map { $0.text! }
+                            if favTitles.count == 10 { Defaults.List.favoriteTitles = favTitles }
+                        }
                     }
+                } else {
+                    block?([], 0)
                 }
-            } else {
+            case .failure(let error):
                 block?([], 0)
             }
-        }
+            
     }
     
     func getDoujinshi(doujinshi: Doujinshi, at page: Int, completeBlock block: (([Page]) -> Void)?) {

@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
-import SDWebImage
 import Alamofire
+import Kingfisher
 
 class SSOperation: Operation {
     enum State {

@@ -1,6 +1,6 @@
 import UIKit
 import Hero
-import SDWebImage
+import Kingfisher
 import SVProgressHUD
 import SafariServices
 
@@ -391,7 +391,7 @@ UICollectionViewDataSourcePrefetching {
                 cell.imageView.image = image
                 cell.loadingView?.hide(animated: false)
             } else {
-                cell.imageView.sd_setImage(with: URL(string: page.thumbUrl), placeholderImage: nil, options: [.handleCookies])
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), options: [.transition(ImageTransition.fade(0.2))])
                 cell.loadingView?.show(animated: false)
             }
         }

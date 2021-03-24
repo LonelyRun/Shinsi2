@@ -1,13 +1,27 @@
 import UIKit
-import SDWebImage
+import Kingfisher
 
 class ImageManager {
     static let shared: ImageManager = ImageManager()
-    let imageCache = SDWebImageManager.shared().imageCache!
+    let imageCache = ImageCache.default
     private var downloadingUrls: Set<URL> = Set<URL>()
     
     func getCache(forKey name: String) -> UIImage? {
-        return imageCache.imageFromMemoryCache(forKey: name) ?? imageCache.imageFromDiskCache(forKey: name)
+        var image = UIImage.self();
+        if imageCache.isCached(forKey: name) {
+            let signalObj = DispatchSemaphore(value: 0)
+            imageCache.retrieveImage(forKey: name, completionHandler: { (result) in
+                switch result {
+                case .success(let value):
+                    image = value.image!
+                case .failure(let error):
+                    print(error)
+                }
+                signalObj.signal()
+            })
+            signalObj.wait()
+        }
+        return image
     }
     
     func prefetch(urls: [URL]) {
@@ -19,11 +33,9 @@ class ImageManager {
             prefetchUrls.append(url)
         }
         
-        let prefetcher = SDWebImagePrefetcher()
-        prefetcher.options = [.highPriority, .handleCookies]
-        prefetcher.prefetchURLs(urls, progress: nil) { (_, _) in
+        let prefetcher = ImagePrefetcher.init(urls: urls, options: [.downloadPriority(1.0)]) { (skippedResources, failedResources, completedResources) in
             prefetchUrls.forEach { self.downloadingUrls.remove($0) }
         }
-        
+        prefetcher.start()
     }
 }

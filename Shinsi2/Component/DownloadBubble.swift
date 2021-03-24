@@ -141,7 +141,7 @@ class DownloadBubble: UIView {
     
     func observerNextQueue() {
         if let queue = DownloadManager.shared.queues.first, let doujinshi = DownloadManager.shared.books[queue.name!] {
-            imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies])
+            imageView.kf.setImage(with: URL(string: doujinshi.coverUrl))
             observingQueue = queue
             queue.addObserver(self, forKeyPath: "operationCount", options: [.new], context: nil)
             updateBadge()

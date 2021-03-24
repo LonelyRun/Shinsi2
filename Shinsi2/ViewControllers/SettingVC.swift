@@ -1,9 +1,11 @@
 import UIKit
 import AloeStackView
-import SDWebImage
+import Kingfisher
 import SVProgressHUD
 import Hero
 import WebKit
+import RxSwift
+import RxCocoa
 
 extension Notification.Name {
     static let settingChanged = Notification.Name("SS_SETTING_CHANGED")
@@ -157,27 +159,40 @@ class SettingVC: BaseViewController {
         authorListSwitch.addTarget(self, action: #selector(listAuthorListSwitchVauleChanged), for: .valueChanged)
         stackView.addRow(createStackView([showAuthorListLabel, authorListSwitch]))
         
+        let downLoadDelay = createTextField("Download Delay")
+        downLoadDelay.text =  String.init(format: "%.2lf", Defaults.Download.downloadDalay)
+        stackView.addRow(downLoadDelay)
+        downLoadDelay.rx.text.orEmpty.subscribe(onNext: { (string) in
+            Defaults.Download.downloadDalay = self.StringToFloat(str: string)
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: DisposeBag())
+
         //Cache+
         addTitle("Cache")
         let cacheSizeLable = createSubTitleLabel("size: counting...")
         stackView.addRow(cacheSizeLable)
         DispatchQueue.global(qos: .userInteractive).async {
-            let cacheSize = Double(SDImageCache.shared().getSize()) / 1024 / 1024
-            DispatchQueue.main.async { [weak self, weak cacheSizeLable] in
-                guard let self = self, let cacheSizeLable = cacheSizeLable else {return}
-                cacheSizeLable.text = String(format: "size: %.1fmb", cacheSize)
-                
-                let clear = self.createTextLable("Delete All Cache")
-                clear.heightAnchor.constraint(equalToConstant: 50).isActive = true
-                clear.textAlignment = .right
-                clear.textColor = kMainColor
-                clear.isUserInteractionEnabled = true
-                self.stackView.insertRow(clear, after: cacheSizeLable)
-                self.stackView.setTapHandler(forRow: clear) { _ in
-                    SVProgressHUD.show()
-                    SDImageCache.shared().clearDisk(onCompletion: {
-                        SVProgressHUD.showSuccess(withStatus: "Deleted")
-                    })
+            ImageCache.default.calculateDiskStorageSize { (result) in
+                switch result {
+                case .success(let value):
+                    let cacheSize = Double(value) / 1024 / 1024
+                    DispatchQueue.main.async { [weak self, weak cacheSizeLable] in
+                        guard let self = self, let cacheSizeLable = cacheSizeLable else {return}
+                        cacheSizeLable.text = String(format: "size: %.1fmb", cacheSize)
+                        let clear = self.createTextLable("Delete All Cache")
+                        clear.heightAnchor.constraint(equalToConstant: 50).isActive = true
+                        clear.textAlignment = .right
+                        clear.textColor = kMainColor
+                        clear.isUserInteractionEnabled = true
+                        self.stackView.insertRow(clear, after: cacheSizeLable)
+                        self.stackView.setTapHandler(forRow: clear) { _ in
+                            SVProgressHUD.show()
+                            ImageCache.default.clearCache {
+                                SVProgressHUD.showSuccess(withStatus: "Deleted")
+                            }
+                        }
+                    }
+                case .failure(let error):
+                    print(error)
                 }
             }
         }
@@ -316,6 +331,21 @@ class SettingVC: BaseViewController {
         return label
     }
     
+    func createTextField(_ text: String) -> UITextField {
+        let textField = UITextField()
+        textField.placeholder = text
+        return textField
+    }
+    
+    func StringToFloat(str:String)->(CGFloat){
+        let string = str
+        var cgFloat:CGFloat = 0.0
+        if let doubleValue = Double(string) {
+            cgFloat = CGFloat(doubleValue)
+        }
+        return cgFloat
+    }
+
     @discardableResult func addSubTitle(_ text: String) -> UILabel {
         let label = createSubTitleLabel(text)
         stackView.addRow(label)

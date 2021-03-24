@@ -157,7 +157,7 @@ private class AuthorCollectionViewCell: UICollectionViewCell {
     var cover: String? {
         didSet {
             if let imageCover = cover {
-                coverImage.sd_setImage(with: URL.init(string: imageCover), placeholderImage: nil, options: [.handleCookies, .retryFailed], completed: nil)
+                coverImage.kf.setImage(with: URL.init(string: imageCover), placeholder: nil, options: [.waitForCache], completionHandler: nil)
             }
         }
     }

@@ -1,5 +1,5 @@
 import UIKit
-import SDWebImage
+import Kingfisher
 import RealmSwift
 import SVProgressHUD
 
@@ -368,7 +368,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
                 cell.imageView.image = image
             }
         } else {
-            cell.imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies], completed: nil)
+            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl))
         }
         
         if mode == .download {

@@ -75,6 +75,8 @@ class Doujinshi: Object, HandyJSON {
     override static func ignoredProperties() -> [String] {
         return ["comments", "commentScrollPosition", "perPageCount"]
     }
+    
+    override required init() {}
 }
 
 class Page: Object {
@@ -116,6 +118,8 @@ class Author: Object, HandyJSON {
                 return result
             })
     }
+    
+    override required init() {}
 }
 
 class GData: Object {

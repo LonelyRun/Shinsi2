@@ -1,6 +1,6 @@
 import UIKit
 import Hero
-import SDWebImage
+import Kingfisher
 import Photos
 
 class ViewerVC: UICollectionViewController {
@@ -251,8 +251,8 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
                 if let image = ImageManager.shared.getCache(forKey: page.thumbUrl) { 
                     cell.image = image
                 } else {
-                    cell.imageView.sd_setImage(with: URL(string: page.thumbUrl), placeholderImage: nil, options: [.handleCookies])
-                } 
+                    cell.imageView.kf.setImage(with: URL(string: page.thumbUrl))
+                }
                 photo.loadUnderlyingImageAndNotify()
             }
         }
