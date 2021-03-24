@@ -1,7 +1,7 @@
 import UIKit
 
 import SVProgressHUD
-import SDWebImage
+//import SDWebImage
 
 @UIApplicationMain
 

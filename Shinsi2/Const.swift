@@ -38,6 +38,8 @@ let kUDViewerReloadData = "kUDViewerReloadData"
 let kUDViewerTapToScroll = "kUDViewerTapToScroll"
 
 let kUDViewerPageType = "kUDViewerPageType"
+let kUDDownloadDelayValue = "kUDDownloadDelayValue"
+
 
 //Color
 let kMainColor = UIApplication.shared.keyWindow?.tintColor ?? #colorLiteral(red: 0.8459790349, green: 0.2873021364, blue: 0.2579272389, alpha: 1)
@@ -136,6 +138,14 @@ class Defaults {
             set { UserDefaults.standard.setValue(newValue, forKey: kUDViewerPageType)}
         }
     }
-    
-    
+    class Download {
+        static var downloadDalay : CGFloat {
+            get {
+                let string = UserDefaults.standard.string(forKey: kUDDownloadDelayValue) ?? "1.0"
+                let double = Double(string)
+                return CGFloat(double ?? 1.0)
+            }
+            set { UserDefaults.standard.set(newValue, forKey: kUDDownloadDelayValue) }
+        }
+    }
 }

@@ -1,12 +1,11 @@
 import UIKit
-import SDWebImage
 
 class ImageCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var  loadingView: LoadingView?
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageView.sd_cancelCurrentImageLoad()
+        imageView.kf.cancelDownloadTask()
     }
 }
 
@@ -100,7 +99,7 @@ class ScrollingImageCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         scrollView.setZoomScale(1, animated: false)
-        imageView.sd_cancelCurrentImageLoad()
+        imageView.kf.cancelDownloadTask()
     }
     
     func centerIfNeeded() {

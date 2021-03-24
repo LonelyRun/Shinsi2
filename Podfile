@@ -4,14 +4,17 @@ platform :ios, '10.0'
 inhibit_all_warnings!
 use_modular_headers!
 target 'Shinsi2' do
-    pod 'RealmSwift', '> 3.16.2'
-    pod 'Alamofire', '~> 4' 
+    pod 'RealmSwift'
+    pod 'Alamofire'
     pod 'Kanna'
-    pod 'SDWebImage', '~> 4' 
+#    pod 'SDWebImage'
     pod 'SVProgressHUD'
     pod 'Hero'
     pod 'AloeStackView'
     pod 'Then'
-    pod 'HandyJSON', '~> 5.0.2'
+    pod 'HandyJSON'
+    pod 'RxSwift', '6.1.0'
+    pod 'RxCocoa', '6.1.0'
+    pod 'Kingfisher'
     
 end
