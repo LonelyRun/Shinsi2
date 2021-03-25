@@ -275,7 +275,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     } 
     
     func convertIndexPath(from indexPath: IndexPath) -> IndexPath {
-        var i = indexPath.item
+        let i = indexPath.item
         return IndexPath(item: i, section: indexPath.section)
     }
 
