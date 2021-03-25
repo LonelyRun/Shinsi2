@@ -79,51 +79,52 @@ class RequestManager {
                 } else {
                     block?([], 0)
                 }
-            case .failure(let error):
+            case .failure(_):
                 block?([], 0)
             }
-            
+        }
     }
     
     func getDoujinshi(doujinshi: Doujinshi, at page: Int, completeBlock block: (([Page]) -> Void)?) {
         print(#function)
         var url = doujinshi.url + "?p=\(page)"
         url += "&inline_set=ts_l" //Set thumbnal size to large
-        Alamofire.request(url, method: .get).responseString { response in
-            guard let html = response.result.value else {
-                block?([])
-                return
-            }
-            if let doc = try? Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
-                var pages: [Page] = []
-                for link in doc.xpath("//div [@class='gdtl'] //a") {
-                    if let url = link["href"] {
-                        if let imgNode = link.at_css("img"), let thumbUrl = imgNode["src"] {
-                            let page = Page(value: ["thumbUrl": thumbUrl, "url": url])
-                            page.photo = SSPhoto(URL: url)
-                            pages.append(page)
+        AF.request(url, method: .get).responseString { response in
+            switch response.result {
+            case .success(let value):
+                if let doc = try? Kanna.HTML(html: value, encoding: String.Encoding.utf8) {
+                    var pages: [Page] = []
+                    for link in doc.xpath("//div [@class='gdtl'] //a") {
+                        if let url = link["href"] {
+                            if let imgNode = link.at_css("img"), let thumbUrl = imgNode["src"] {
+                                let page = Page(value: ["thumbUrl": thumbUrl, "url": url])
+                                page.photo = SSPhoto(URL: url)
+                                pages.append(page)
+                            }
                         }
                     }
-                }
-                
-                if page == 0 {
-                    doujinshi.isFavorite = doc.xpath("//div [@class='i']").count != 0
-                    //Parse comments
-                    let commentDateFormatter = DateFormatter()
-                    commentDateFormatter.dateFormat = "dd MMMM  yyyy, HH:mm zzz"
-                    for c in doc.xpath("//div [@id='cdiv'] //div [@class='c1']") {
-                        if let dateAndAuthor = c.at_xpath("div [@class='c2'] /div [@class='c3']")?.text,
-                            let author = c.at_xpath("div [@class='c2'] /div [@class='c3'] /a")?.text,
-                            let text = c.at_xpath("div [@class='c6']")?.innerHTML {
-                            let dateString = dateAndAuthor.replacingOccurrences(of: author, with: "").replacingOccurrences(of: "Posted on ", with: "").replacingOccurrences(of: " by:   ", with: "")
-                            let r = Comment(author: author, date: commentDateFormatter.date(from: dateString) ?? Date(), text: text)
-                            doujinshi.comments.append(r)
+                    
+                    if page == 0 {
+                        doujinshi.isFavorite = doc.xpath("//div [@class='i']").count != 0
+                        //Parse comments
+                        let commentDateFormatter = DateFormatter()
+                        commentDateFormatter.dateFormat = "dd MMMM  yyyy, HH:mm zzz"
+                        for c in doc.xpath("//div [@id='cdiv'] //div [@class='c1']") {
+                            if let dateAndAuthor = c.at_xpath("div [@class='c2'] /div [@class='c3']")?.text,
+                                let author = c.at_xpath("div [@class='c2'] /div [@class='c3'] /a")?.text,
+                                let text = c.at_xpath("div [@class='c6']")?.innerHTML {
+                                let dateString = dateAndAuthor.replacingOccurrences(of: author, with: "").replacingOccurrences(of: "Posted on ", with: "").replacingOccurrences(of: " by:   ", with: "")
+                                let r = Comment(author: author, date: commentDateFormatter.date(from: dateString) ?? Date(), text: text)
+                                doujinshi.comments.append(r)
+                            }
                         }
+                        doujinshi.perPageCount = pages.count
                     }
-                    doujinshi.perPageCount = pages.count
+                    block?(pages)
+                } else {
+                    block?([])
                 }
-                block?(pages)
-            } else {
+            case .failure(_):
                 block?([])
             }
         }
@@ -131,20 +132,19 @@ class RequestManager {
 
     func getPageImageUrl(url: String, completeBlock block: ( (_ imageURL: String?) -> Void )?) {
         print(#function)
-        Alamofire.request(url, method: .get).responseString { response in
-            guard let html = response.result.value else {
-                block?(nil)
-                return
-            }
-            if let doc = try? Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
-                if let imageNode = doc.at_xpath("//img [@id='img']") {
-                    if let imageURL = imageNode["src"] {
+        AF.request(url, method: .get).responseString { response in
+            switch response.result {
+            case .success(let value):
+                if let doc = try? Kanna.HTML(html: value, encoding: String.Encoding.utf8) {
+                    if let imageURL =  doc.at_xpath("//img [@id='img']")?["src"] {
                         block?(imageURL)
                         return
                     }
                 }
+                block?(nil)
+            case .failure(_):
+                block?(nil)
             }
-            block?(nil)
         }
     }
 
@@ -160,33 +160,36 @@ class RequestManager {
             "namespace": 1
         ]
         
-        Alamofire.request(Defaults.URL.host + "/api.php", method: .post, parameters: p, encoding: JSONEncoding(), headers: nil).responseJSON { response in
-            if let dic = response.result.value as? NSDictionary {
-                if let metadatas = dic["gmetadata"] as? NSArray {
-                    if let metadata = metadatas[0] as? NSDictionary {
-                        if let count = metadata["filecount"]  as? String,
-                            let rating = metadata["rating"] as? String,
-                            let title = metadata["title"] as? String,
-                            let title_jpn = metadata["title_jpn"] as? String,
-                            let tags = metadata["tags"] as? [String],
-                            let thumb = metadata["thumb"] as? String,
-                            let gid = metadata["gid"] as? Int {
-                            let gdata = GData(value: ["filecount": Int(count)!, "rating": Float(rating)!, "title": title.isEmpty ? doujinshi.title : title, "title_jpn": title_jpn.isEmpty ? doujinshi.title: title_jpn, "coverUrl": thumb, "gid": String(gid)])
-                            for t in tags {
-                                gdata.tags.append(Tag(value: ["name": t]))
+        AF.request(Defaults.URL.host + "/api.php", method: .post, parameters: p, encoding: JSONEncoding(), headers: nil).responseJSON { response in
+            switch response.result {
+            case .success(let value):
+                if let dic = value as? NSDictionary {
+                    if let metadatas = dic["gmetadata"] as? NSArray {
+                        if let metadata = metadatas[0] as? NSDictionary {
+                            if let count = metadata["filecount"]  as? String,
+                                let rating = metadata["rating"] as? String,
+                                let title = metadata["title"] as? String,
+                                let title_jpn = metadata["title_jpn"] as? String,
+                                let tags = metadata["tags"] as? [String],
+                                let thumb = metadata["thumb"] as? String,
+                                let gid = metadata["gid"] as? Int {
+                                let gdata = GData(value: ["filecount": Int(count)!, "rating": Float(rating)!, "title": title.isEmpty ? doujinshi.title : title, "title_jpn": title_jpn.isEmpty ? doujinshi.title: title_jpn, "coverUrl": thumb, "gid": String(gid)])
+                                for t in tags {
+                                    gdata.tags.append(Tag(value: ["name": t]))
+                                }
+                                block?(gdata)
+                                //Cache
+                                let cachedURLResponse = CachedURLResponse(response: response.response!, data: response.data!, userInfo: nil, storagePolicy: .allowed)
+                                URLCache.shared.storeCachedResponse(cachedURLResponse, for: response.request!)
+                                return
                             }
-                            block?(gdata)
-                            //Cache
-                            let cachedURLResponse = CachedURLResponse(response: response.response!, data: response.data!, userInfo: nil, storagePolicy: .allowed)
-                            URLCache.shared.storeCachedResponse(cachedURLResponse, for: response.request!)
-                            
-                            return
                         }
                     }
+                    block?(nil)
                 }
+            case .failure(_):
                 block?(nil)
             }
-            block?(nil)
         }
     }
 
@@ -199,7 +202,7 @@ class RequestManager {
             "UserName": name,
             "PassWord": pw,
             "ipb_login_submit": "Login!"]
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
             block?()
         }
     }
@@ -209,7 +212,7 @@ class RequestManager {
         doujinshi.isFavorite = true
         let url = Defaults.URL.host + "/gallerypopups.php?gid=\(doujinshi.id)&t=\(doujinshi.token)&act=addfav"
         let parameters: [String: String] = ["favcat": "\(category)", "favnote": "", "apply": "Add to Favorites", "update": "1"]
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
         }
     }
 
@@ -217,7 +220,7 @@ class RequestManager {
         guard doujinshi.isIdTokenValide else {return}
         let url = Defaults.URL.host + "/favorites.php"
         let parameters: [String: Any] = ["ddact": "delete", "modifygids[]": doujinshi.id, "apply": "Apply"]
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
         }
     }
     
@@ -226,7 +229,7 @@ class RequestManager {
         guard doujinshi.isIdTokenValide else {return}
         let url = Defaults.URL.host + "/favorites.php"
         let parameters: [String: Any] = ["ddact": "fav\(catogory)", "modifygids[]": doujinshi.id, "apply": "Apply"]
-        Alamofire.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
         }
     }
 }
