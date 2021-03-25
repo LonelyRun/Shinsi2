@@ -2,6 +2,7 @@ import Foundation
 import RealmSwift
 import Alamofire
 import Kingfisher
+import Tiercel
 
 class SSOperation: Operation {
     enum State {
@@ -37,7 +38,14 @@ class PageDownloadOperation: SSOperation {
     var url: String
     var folderPath: String
     var pageNumber: Int
-
+    var imageDownloader: SessionManager = {
+        var configuration = SessionConfiguration()
+        configuration.allowsCellularAccess = true
+        configuration.maxConcurrentTasksLimit = 3
+        let manager = SessionManager("imageDownloader", configuration: configuration)
+        return manager
+    }()
+    
     init(url: String, folderPath: String, pageNumber: Int) {
         self.url = url
         self.folderPath = folderPath
@@ -54,51 +62,99 @@ class PageDownloadOperation: SSOperation {
     }
     
     override func main() {
-        RequestManager.shared.getPageImageUrl(url: url) { imageUrl in
-            if let imageUrl = imageUrl {
-                let documentsURL = URL(fileURLWithPath: self.folderPath)
-                let fileURL = documentsURL.appendingPathComponent(String(format: "%04d.jpg", self.pageNumber))
-                let destination: DownloadRequest.Destination = { _, _ in
-                    return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
-                }
-                AF.download(imageUrl, to: destination).response { _ in
-                    self.state = .finished
-                    if let image = UIImage(contentsOfFile: fileURL.path) {
-                        ImageCache.default.store(image, forKey: imageUrl)
-                    }
-                    if self.isCancelled {
-                        try? FileManager.default.removeItem(at: documentsURL)
-                    }
-                }
-            } else {
-                self.state = .finished
+        let documentsURL = URL(fileURLWithPath: self.folderPath)
+        imageDownloader.download(url, onMainQueue: false)?.success(handler: { (task) in
+            if let image = UIImage(contentsOfFile: task.filePath) {
+                ImageCache.default.store(image, forKey: task.url.path)
             }
-        }
-    }
+            if self.isCancelled {
+                try? FileManager.default.removeItem(at: documentsURL)
+            }
+        }).failure(handler: { (_) in
+            self.main()
+            if self.isCancelled {
+                try? FileManager.default.removeItem(at: documentsURL)
+            }
+        })
+//        imageDownloader.download(url, onMainQueue: false).success(handler: { (task) in
+//
+//        })
+//        RequestManager.shared.getPageImageUrl(url: url) { imageUrl in
+//            if let imageUrl = imageUrl {
+//                let documentsURL = URL(fileURLWithPath: self.folderPath)
+//                let fileURL = documentsURL.appendingPathComponent(String(format: "%04d.jpg", self.pageNumber))
+//                let destination: DownloadRequest.Destination = { _, _ in
+//                    return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+//                }
+//                AF.download(imageUrl, to: destination).response { response in
+//                    switch response.result {
+//                    case .success(_):
+//                        self.state = .finished
+//                        if let image = UIImage(contentsOfFile: fileURL.path) {
+//                            ImageCache.default.store(image, forKey: imageUrl)
+//                        }
+//                    case .failure(_):
+//                        self.main()
+//                    }
+//                    if self.isCancelled {
+//                        try? FileManager.default.removeItem(at: documentsURL)
+//                    }
+//                }
+//            } else {
+//                self.state = .finished
+//            }
+//        }
+//    }
+    
+    
+    
 }
 
 class DownloadManager: NSObject {
     static let shared = DownloadManager()
     var queues: [OperationQueue] = []
     var books: [String: Doujinshi] = [:]
+    var sessionManager: SessionManager = {
+        let manager = appDelegate.sessionManager
+        manager.configuration.maxConcurrentTasksLimit = 2
+        return manager
+    }()
     
     func download(doujinshi: Doujinshi) {
         guard let gdata = doujinshi.gdata, doujinshi.pages.count != 0 else {return}
         let folderName = gdata.gid
         let path = documentURL.appendingPathComponent(folderName).path
-        
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 3
-        queue.isSuspended = queues.count != 0
-        queue.name = gdata.gid
-        queues.append(queue)
-        books[gdata.gid] = doujinshi
-        
+
+        let urls = NSMutableArray.init(capacity: doujinshi.pages.count)
+        let fileNames = NSMutableArray.init(capacity: doujinshi.pages.count)
         for (i, p) in doujinshi.pages.enumerated() {
-            let o = PageDownloadOperation(url: p.url, folderPath: path, pageNumber: i)
-            queue.addOperation(o)
+            urls.add(p.url)
+            fileNames.add((String(format: "%04d.jpg", i)))
         }
-        queue.addObserver(self, forKeyPath: "operationCount", options: [.new], context: nil)
+        sessionManager.multiDownload((NSArray(array: urls) as! [String]), fileNames: (NSArray(array: fileNames) as! [String]), onMainQueue: true) { (task) in
+            let progress = task.progress.fractionCompleted
+            print("下载中, 进度：\(progress)")
+        }
+        sessionManager.completion { [weak self] (manager) in
+            if manager.status == .succeeded {
+                // 下载成功
+            } else {
+                // 其他状态
+            }
+        }
+        
+//        let queue = OperationQueue()
+//        queue.maxConcurrentOperationCount = 3
+//        queue.isSuspended = queues.count != 0
+//        queue.name = gdata.gid
+//        queues.append(queue)
+//        books[gdata.gid] = doujinshi
+//
+//        for (i, p) in doujinshi.pages.enumerated() {
+//            let o = PageDownloadOperation(url: p.url, folderPath: path, pageNumber: i)
+//            queue.addOperation(o)
+//        }
+//        queue.addObserver(self, forKeyPath: "operationCount", options: [.new], context: nil)
     }
     
     func cancelAllDownload() {

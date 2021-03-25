@@ -5,9 +5,8 @@ inhibit_all_warnings!
 use_modular_headers!
 target 'Shinsi2' do
     pod 'RealmSwift'
-    pod 'Alamofire'
     pod 'Kanna'
-#    pod 'SDWebImage'
+    pod 'Alamofire'
     pod 'SVProgressHUD'
     pod 'Hero'
     pod 'AloeStackView'
@@ -16,5 +15,6 @@ target 'Shinsi2' do
     pod 'RxSwift', '6.1.0'
     pod 'RxCocoa', '6.1.0'
     pod 'Kingfisher'
+    pod 'Tiercel'
     
 end

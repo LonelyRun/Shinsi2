@@ -18,6 +18,7 @@ PODS:
   - RxSwift (6.1.0)
   - SVProgressHUD (2.2.5)
   - Then (2.7.0)
+  - Tiercel (3.2.1)
 
 DEPENDENCIES:
   - Alamofire
@@ -31,6 +32,7 @@ DEPENDENCIES:
   - RxSwift (= 6.1.0)
   - SVProgressHUD
   - Then
+  - Tiercel
 
 SPEC REPOS:
   trunk:
@@ -47,6 +49,7 @@ SPEC REPOS:
     - RxSwift
     - SVProgressHUD
     - Then
+    - Tiercel
 
 SPEC CHECKSUMS:
   Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
@@ -62,7 +65,8 @@ SPEC CHECKSUMS:
   RxSwift: a834e5c538e89eca0cae86f403f4fbf0336786ce
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
+  Tiercel: 94b817f76bcdb7c86290b3dbd945048e94c6c153
 
-PODFILE CHECKSUM: 9dea31f4398871f463de770adcf4953e11835d6f
+PODFILE CHECKSUM: 5e3357dc6b075c2094cb526dfb7f9a411933fe00
 
 COCOAPODS: 1.10.1
