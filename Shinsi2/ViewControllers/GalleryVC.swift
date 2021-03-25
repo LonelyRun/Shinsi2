@@ -384,15 +384,32 @@ UICollectionViewDataSourcePrefetching {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImageCell
         let page = doujinshi.pages[indexPath.item]
         if doujinshi.isDownloaded {
-            cell.imageView.image = page.localImage
-            cell.loadingView?.hide(animated: false)
+            if page.localImage == nil {
+                cell.imageView.image = page.localImage
+                cell.loadingView?.hide(animated: false)
+            }else {
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.2))], progressBlock: nil) { (result) in
+                    switch result {
+                    case .success(_):
+                        cell.loadingView?.hide(animated: false)
+                    case .failure(_) :
+                        cell.loadingView?.show(animated: false)
+                    }
+                }
+            }
         } else {
             if let image = ImageManager.shared.getCache(forKey: page.url) {
                 cell.imageView.image = image
                 cell.loadingView?.hide(animated: false)
             } else {
-                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), options: [.transition(ImageTransition.fade(0.2))])
-                cell.loadingView?.show(animated: false)
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.2))], progressBlock: nil) { (result) in
+                    switch result {
+                    case .success(_):
+                        cell.loadingView?.hide(animated: false)
+                    case .failure(_) :
+                        cell.loadingView?.show(animated: false)
+                    }
+                }
             }
         }
         cell.imageView.hero.id = "image_\(doujinshi.id)_\(indexPath.item)"

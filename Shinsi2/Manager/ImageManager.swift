@@ -7,21 +7,23 @@ class ImageManager {
     private var downloadingUrls: Set<URL> = Set<URL>()
     
     func getCache(forKey name: String) -> UIImage? {
-        var image = UIImage.self();
         if imageCache.isCached(forKey: name) {
-            let signalObj = DispatchSemaphore(value: 0)
+            var image : UIImage?;
+            let semaphore = DispatchSemaphore(value: 1)
+            semaphore.wait()
             imageCache.retrieveImage(forKey: name, completionHandler: { (result) in
                 switch result {
                 case .success(let value):
                     image = value.image!
-                case .failure(let error):
-                    print(error)
+                case .failure(_):
+                    image = nil
                 }
-                signalObj.signal()
+                semaphore.signal()
             })
-            signalObj.wait()
+            return image
+        }else {
+            return nil
         }
-        return image
     }
     
     func prefetch(urls: [URL]) {
