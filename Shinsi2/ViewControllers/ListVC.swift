@@ -366,6 +366,8 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         if doujinshi.isDownloaded {
             if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
                 cell.imageView.image = image
+            }else {
+                cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl))
             }
         } else {
             cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.2))])
