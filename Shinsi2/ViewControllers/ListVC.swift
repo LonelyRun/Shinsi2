@@ -368,7 +368,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
                 cell.imageView.image = image
             }
         } else {
-            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl))
+            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.2))])
         }
         
         if mode == .download {

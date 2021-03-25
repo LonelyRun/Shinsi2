@@ -57,7 +57,7 @@ class SSPhoto: NSObject {
                 }
             })
         }else {
-            self.downloader.downloadImage(with: URL(string: urlString)!,
+            self.downloader.downloadImage(with: URL(string: urlString) ?? URL(string: "")!,
                                           options: [.downloadPriority(1)],
                                           progressBlock: nil) { result in
                 switch result {
