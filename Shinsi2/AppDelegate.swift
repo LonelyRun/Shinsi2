@@ -8,16 +8,17 @@ let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+    var imgDownloaders: Array = [SessionManager]()
     var sessionManager: SessionManager = {
         var configuration = SessionConfiguration()
         configuration.allowsCellularAccess = true
+        configuration.maxConcurrentTasksLimit = 1
         let manager = SessionManager("default", configuration: configuration)
         return manager
     }()
-    let imageDownloader = SessionManager("imageDownloader", configuration: SessionConfiguration())
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        sessionManager.totalCancel()
         setDefaultAppearance()
         setDefaultHudAppearance()
         Defaults.Search.categories.map { [$0: true] }.forEach { UserDefaults.standard.register(defaults: $0) }
@@ -33,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
-        let downloadManagers = [sessionManager, imageDownloader]
+        let downloadManagers = [sessionManager] + imgDownloaders
         for manager in downloadManagers {
             if manager.identifier == identifier {
                 manager.completionHandler = completionHandler

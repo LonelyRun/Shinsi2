@@ -280,8 +280,10 @@ class GalleryVC: BaseViewController {
     
     func downloadAll() {
         downloadButton.isEnabled = false
-        DownloadManager.shared.download(doujinshi: doujinshi)
-        DownloadBubble.shared.show(on: navigationController!)
+        DownloadManager.shared.download(doujinshi: doujinshi) { [weak self] (_) in
+            DownloadBubble.shared.show(on: (self?.navigationController)!)
+        }
+        
     }
     
     func downloadSelectedPage() {
@@ -300,8 +302,9 @@ class GalleryVC: BaseViewController {
         new.gdata!.gid = new.gdata!.gid + String(Date().timeIntervalSince1970)
         new.gdata!.filecount = selectedIndexPaths.count
         new.coverUrl = new.pages.first!.thumbUrl
-        DownloadManager.shared.download(doujinshi: new)
-        DownloadBubble.shared.show(on: navigationController!)
+        DownloadManager.shared.download(doujinshi: new) { [weak self] (_) in
+            DownloadBubble.shared.show(on: (self?.navigationController)!)
+        }
         
         isPartDownloading = false
     }
@@ -384,7 +387,7 @@ UICollectionViewDataSourcePrefetching {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImageCell
         let page = doujinshi.pages[indexPath.item]
         if doujinshi.isDownloaded {
-            if page.localImage == nil {
+            if page.localImage != nil {
                 cell.imageView.image = page.localImage
                 cell.loadingView?.hide(animated: false)
             }else {
