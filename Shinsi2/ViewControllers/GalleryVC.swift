@@ -20,7 +20,11 @@ class GalleryVC: BaseViewController {
     @IBOutlet weak var loadingView: LoadingView!
     private var scrollBar: QuickScrollBar!
     weak var delegate: GalleryVCPreviewActionDelegate?
-    
+    private let modifer = AnyModifier { request in
+        var re = request
+        re.httpShouldHandleCookies = true;
+        return request
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         title = doujinshi.gdata?.getTitle() ?? doujinshi.title
@@ -391,11 +395,12 @@ UICollectionViewDataSourcePrefetching {
                 cell.imageView.image = page.localImage
                 cell.loadingView?.hide(animated: false)
             }else {
-                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.2))], progressBlock: nil) { (result) in
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.2)), .requestModifier(modifer)], progressBlock: nil) { (result) in
                     switch result {
                     case .success(_):
                         cell.loadingView?.hide(animated: false)
-                    case .failure(_) :
+                    case .failure(let error) :
+                        print("Error: \(error)")
                         cell.loadingView?.show(animated: false)
                     }
                 }
@@ -405,11 +410,12 @@ UICollectionViewDataSourcePrefetching {
                 cell.imageView.image = image
                 cell.loadingView?.hide(animated: false)
             } else {
-                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.2))], progressBlock: nil) { (result) in
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.2)), .requestModifier(modifer)], progressBlock: nil) { (result) in
                     switch result {
                     case .success(_):
                         cell.loadingView?.hide(animated: false)
-                    case .failure(_) :
+                    case .failure(let error) :
+                        print("Error: \(error)")
                         cell.loadingView?.show(animated: false)
                     }
                 }
@@ -450,7 +456,10 @@ UICollectionViewDataSourcePrefetching {
             c.imageView.alpha = 1
         }
     }
-    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let cell = cell as! ImageCell
+        cell.imageView.kf.cancelDownloadTask()
+    }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if isPartDownloading {
             let c = collectionView.cellForItem(at: indexPath) as! ImageCell

@@ -1,9 +1,7 @@
 import Alamofire
 import Kanna
 
-class RequestManager {
-    let downloadManager = appDelegate.sessionManager
-    
+class RequestManager {    
     static let shared = RequestManager()
 
     func getList(page: Int, search keyword: String? = nil, completeBlock block: (([Doujinshi], Int) -> Void)?) {
@@ -133,41 +131,20 @@ class RequestManager {
 
     func getPageImageUrl(url: String, completeBlock block: ( (_ imageURL: String?) -> Void )?) {
         print(#function)
-        downloadManager.download(url)?.success(handler: { (task) in
-            guard let content = try? String.init(contentsOfFile: task.filePath, encoding: String.Encoding.utf8) else {
-                block?(nil)
-                return
-            }
-            if let doc = try? Kanna.HTML(html: content, encoding: String.Encoding.utf8) {
-                if let imageURL =  doc.at_xpath("//img [@id='img']")?["src"] {
-                    block?(imageURL)
-                    return
+        AF.request(url, method: .get).responseString { response in
+            switch response.result {
+            case .success(let value):
+                if let doc = try? Kanna.HTML(html: value, encoding: String.Encoding.utf8) {
+                    if let imageURL =  doc.at_xpath("//img [@id='img']")?["src"] {
+                        block?(imageURL)
+                        return
+                    }
                 }
-            }
-            block?(nil)
-        }).failure(handler: { (task) in
-            block?(nil)
-        })
-        downloadManager.completion { (manager) in
-            if manager.status == .succeeded {
-                Thread.sleep(forTimeInterval: 1)
-                manager.totalRemove(completely: true)
+                block?(nil)
+            case .failure(_):
+                block?(nil)
             }
         }
-//        AF.request(url, method: .get).responseString { response in
-//            switch response.result {
-//            case .success(let value):
-//                if let doc = try? Kanna.HTML(html: value, encoding: String.Encoding.utf8) {
-//                    if let imageURL =  doc.at_xpath("//img [@id='img']")?["src"] {
-//                        block?(imageURL)
-//                        return
-//                    }
-//                }
-//                block?(nil)
-//            case .failure(_):
-//                block?(nil)
-//            }
-//        }
     }
 
 

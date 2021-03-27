@@ -47,10 +47,10 @@ class ListVC: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView)
         }
+        ImageDownloader.default.downloadTimeout = 30;
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(ges:)))
         longPressGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressGesture)
@@ -367,10 +367,38 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
             if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
                 cell.imageView.image = image
             }else {
-                cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl))
+                let modifier = AnyModifier { request in
+                    var re = request
+                    re.httpShouldHandleCookies = true;
+                    re.setValue(doujinshi.coverUrl, forHTTPHeaderField: "'X-Alt-Referer'")
+                    return request
+                }
+                cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.2)), .requestModifier(modifier)]) { (result) in
+                    switch result {
+                    case .success(_):
+                        cell.loadingView?.hide(animated: false)
+                    case .failure(let error) :
+                        print("Error: \(error)")
+                        cell.loadingView?.show(animated: false)
+                    }
+                }
             }
         } else {
-            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.2))])
+            let modifier = AnyModifier { request in
+                var re = request
+                re.httpShouldHandleCookies = true;
+                re.setValue(doujinshi.coverUrl, forHTTPHeaderField: "'X-Alt-Referer'")
+                return request
+            }
+            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.2)), .requestModifier(modifier)]) { (result) in
+                switch result {
+                case .success(_):
+                    cell.loadingView?.hide(animated: false)
+                case .failure(let error) :
+                    print("Error: \(error)")
+                    cell.loadingView?.show(animated: false)
+                }
+            }
         }
         
         if mode == .download {
@@ -415,6 +443,10 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         let vc = storyboard!.instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
         vc.doujinshi = items[indexPath.item]
         navigationController?.pushViewController(vc, animated: true)
+    }
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let cell = cell as! ListCell
+        cell.imageView.kf.cancelDownloadTask()
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

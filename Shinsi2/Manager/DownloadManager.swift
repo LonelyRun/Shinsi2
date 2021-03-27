@@ -89,8 +89,32 @@ class DownloadFunc: NSObject {
     var imgDownloaders = appDelegate.imgDownloaders
     let sessionManager: SessionManager = appDelegate.sessionManager
     
+    func downloadPageImageUrl(url: String, completeBlock block: ( (_ imageURL: String?) -> Void )?) {
+        sessionManager.download(url)?.success(handler: { (task) in
+            guard let content = try? String.init(contentsOfFile: task.filePath, encoding: String.Encoding.utf8) else {
+                block?(nil)
+                return
+            }
+            if let doc = try? Kanna.HTML(html: content, encoding: String.Encoding.utf8) {
+                if let imageURL =  doc.at_xpath("//img [@id='img']")?["src"] {
+                    block?(imageURL)
+                    return
+                }
+            }
+            block?(nil)
+        }).failure(handler: { (task) in
+            block?(nil)
+        })
+        sessionManager.completion { (manager) in
+            if manager.status == .succeeded {
+                Thread.sleep(forTimeInterval: 1)
+                manager.totalRemove(completely: true)
+            }
+        }
+    }
+    
     func downloadFuntion(url: String, folderPath: String, pageNumber: Int, downloader : SessionManager) {
-        RequestManager.shared.getPageImageUrl(url: url) { imageUrl in
+        self.downloadPageImageUrl(url: url) { (imageUrl) in
             if let imageUrl = imageUrl {
                 let documentsURL = URL(fileURLWithPath: folderPath)
                 let fileURL : URL = documentsURL.appendingPathComponent(String(format: "%04d.jpg", pageNumber))
@@ -99,13 +123,12 @@ class DownloadFunc: NSObject {
                         ImageCache.default.store(image, forKey: imageUrl)
                     }
                 }).failure(handler: { (task) in
-//                    self.downloadFuntion(url: url, folderPath: folderPath, pageNumber: pageNumber, downloader: downloader)
+                    self.downloadFuntion(url: url, folderPath: folderPath, pageNumber: pageNumber, downloader: downloader)
                 })
             } else {
-//                self.downloadFuntion(url: url, folderPath: folderPath, pageNumber: pageNumber, downloader: downloader)
+                self.downloadFuntion(url: url, folderPath: folderPath, pageNumber: pageNumber, downloader: downloader)
             }
         }
-        
     }
 }
 
@@ -129,7 +152,10 @@ class DownloadManager: NSObject {
         manager.logger.option = .none
         manager.completion { [weak self] (manager) in
             if manager.status == .succeeded {
-                self?.imgDownloaders.removeFirst()
+                if (self?.imgDownloaders.count)! > 0 {
+                    self?.imgDownloaders.removeFirst()
+                }
+                
                 RealmManager.shared.saveDownloadedDoujinshi(book: (self?.books[gdata.gid])!)
                 self?.books.removeValue(forKey: gdata.gid)
             }
