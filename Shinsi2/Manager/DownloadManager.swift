@@ -5,215 +5,77 @@ import Kingfisher
 import Tiercel
 import Kanna
 
-class SSOperation: Operation {
-    enum State {
-        case ready, executing, finished
-        var keyPath: String {
-            switch self {
-            case .ready:
-                return "isReady"
-            case .executing:
-                return "isExecuting"
-            case .finished:
-                return "isFinished"
-            }
-        }
-    }
-    var state = State.ready {
-        willSet {
-            willChangeValue(forKey: newValue.keyPath)
-            willChangeValue(forKey: state.keyPath)
-        }
-        didSet {
-            didChangeValue(forKey: oldValue.keyPath)
-            didChangeValue(forKey: state.keyPath)
-        }
-    }
-    override var isReady: Bool { return super.isReady && state == .ready }
-    override var isExecuting: Bool { return state == .executing }
-    override var isFinished: Bool { return state == .finished }
-    override var isAsynchronous: Bool { return true }
-}
-
-class PageDownloadOperation: SSOperation {
-    var url: String
-    var folderPath: String
-    var pageNumber: Int
-    
-    init(url: String, folderPath: String, pageNumber: Int) {
-        self.url = url
-        self.folderPath = folderPath
-        self.pageNumber = pageNumber
-    }
-    
-    override func start() {
-        guard !isCancelled else {
-            state = .finished
-            return
-        }
-        state = .executing
-        main()
-    }
-    
-    override func main() {
-        RequestManager.shared.getPageImageUrl(url: url) { imageUrl in
-            if let imageUrl = imageUrl {
-                let documentsURL = URL(fileURLWithPath: self.folderPath)
-                let fileURL = documentsURL.appendingPathComponent(String(format: "%04d.jpg", self.pageNumber))
-                let destination: DownloadRequest.Destination = { _, _ in
-                    return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
-                }
-                AF.download(imageUrl, to: destination).response { response in
-                    switch response.result {
-                    case .success(_):
-                        self.state = .finished
-                        if let image = UIImage(contentsOfFile: fileURL.path) {
-                            ImageCache.default.store(image, forKey: imageUrl)
-                        }
-                    case .failure(_):
-                        self.main()
-                    }
-                    if self.isCancelled {
-                        try? FileManager.default.removeItem(at: documentsURL)
-                    }
-                }
-            } else {
-                self.state = .finished
-            }
-        }
-    }
-}
-
-class DownloadFunc: NSObject {
-    static let shared = DownloadFunc()
-    var imgDownloaders = appDelegate.imgDownloaders
-    let sessionManager: SessionManager = appDelegate.sessionManager
-    
-    func downloadPageImageUrl(url: String, completeBlock block: ( (_ imageURL: String?) -> Void )?) {
-        sessionManager.download(url)?.success(handler: { (task) in
-            guard let content = try? String.init(contentsOfFile: task.filePath, encoding: String.Encoding.utf8) else {
-                block?(nil)
-                return
-            }
-            if let doc = try? Kanna.HTML(html: content, encoding: String.Encoding.utf8) {
-                if let imageURL =  doc.at_xpath("//img [@id='img']")?["src"] {
-                    block?(imageURL)
-                    return
-                }
-            }
-            block?(nil)
-        }).failure(handler: { (task) in
-            block?(nil)
-        })
-        sessionManager.completion { (manager) in
-            if manager.status == .succeeded {
-                Thread.sleep(forTimeInterval: 1)
-                manager.totalRemove(completely: true)
-            }
-        }
-    }
-    
-    func downloadFuntion(url: String, folderPath: String, pageNumber: Int, downloader : SessionManager) {
-        self.downloadPageImageUrl(url: url) { (imageUrl) in
-            if let imageUrl = imageUrl {
-                let documentsURL = URL(fileURLWithPath: folderPath)
-                let fileURL : URL = documentsURL.appendingPathComponent(String(format: "%04d.jpg", pageNumber))
-                downloader.download(imageUrl)?.success(handler: { (task) in
-                    if let image = UIImage(contentsOfFile: fileURL.path) {
-                        ImageCache.default.store(image, forKey: imageUrl)
-                    }
-                }).failure(handler: { (task) in
-                    self.downloadFuntion(url: url, folderPath: folderPath, pageNumber: pageNumber, downloader: downloader)
-                })
-            } else {
-                self.downloadFuntion(url: url, folderPath: folderPath, pageNumber: pageNumber, downloader: downloader)
-            }
-        }
-    }
-}
-
 class DownloadManager: NSObject {
     static let shared = DownloadManager()
-//    var queues: [OperationQueue] = []
+    var queues: [OperationQueue] = []
     var books: [String: Doujinshi] = [:]
+    
     var imgDownloaders = appDelegate.imgDownloaders
     let sessionManager: SessionManager = appDelegate.sessionManager
-    
-    func download(doujinshi: Doujinshi, completion: ((Bool) -> Void)? = nil) {
+
+    func download(doujinshi: Doujinshi) {
         guard let gdata = doujinshi.gdata, doujinshi.pages.count != 0 else {return}
         let folderName = gdata.gid
         let path = documentURL.appendingPathComponent(folderName).path
         
-        let downloadCache = Cache.init(gdata.gid, downloadPath: path, downloadFilePath: path)
+        books[gdata.gid] = doujinshi
+        
+        let downloadCache = Cache.init(gdata.gid, downloadPath: path, downloadTmpPath: path, downloadFilePath: path)
         var configuration = SessionConfiguration()
         configuration.allowsCellularAccess = true
         configuration.maxConcurrentTasksLimit = 3
         let manager = SessionManager.init(gdata.gid, configuration: configuration, cache: downloadCache)
-        manager.logger.option = .none
-        manager.completion { [weak self] (manager) in
-            if manager.status == .succeeded {
-                if (self?.imgDownloaders.count)! > 0 {
-                    self?.imgDownloaders.removeFirst()
-                }
-                
-                RealmManager.shared.saveDownloadedDoujinshi(book: (self?.books[gdata.gid])!)
-                self?.books.removeValue(forKey: gdata.gid)
+        manager.progress(handler: { (manager) in
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "downloadProgress"),
+                                            object: [doujinshi.coverUrl, CGFloat(manager.succeededTasks.count) / CGFloat(doujinshi.gdata!.filecount)])
+        }).success(onMainQueue: true) { [weak self] (manager) in
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "downloadProgress"),
+                                            object: [doujinshi.coverUrl, CGFloat(1.0)])
+            RealmManager.shared.saveDownloadedDoujinshi(book: doujinshi)
+            
+            if ((self?.imgDownloaders.count)!) > 0 {
+                self?.imgDownloaders.removeFirst()
             }
+            self?.books.removeValue(forKey: gdata.gid)
         }
+        manager.totalSuspend()
         imgDownloaders.append(manager)
-        completion!(true)
-//        let queue = OperationQueue()
-//        queue.maxConcurrentOperationCount = doujinshi.pages.count
-//        queue.isSuspended = queues.count != 0
-//        queue.name = gdata.gid
-//        queues.append(queue)
-        books[gdata.gid] = doujinshi
+        imgDownloaders.first?.totalStart()
+        
         for (i, p) in doujinshi.pages.enumerated() {
-            DownloadFunc.shared.downloadFuntion(url: p.url, folderPath: path, pageNumber: i, downloader: manager)
-//            let o = PageDownloadOperation(url: p.url, folderPath: path, pageNumber: i)
-//            queue.addOperation(o)
+            if i == 0 {
+                doujinshi.webCoverUrl = doujinshi.coverUrl
+            }
+            downloadFuntion(page:p, url: p.url, folderPath: path, pageNumber: i, downloader: manager)
         }
-//        queue.addObserver(self, forKeyPath: "operationCount", options: [.new], context: nil)
+        
     }
     
     func cancelAllDownload() {
-        sessionManager.totalCancel()
-        for loader in appDelegate.imgDownloaders {
-            loader.totalRemove(completely: true)
+        for downloader in imgDownloaders {
+            downloader.totalRemove()
         }
-//        let fileManager = FileManager.default
-//        for q in queues {
-//            q.removeObserver(self, forKeyPath: "operationCount")
-//            q.cancelAllOperations()
-//            let url = documentURL.appendingPathComponent(q.name!)
-//            try? fileManager.removeItem(at: url)
-//        }
-//        queues.removeAll()
+        sessionManager.totalRemove()
         books.removeAll()
     }
-    
+
     func deleteDownloaded(doujinshi: Doujinshi) {
-        for loader in appDelegate.imgDownloaders {
-            loader.totalRemove()
-        }
         try? FileManager.default.removeItem(at: documentURL.appendingPathComponent(doujinshi.gdata!.gid))
         RealmManager.shared.deleteDoujinshi(book: doujinshi)
     }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath, keyPath == "operationCount",
-              let change = change, let count = change[.newKey] as? Int,
-              let queue = object as? OperationQueue
-        else {return}
-        
-        if count == 0 {
-            RealmManager.shared.saveDownloadedDoujinshi(book: books[queue.name!]!)
-//            queues.remove(at: queues.firstIndex(of: queue)!)
-//            queue.removeObserver(self, forKeyPath: "operationCount")
-            books.removeValue(forKey: queue.name!)
-//            if let nextQueue = queues.first {
-//                nextQueue.isSuspended = false
-//            }
+
+    func downloadFuntion(page : Page, url: String, folderPath: String, pageNumber: Int, downloader : SessionManager) {
+        RequestManager.shared.downloadPageImageUrl(url: url) { (imageUrl) in
+            if let imgUrl = imageUrl {
+                downloader.download(imgUrl)?.success(handler: { (task) in
+                    page.webUrl = imgUrl
+                    page.url = task.filePath
+                    if let image = UIImage(contentsOfFile: task.filePath) {
+                        ImageCache.default.store(image, forKey: imgUrl)
+                    }
+                })
+            }
         }
     }
+
 }

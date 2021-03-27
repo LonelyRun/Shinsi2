@@ -1,6 +1,7 @@
 import UIKit
 import SVProgressHUD
 import Tiercel
+import Kingfisher
 
 let appDelegate = UIApplication.shared.delegate as! AppDelegate
 

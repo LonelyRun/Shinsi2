@@ -10,12 +10,6 @@ PODS:
   - Realm/Headers (10.7.2)
   - RealmSwift (10.7.2):
     - Realm (= 10.7.2)
-  - RxCocoa (6.1.0):
-    - RxRelay (= 6.1.0)
-    - RxSwift (= 6.1.0)
-  - RxRelay (6.1.0):
-    - RxSwift (= 6.1.0)
-  - RxSwift (6.1.0)
   - SVProgressHUD (2.2.5)
   - Then (2.7.0)
   - Tiercel (3.2.1)
@@ -28,8 +22,6 @@ DEPENDENCIES:
   - Kanna
   - Kingfisher
   - RealmSwift
-  - RxCocoa (= 6.1.0)
-  - RxSwift (= 6.1.0)
   - SVProgressHUD
   - Then
   - Tiercel
@@ -44,9 +36,6 @@ SPEC REPOS:
     - Kingfisher
     - Realm
     - RealmSwift
-    - RxCocoa
-    - RxRelay
-    - RxSwift
     - SVProgressHUD
     - Then
     - Tiercel
@@ -60,13 +49,10 @@ SPEC CHECKSUMS:
   Kingfisher: e71c6fac2aebb1262888cabc2cb13d313362a48f
   Realm: e523da9ade306c5ae87e85dc09fdef148d3e1cc1
   RealmSwift: 4f6758c3adbdcc87f7b7777107226532a077f61c
-  RxCocoa: 5c51f02d562cbd94629f6c26cf0c80fe4ab8d343
-  RxRelay: 483e1a19fad961b41f0b0c0bee506f46c1ae14fe
-  RxSwift: a834e5c538e89eca0cae86f403f4fbf0336786ce
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
   Tiercel: 94b817f76bcdb7c86290b3dbd945048e94c6c153
 
-PODFILE CHECKSUM: 5e3357dc6b075c2094cb526dfb7f9a411933fe00
+PODFILE CHECKSUM: 4255e6d493d78d41915df260a1d72b6074bcdaec
 
 COCOAPODS: 1.10.1

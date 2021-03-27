@@ -1,7 +1,9 @@
 import Alamofire
 import Kanna
 
-class RequestManager {    
+class RequestManager {
+    let sessionManager = appDelegate.sessionManager
+    
     static let shared = RequestManager()
 
     func getList(page: Int, search keyword: String? = nil, completeBlock block: (([Doujinshi], Int) -> Void)?) {
@@ -147,7 +149,30 @@ class RequestManager {
         }
     }
 
-
+    
+    func downloadPageImageUrl(url: String, completeBlock block: ( (_ imageURL: String?) -> Void )?) {
+        sessionManager.download(url)?.success(handler: { (task) in
+            guard let content = try? String.init(contentsOfFile: task.filePath, encoding: String.Encoding.utf8) else {
+                return
+            }
+            if let doc = try? Kanna.HTML(html: content, encoding: String.Encoding.utf8) {
+                if let imageURL =  doc.at_xpath("//img [@id='img']")?["src"] {
+                    block?(imageURL)
+                    return
+                }
+            }
+            block?(nil)
+        }).failure(handler: { (_) in
+            block?(nil)
+        })
+        sessionManager.completion { (manager) in
+            if manager.status == .succeeded {
+                Thread.sleep(forTimeInterval: 1)
+                manager.totalRemove(completely: true)
+            }
+        }
+    }
+    
     func getGData( doujinshi: Doujinshi, completeBlock block: ((GData?) -> Void)? ) {
         print(#function)
         //Api http://ehwiki.org/wiki/API
@@ -192,7 +217,7 @@ class RequestManager {
         }
     }
 
-    func login(username name: String, password pw: String, completeBlock block: (() -> Void)? ) {
+    func login(username name: String, password pw: String, completeBlock block: ((AFDataResponse<String>) -> Void)? ) {
         let url = Defaults.URL.login.absoluteString + "&CODE=01"
         let parameters: [String: String] = [
             "CookieDate": "1",
@@ -201,8 +226,8 @@ class RequestManager {
             "UserName": name,
             "PassWord": pw,
             "ipb_login_submit": "Login!"]
-        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { _ in
-            block?()
+        AF.request(url, method: .post, parameters: parameters, encoding: URLEncoding(), headers: nil).responseString { string in
+            block?(string)
         }
     }
 
