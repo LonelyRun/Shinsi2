@@ -20,6 +20,17 @@ class ListVC: BaseViewController {
     @IBOutlet weak var loadingView: LoadingView!
     @IBOutlet weak var findPageButton: UIButton!
     @IBOutlet weak var authorButton: UIButton!
+    let modifier = AnyModifier { request in
+        var re = request
+        re.httpShouldHandleCookies = true;
+        re.setValue(Defaults.URL.host, forHTTPHeaderField: "Referer")
+        var array = Array<String>()
+        for cookie in HTTPCookieStorage.shared.cookies(for: URL(string: Defaults.URL.host)!)! {
+            array.append("\(cookie.name)=\(cookie.value)")
+        }
+        re.setValue(array.joined(separator: ";"), forHTTPHeaderField: "Cookie")
+        return re
+    }
     
     enum Mode: String {
         case normal = "normal"
@@ -352,7 +363,24 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
-    } 
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let doujinshi = items[indexPath.item]
+        let cell = cell as! ListCell
+        
+        if doujinshi.isDownloaded {
+            if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
+                cell.imageView.image = image
+            }else {
+                cell.imageView.kf.setImage(with: URL(string: doujinshi.webCoverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage]) { (_) in
+                }
+            }
+        } else {
+            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage]) { (_) in
+            }
+        }
+    }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ListCell
@@ -361,45 +389,9 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         cell.imageView.hero.id = "image_\(doujinshi.id)_0"
         cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
         cell.imageView.contentMode = .scaleAspectFill
-        cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
+        cell.imageView.kf.indicatorType = .activity
         
-        if doujinshi.isDownloaded {
-            if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
-                cell.imageView.image = image
-            }else {
-                let modifier = AnyModifier { request in
-                    var re = request
-                    re.httpShouldHandleCookies = true;
-                    re.setValue(doujinshi.coverUrl, forHTTPHeaderField: "'X-Alt-Referer'")
-                    return request
-                }
-                cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.2)), .requestModifier(modifier)]) { (result) in
-                    switch result {
-                    case .success(_):
-                        cell.loadingView?.hide(animated: false)
-                    case .failure(let error) :
-                        print("Error: \(error)")
-                        cell.loadingView?.show(animated: false)
-                    }
-                }
-            }
-        } else {
-            let modifier = AnyModifier { request in
-                var re = request
-                re.httpShouldHandleCookies = true;
-                re.setValue(doujinshi.coverUrl, forHTTPHeaderField: "'X-Alt-Referer'")
-                return request
-            }
-            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.2)), .requestModifier(modifier)]) { (result) in
-                switch result {
-                case .success(_):
-                    cell.loadingView?.hide(animated: false)
-                case .failure(let error) :
-                    print("Error: \(error)")
-                    cell.loadingView?.show(animated: false)
-                }
-            }
-        }
+        cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
         
         if mode == .download {
             cell.pageCountLabel.text = "\(doujinshi.pages.count)"

@@ -4,8 +4,6 @@ import Kingfisher
 import SVProgressHUD
 import Hero
 import WebKit
-import RxSwift
-import RxCocoa
 
 extension Notification.Name {
     static let settingChanged = Notification.Name("SS_SETTING_CHANGED")
@@ -159,12 +157,12 @@ class SettingVC: BaseViewController {
         authorListSwitch.addTarget(self, action: #selector(listAuthorListSwitchVauleChanged), for: .valueChanged)
         stackView.addRow(createStackView([showAuthorListLabel, authorListSwitch]))
         
-        let downLoadDelay = createTextField("Download Delay")
-        downLoadDelay.text =  String.init(format: "%.2lf", Defaults.Download.downloadDalay)
-        stackView.addRow(downLoadDelay)
-        downLoadDelay.rx.text.orEmpty.subscribe(onNext: { (string) in
-            Defaults.Download.downloadDalay = self.StringToFloat(str: string)
-        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: DisposeBag())
+//        let downLoadDelay = createTextField("Download Delay")
+//        downLoadDelay.text =  String.init(format: "%.2lf", Defaults.Download.downloadDalay)
+//        stackView.addRow(downLoadDelay)
+//        downLoadDelay.rx.text.orEmpty.subscribe(onNext: { (string) in
+//            Defaults.Download.downloadDalay = self.StringToFloat(str: string)
+//        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: DisposeBag())
 
         //Cache+
         addTitle("Cache")

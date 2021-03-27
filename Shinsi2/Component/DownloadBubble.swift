@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 class DownloadBubble: UIView {
     static let shared = DownloadBubble()
@@ -9,7 +10,18 @@ class DownloadBubble: UIView {
     private var lineWidth = CGFloat(4)
     private var observingQueue: OperationQueue?
     weak var viewController: UIViewController?
-    
+    let imgDownloaders = appDelegate.imgDownloaders
+    let modifier = AnyModifier { request in
+        var re = request
+        re.httpShouldHandleCookies = true;
+        re.setValue(Defaults.URL.host, forHTTPHeaderField: "Referer")
+        var array = Array<String>()
+        for cookie in HTTPCookieStorage.shared.cookies(for: URL(string: Defaults.URL.host)!)! {
+            array.append("\(cookie.name)=\(cookie.value)")
+        }
+        re.setValue(array.joined(separator: ";"), forHTTPHeaderField: "Cookie")
+        return re
+    }
     init() {
         super.init(frame: .zero)
         setup()
@@ -86,8 +98,21 @@ class DownloadBubble: UIView {
             self.alpha = 1
             self.transform = .identity
         }, completion: nil)
-        Thread.sleep(forTimeInterval: 1)
-        observerNextQueue()
+    
+        NotificationCenter.default.addObserver(forName:  Notification.Name(rawValue: "downloadProgress"), object: nil, queue: nil) { [weak self] (notification) in
+            let array = notification.object as! Array<Any>
+            let cover = array.first as! String
+            let value = array.last as! CGFloat
+            let mod = (self?.modifier)! as AsyncImageDownloadRequestModifier
+            self?.imageView.kf.setImage(with: URL(string: cover), options: [.loadDiskFileSynchronously, .cacheOriginalImage, .requestModifier(mod)])
+            if value < 1.0 {
+                self?.circleLayer.strokeEnd = value
+                self?.updateBadge()
+            } else {
+                self?.dismiss()
+            }
+            
+        }
     }
     
     func dismiss() {
@@ -108,29 +133,25 @@ class DownloadBubble: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let vc = viewController,
-              let queue = appDelegate.imgDownloaders.first
-        else { return }
-        queue.totalSuspend()
+        guard let vc = viewController
+            else { return }
         let alert = UIAlertController(title: "Cancel All Download", message: nil, preferredStyle: .alert)
         let ok = UIAlertAction(title: "Yes", style: .default) { _ in
             self.cancelAllDownload()
             self.dismiss()
         }
-        let cancel = UIAlertAction(title: "No", style: .cancel, handler: { _ in queue.totalStart() })
+        let cancel = UIAlertAction(title: "No", style: .cancel, handler: { _ in })
         alert.addAction(ok)
         alert.addAction(cancel)
         vc.present(alert, animated: true, completion: nil)
     }
     
     func cancelAllDownload() {
-//        observingQueue?.removeObserver(self, forKeyPath: "operationCount")
         DownloadManager.shared.cancelAllDownload()
     }
     
     func updateBadge() {
-//        let count = DownloadManager.shared.queues.count
-        let count = appDelegate.imgDownloaders.count
+        let count = imgDownloaders.count
         badgeLabel.text = String(count)
         badgeLabel.sizeToFit()
         let r = badgeLabel.bounds.insetBy(dx: -2, dy: -2)
@@ -140,41 +161,4 @@ class DownloadBubble: UIView {
         badgeLabel.center = CGPoint(x: bounds.maxX, y: bounds.minY)
     }
     
-    func observerNextQueue() {
-        if let manager = DownloadManager.shared.imgDownloaders.first, let doujinshi = DownloadManager.shared.books[manager.identifier] {
-            imageView.kf.setImage(with: URL(string: doujinshi.coverUrl))
-            manager.progress(onMainQueue: true) { [weak self] (manager) in
-                self?.circleLayer.strokeEnd = 1 - CGFloat(manager.succeededTasks.count) / CGFloat(doujinshi.gdata!.filecount)
-            }.completion(onMainQueue: true) { [weak self] (_) in
-                self?.observerNextQueue()
-            }
-            updateBadge()
-        } else {
-            dismiss()
-        }
-//        if let queue = DownloadManager.shared.queues.first, let doujinshi = DownloadManager.shared.books[queue.name!] {
-//            imageView.kf.setImage(with: URL(string: doujinshi.coverUrl))
-//            observingQueue = queue
-//            queue.addObserver(self, forKeyPath: "operationCount", options: [.new], context: nil)
-//            updateBadge()
-
-    }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath, keyPath == "operationCount",
-            let change = change, let count = change[.newKey] as? Int,
-            let queue = object as? OperationQueue,
-            let doujinshi = DownloadManager.shared.books[queue.name!]
-            else {return}
-        
-        circleLayer.strokeEnd = 1 - CGFloat(count) / CGFloat(doujinshi.gdata!.filecount)
-        
-        if count == 0 {
-            queue.removeObserver(self, forKeyPath: "operationCount")
-            observingQueue = nil
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                self.observerNextQueue()
-            })
-        }
-    }
 }

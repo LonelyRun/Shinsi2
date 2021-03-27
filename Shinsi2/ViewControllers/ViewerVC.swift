@@ -242,10 +242,10 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
         
         let page = getPage(for: indexPath)
         if doujinshi.isDownloaded {
-            if page.localImage != nil {
-                cell.imageView.image = page.localImage
+            if let image = page.localImage as UIImage? {
+                cell.imageView.image = image
             }else {
-                KF.url(URL(string: page.thumbUrl))
+                KF.url(URL(string: page.webUrl))
                     .fade(duration: 0.1)
                     .loadDiskFileSynchronously()
                     .set(to: cell.imageView)
