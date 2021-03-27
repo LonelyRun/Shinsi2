@@ -245,7 +245,10 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
             if page.localImage != nil {
                 cell.imageView.image = page.localImage
             }else {
-                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.1))])
+                KF.url(URL(string: page.thumbUrl))
+                    .fade(duration: 0.1)
+                    .loadDiskFileSynchronously()
+                    .set(to: cell.imageView)
             }
         } else {
             let photo = page.photo!
@@ -255,7 +258,10 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
                 if let image = ImageManager.shared.getCache(forKey: page.thumbUrl) { 
                     cell.image = image
                 } else {
-                    cell.imageView.kf.setImage(with: URL(string: page.thumbUrl))
+                    KF.url(URL(string: page.thumbUrl))
+                        .fade(duration: 0.1)
+                        .loadDiskFileSynchronously()
+                        .set(to: cell.imageView)
                 }
                 photo.loadUnderlyingImageAndNotify()
             }
