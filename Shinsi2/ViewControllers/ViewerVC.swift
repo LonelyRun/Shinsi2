@@ -231,14 +231,9 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
         return pages.count
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? ScrollingImageCell)!
-        if readDirection == .R2L {
-            cell.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
-        }
-        cell.imageView.hero.id = heroID(for: indexPath)
-        cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
-        cell.imageView.isOpaque = true
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let doujinshi = items[indexPath.item]
+        let cell = cell as! ScrollingImageCell
         
         let page = getPage(for: indexPath)
         if doujinshi.isDownloaded {
@@ -255,7 +250,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
             if let image = photo.underlyingImage {
                 cell.image = image
             } else {
-                if let image = ImageManager.shared.getCache(forKey: page.thumbUrl) { 
+                if let image = ImageManager.shared.getCache(forKey: page.thumbUrl) {
                     cell.image = image
                 } else {
                     KF.url(URL(string: page.thumbUrl))
@@ -266,6 +261,16 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
                 photo.loadUnderlyingImageAndNotify()
             }
         }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? ScrollingImageCell)!
+        if readDirection == .R2L {
+            cell.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+        }
+        cell.imageView.hero.id = heroID(for: indexPath)
+        cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
+        cell.imageView.isOpaque = true
         
         //prefetch
         let pageIndex = indexPath.item
@@ -278,7 +283,12 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
         }
         
         return cell
-    } 
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let cell = cell as! ScrollingImageCell
+        cell.imageView.kf.cancelDownloadTask()
+    }
     
     func convertIndexPath(from indexPath: IndexPath) -> IndexPath {
         let i = indexPath.item
