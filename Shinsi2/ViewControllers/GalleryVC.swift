@@ -398,7 +398,7 @@ UICollectionViewDataSourcePrefetching {
             if let image = page.localImage {
                 cell.imageView.image = image
             }else {
-                cell.imageView.kf.setImage(with: URL(string: page.webthumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
                     switch result {
                     case .success(_):
                         cell.loadingView?.hide(animated: false)

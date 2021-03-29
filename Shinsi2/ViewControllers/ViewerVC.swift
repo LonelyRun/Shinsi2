@@ -245,7 +245,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
             if let image = page.localImage as UIImage? {
                 cell.imageView.image = image
             }else {
-                KF.url(URL(string: page.webUrl))
+                KF.url(URL(string: page.thumbUrl))
                     .fade(duration: 0.1)
                     .loadDiskFileSynchronously()
                     .set(to: cell.imageView)
@@ -258,7 +258,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
                 if let image = ImageManager.shared.getCache(forKey: page.thumbUrl) { 
                     cell.image = image
                 } else {
-                    KF.url(URL(string: page.thumbUrl))
+                    KF.url(URL(string: page.url))
                         .fade(duration: 0.1)
                         .loadDiskFileSynchronously()
                         .set(to: cell.imageView)

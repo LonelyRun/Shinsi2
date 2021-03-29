@@ -373,7 +373,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
             if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
                 cell.imageView.image = image
             }else {
-                cell.imageView.kf.setImage(with: URL(string: doujinshi.webCoverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage]) { (_) in
+                cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage]) { (_) in
                 }
             }
         } else {

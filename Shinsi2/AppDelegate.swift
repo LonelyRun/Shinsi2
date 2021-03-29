@@ -1,22 +1,10 @@
 import UIKit
 import SVProgressHUD
-import Tiercel
-import Kingfisher
-
-let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
 @UIApplicationMain
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    var imgDownloaders: Array = [SessionManager]()
-    var sessionManager: SessionManager = {
-        var configuration = SessionConfiguration()
-        configuration.allowsCellularAccess = true
-        configuration.maxConcurrentTasksLimit = 1
-        let manager = SessionManager("default", configuration: configuration)
-        return manager
-    }()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -32,16 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         return true
-    }
-    
-    func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
-        let downloadManagers = [sessionManager] + imgDownloaders
-        for manager in downloadManagers {
-            if manager.identifier == identifier {
-                manager.completionHandler = completionHandler
-                break
-            }
-        }
     }
     
     func setDefaultAppearance() {
