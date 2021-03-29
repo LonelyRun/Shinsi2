@@ -4,7 +4,7 @@ platform :ios, '10.0'
 inhibit_all_warnings!
 use_modular_headers!
 target 'Shinsi2' do
-    pod 'RealmSwift'
+    pod 'RealmSwift' , '> 3.16.2'
     pod 'Kanna'
     pod 'Alamofire'
     pod 'SVProgressHUD'
@@ -13,6 +13,4 @@ target 'Shinsi2' do
     pod 'Then'
     pod 'HandyJSON'
     pod 'Kingfisher'
-    pod 'Tiercel'
-    
 end

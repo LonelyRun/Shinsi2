@@ -4,7 +4,12 @@ import RealmSwift
 class RealmManager {
     static let shared = RealmManager()
     let realm: Realm = {
-        Realm.Configuration.defaultConfiguration = Realm.Configuration()
+        let config = Realm.Configuration( schemaVersion: 9, migrationBlock: { migration, oldSchemaVersion in
+            if oldSchemaVersion < 8 {
+                
+            }
+        })
+        Realm.Configuration.defaultConfiguration = config
         return try! Realm()
     }()
     
@@ -110,18 +115,10 @@ class RealmManager {
     }
     
     func saveDownloadedDoujinshi(book: Doujinshi) {
-        var array = Array<Page>()
-        for page in book.pages {
-            array.append(page)
-        }
         book.pages.removeAll()
         for i in 0..<book.gdata!.filecount {
             let p = Page()
-            let page = array[i]
-            p.webthumbUrl = page.thumbUrl
-            p.webUrl = page.webUrl
-            p.url = page.url
-            p.thumbUrl = page.url
+            p.thumbUrl = String(format: book.gdata!.gid + "/%04d.jpg", i)
             book.pages.append(p)
         }
         if let first = book.pages.first {
@@ -130,8 +127,10 @@ class RealmManager {
         book.isDownloaded = true
         book.date = Date()
         
-        try! self.realm.write {
-            self.realm.add(book)
+        DispatchQueue.main.async {
+            try! self.realm.write {
+                self.realm.add(book)
+            }
         }
     }
     

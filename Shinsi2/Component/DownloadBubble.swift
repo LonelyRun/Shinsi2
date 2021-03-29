@@ -10,7 +10,6 @@ class DownloadBubble: UIView {
     private var lineWidth = CGFloat(4)
     private var observingQueue: OperationQueue?
     weak var viewController: UIViewController?
-    let imgDownloaders = appDelegate.imgDownloaders
     let modifier = AnyModifier { request in
         var re = request
         re.httpShouldHandleCookies = true;
@@ -98,21 +97,8 @@ class DownloadBubble: UIView {
             self.alpha = 1
             self.transform = .identity
         }, completion: nil)
-    
-        NotificationCenter.default.addObserver(forName:  Notification.Name(rawValue: "downloadProgress"), object: nil, queue: nil) { [weak self] (notification) in
-            let array = notification.object as! Array<Any>
-            let cover = array.first as! String
-            let value = array.last as! CGFloat
-            let mod = (self?.modifier)! as AsyncImageDownloadRequestModifier
-            self?.imageView.kf.setImage(with: URL(string: cover), options: [.loadDiskFileSynchronously, .cacheOriginalImage, .requestModifier(mod)])
-            if value < 1.0 {
-                self?.circleLayer.strokeEnd = value
-                self?.updateBadge()
-            } else {
-                self?.dismiss()
-            }
-            
-        }
+        
+        observerNextQueue()
     }
     
     func dismiss() {
@@ -133,25 +119,28 @@ class DownloadBubble: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let vc = viewController
+        guard let vc = viewController,
+            let queue = DownloadManager.shared.queues.first
             else { return }
+        queue.isSuspended = true
         let alert = UIAlertController(title: "Cancel All Download", message: nil, preferredStyle: .alert)
         let ok = UIAlertAction(title: "Yes", style: .default) { _ in
             self.cancelAllDownload()
             self.dismiss()
         }
-        let cancel = UIAlertAction(title: "No", style: .cancel, handler: { _ in })
+        let cancel = UIAlertAction(title: "No", style: .cancel, handler: { _ in queue.isSuspended = false })
         alert.addAction(ok)
         alert.addAction(cancel)
         vc.present(alert, animated: true, completion: nil)
     }
     
     func cancelAllDownload() {
+        observingQueue?.removeObserver(self, forKeyPath: "operationCount")
         DownloadManager.shared.cancelAllDownload()
     }
     
     func updateBadge() {
-        let count = imgDownloaders.count
+        let count = DownloadManager.shared.queues.count
         badgeLabel.text = String(count)
         badgeLabel.sizeToFit()
         let r = badgeLabel.bounds.insetBy(dx: -2, dy: -2)
@@ -161,4 +150,32 @@ class DownloadBubble: UIView {
         badgeLabel.center = CGPoint(x: bounds.maxX, y: bounds.minY)
     }
     
+    func observerNextQueue() {
+        if let queue = DownloadManager.shared.queues.first, let doujinshi = DownloadManager.shared.books[queue.name!] {
+            imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.requestModifier(modifier)])
+            observingQueue = queue
+            queue.addObserver(self, forKeyPath: "operationCount", options: [.new], context: nil)
+            updateBadge()
+        } else {
+            dismiss()
+        }
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+        guard let keyPath = keyPath, keyPath == "operationCount",
+            let change = change, let count = change[.newKey] as? Int,
+            let queue = object as? OperationQueue,
+            let doujinshi = DownloadManager.shared.books[queue.name!]
+            else {return}
+        
+        circleLayer.strokeEnd = 1 - CGFloat(count) / CGFloat(doujinshi.gdata!.filecount)
+        
+        if count == 0 {
+            queue.removeObserver(self, forKeyPath: "operationCount")
+            observingQueue = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                self.observerNextQueue()
+            })
+        }
+    }
 }

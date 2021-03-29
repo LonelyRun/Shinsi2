@@ -12,7 +12,6 @@ PODS:
     - Realm (= 10.7.2)
   - SVProgressHUD (2.2.5)
   - Then (2.7.0)
-  - Tiercel (3.2.1)
 
 DEPENDENCIES:
   - Alamofire
@@ -21,10 +20,9 @@ DEPENDENCIES:
   - Hero
   - Kanna
   - Kingfisher
-  - RealmSwift
+  - RealmSwift (> 3.16.2)
   - SVProgressHUD
   - Then
-  - Tiercel
 
 SPEC REPOS:
   trunk:
@@ -38,7 +36,6 @@ SPEC REPOS:
     - RealmSwift
     - SVProgressHUD
     - Then
-    - Tiercel
 
 SPEC CHECKSUMS:
   Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
@@ -51,8 +48,7 @@ SPEC CHECKSUMS:
   RealmSwift: 4f6758c3adbdcc87f7b7777107226532a077f61c
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
-  Tiercel: 94b817f76bcdb7c86290b3dbd945048e94c6c153
 
-PODFILE CHECKSUM: 4255e6d493d78d41915df260a1d72b6074bcdaec
+PODFILE CHECKSUM: 8d93b735be3d4afe80f1bef07505d5087d04dd7f
 
 COCOAPODS: 1.10.1

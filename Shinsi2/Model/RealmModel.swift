@@ -19,8 +19,6 @@ class Doujinshi: Object, HandyJSON {
     @objc dynamic var title = ""
     @objc dynamic var url = ""
     @objc dynamic var pageCount = ""
-    @objc dynamic var webCoverUrl = ""
-
 
     let pages = List<Page>()
     @objc dynamic var gdata: GData?
@@ -83,8 +81,6 @@ class Doujinshi: Object, HandyJSON {
 class Page: Object {
     @objc dynamic var thumbUrl = ""
     @objc dynamic var url = ""
-    @objc dynamic var webUrl = ""
-    @objc dynamic var webthumbUrl = ""
     
     var photo: SSPhoto!
     var localUrl: URL {
