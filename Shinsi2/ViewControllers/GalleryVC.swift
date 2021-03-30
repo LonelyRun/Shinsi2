@@ -20,17 +20,6 @@ class GalleryVC: BaseViewController {
     @IBOutlet weak var loadingView: LoadingView!
     private var scrollBar: QuickScrollBar!
     weak var delegate: GalleryVCPreviewActionDelegate?
-    private let modifier = AnyModifier { request in
-        var re = request
-        re.httpShouldHandleCookies = true;
-        re.setValue(Defaults.URL.host, forHTTPHeaderField: "Referer")
-        var array = Array<String>()
-        for cookie in HTTPCookieStorage.shared.cookies(for: URL(string: Defaults.URL.host)!)! {
-            array.append("\(cookie.name)=\(cookie.value)")
-        }
-        re.setValue(array.joined(separator: ";"), forHTTPHeaderField: "Cookie")
-        return re
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
         title = doujinshi.gdata?.getTitle() ?? doujinshi.title
@@ -395,27 +384,21 @@ UICollectionViewDataSourcePrefetching {
         let cell = cell as! ImageCell
         
         if doujinshi.isDownloaded {
-            if let image = page.localImage {
-                cell.imageView.image = image
-            }else {
-                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
-                    switch result {
-                    case .success(_):
+            cell.imageView.kf.setImage(with: LocalFileImageDataProvider(fileURL: page.localUrl, cacheKey: page.thumbUrl), options: [.processor(ImageCell.downProcessor)]) { result in
+                if case .failure(_) = result {
+                    cell.imageView.kf.setImage(with: URL(string: page.url), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(ImageManager.shared.modifier),.processor(ImageCell.downProcessor),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
                         cell.loadingView?.hide(animated: false)
-                    case .failure(let error) :
-                        print("Error: \(error)")
-                        cell.loadingView?.show(animated: false)
                     }
+                }else {
+                    cell.loadingView?.hide(animated: false)
                 }
             }
-            cell.loadingView?.hide(animated: false)
-
         } else {
             if let image = ImageManager.shared.getCache(forKey: page.url) {
                 cell.imageView.image = image
                 cell.loadingView?.hide(animated: false)
             } else {
-                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(ImageManager.shared.modifier),.processor(ImageCell.downProcessor),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
                     switch result {
                     case .success(_):
                         cell.loadingView?.hide(animated: false)
@@ -448,7 +431,7 @@ UICollectionViewDataSourcePrefetching {
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard !doujinshi.isDownloaded else {return}
-        let urls = indexPaths.map({URL(string: doujinshi.pages[$0.item].thumbUrl)!})
+        let urls = indexPaths.compactMap({URL(string: doujinshi.pages[$0.item].thumbUrl)!})
         ImageManager.shared.prefetch(urls: urls)
     }
     

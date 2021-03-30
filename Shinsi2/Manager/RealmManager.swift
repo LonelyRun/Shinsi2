@@ -115,10 +115,15 @@ class RealmManager {
     }
     
     func saveDownloadedDoujinshi(book: Doujinshi) {
+        var array = Array<String>()
+        for i in 0..<book.gdata!.filecount {
+            array.append(book.pages[i].url)
+        }
         book.pages.removeAll()
         for i in 0..<book.gdata!.filecount {
             let p = Page()
             p.thumbUrl = String(format: book.gdata!.gid + "/%04d.jpg", i)
+            p.url = array[i]
             book.pages.append(p)
         }
         if let first = book.pages.first {
