@@ -20,17 +20,6 @@ class ListVC: BaseViewController {
     @IBOutlet weak var loadingView: LoadingView!
     @IBOutlet weak var findPageButton: UIButton!
     @IBOutlet weak var authorButton: UIButton!
-    let modifier = AnyModifier { request in
-        var re = request
-        re.httpShouldHandleCookies = true;
-        re.setValue(Defaults.URL.host, forHTTPHeaderField: "Referer")
-        var array = Array<String>()
-        for cookie in HTTPCookieStorage.shared.cookies(for: URL(string: Defaults.URL.host)!)! {
-            array.append("\(cookie.name)=\(cookie.value)")
-        }
-        re.setValue(array.joined(separator: ";"), forHTTPHeaderField: "Cookie")
-        return re
-    }
     
     enum Mode: String {
         case normal = "normal"
@@ -62,6 +51,7 @@ class ListVC: BaseViewController {
             registerForPreviewing(with: self, sourceView: collectionView)
         }
         ImageDownloader.default.downloadTimeout = 30;
+        
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(ges:)))
         longPressGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressGesture)
@@ -369,16 +359,11 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         let doujinshi = items[indexPath.item]
         let cell = cell as! ListCell
         
-        if doujinshi.isDownloaded {
-            if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
-                cell.imageView.image = image
-            }else {
-                cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage]) { (_) in
-                }
-            }
-        } else {
-            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(modifier),.loadDiskFileSynchronously,.cacheOriginalImage]) { (_) in
-            }
+        if doujinshi.isDownloaded, let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
+            cell.imageView.image = image
+            cell.loadingView?.hide(animated: false)
+        }else {
+            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(ImageManager.shared.modifier),.processor(ListCell.downProcessor),.cacheOriginalImage])
         }
     }
     
@@ -427,7 +412,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard mode != .download else {return}
-        let urls = indexPaths.map { URL(string: items[$0.item].coverUrl)! }
+        let urls = indexPaths.compactMap { URL(string: items[$0.item].coverUrl)! }
         ImageManager.shared.prefetch(urls: urls)
     }
     
