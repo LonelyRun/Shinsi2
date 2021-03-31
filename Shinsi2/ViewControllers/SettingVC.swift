@@ -11,7 +11,12 @@ extension Notification.Name {
 
 class SettingVC: BaseViewController {
     
-    let stackView = AloeStackView()
+    lazy var stackView = AloeStackView().then {[unowned self] in
+        $0.frame = self.view.bounds
+        $0.hidesSeparatorsByDefault = true
+        $0.separatorInset = .zero
+        $0.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,10 +24,7 @@ class SettingVC: BaseViewController {
         navigationController?.navigationBar.barTintColor = UIColor(white: 0, alpha: 0.5)
         
         view.addSubview(stackView)
-        stackView.frame = view.bounds
-        stackView.hidesSeparatorsByDefault = true
-        stackView.separatorInset = .zero
-        stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
         
         //Host
         addTitle("Host")
@@ -81,81 +83,76 @@ class SettingVC: BaseViewController {
         
         //UI
         addTitle("List")
+
+        stackView.addRow(createStackView([createSubTitleLabel("Hide Title"), UISwitch().then{[unowned self] in
+            $0.isOn = Defaults.List.isHideTitle
+            $0.addTarget(self, action: #selector(listTitleSwitchVauleChanged(sender:)), for: .valueChanged)
+        }]))
         
-        let titleLabel = createSubTitleLabel("Hide Title")
-        let titleSwitch = UISwitch()
-        titleSwitch.isOn = Defaults.List.isHideTitle
-        titleSwitch.addTarget(self, action: #selector(listTitleSwitchVauleChanged(sender:)), for: .valueChanged)
-        stackView.addRow(createStackView([titleLabel, titleSwitch]))
         
-        let tagLabel = createSubTitleLabel("Hide Tag")
-        let tagSwitch = UISwitch()
-        tagSwitch.isOn = Defaults.List.isHideTag
-        tagSwitch.addTarget(self, action: #selector(listTagSwitchVauleChanged(sender:)), for: .valueChanged)
-        stackView.addRow(createStackView([tagLabel, tagSwitch]))
+        stackView.addRow(createStackView([createSubTitleLabel("Hide Tag"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.List.isHideTag
+            $0.addTarget(self, action: #selector(listTagSwitchVauleChanged(sender:)), for: .valueChanged)
+        }]))
         
-        let listFavLabel = createSubTitleLabel("Show Favorites List")
-        let listFavSwitch = UISwitch()
-        listFavSwitch.isOn = Defaults.List.isShowFavoriteList
-        listFavSwitch.addTarget(self, action: #selector(listFavoriteSwitchVauleChanged(sender:)), for: .valueChanged)
-        stackView.addRow(createStackView([listFavLabel, listFavSwitch]))
+        
+        stackView.addRow(createStackView([createSubTitleLabel("Show Favorites List"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.List.isShowFavoriteList
+            $0.addTarget(self, action: #selector(listFavoriteSwitchVauleChanged(sender:)), for: .valueChanged)
+        }]))
+
         
         //Gallery
         addTitle("Gallery")
         
-        let galleryFavLabel = createSubTitleLabel("Show Favorites List")
-        let galleryFavSwitch = UISwitch()
-        galleryFavSwitch.isOn = Defaults.Gallery.isShowFavoriteList
-        galleryFavSwitch.addTarget(self, action: #selector(galleryFavoriteSwitchVauleChanged(sender:)), for: .valueChanged)
-        stackView.addRow(createStackView([galleryFavLabel, galleryFavSwitch]))
+        stackView.addRow(createStackView([createSubTitleLabel("Show Favorites List"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.Gallery.isShowFavoriteList
+            $0.addTarget(self, action: #selector(galleryFavoriteSwitchVauleChanged(sender:)), for: .valueChanged)
+        }]))
         
-        let autoScrollLabel = createSubTitleLabel("Continue Reading")
-        let autoScrollSwitch = UISwitch()
-        autoScrollSwitch.isOn = Defaults.Gallery.isAutomaticallyScrollToHistory
-        autoScrollSwitch.addTarget(self, action: #selector(galleryAutoScrollToHistorySwitchVauleChanged(sender:)), for: .valueChanged)
-        stackView.addRow(createStackView([autoScrollLabel, autoScrollSwitch]))
+        stackView.addRow(createStackView([createSubTitleLabel("Continue Reading"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.Gallery.isAutomaticallyScrollToHistory
+            $0.addTarget(self, action: #selector(galleryAutoScrollToHistorySwitchVauleChanged(sender:)), for: .valueChanged)
+        }]))
         
-        let quickScrollLabel = createSubTitleLabel("Show Quick Scroll")
-        let quickScrollSwitch = UISwitch()
-        quickScrollSwitch.isOn = Defaults.Gallery.isShowQuickScroll
-        quickScrollSwitch.addTarget(self, action: #selector(galleryQuickScrollSwitchVauleChanged(sender:)), for: .valueChanged)
-        stackView.addRow(createStackView([quickScrollLabel, quickScrollSwitch]))
+        stackView.addRow(createStackView([createSubTitleLabel("Show Quick Scroll"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.Gallery.isShowQuickScroll
+            $0.addTarget(self, action: #selector(galleryQuickScrollSwitchVauleChanged(sender:)), for: .valueChanged)
+        }]))
         
         //Viewer
         addTitle("Viewer")
         addSubTitle("Scroll Direction")
-        let viewerModeSeg = UISegmentedControl(items: ["Horizontal", "Vertical"])
-        viewerModeSeg.selectedSegmentIndex = Defaults.Viewer.mode == .horizontal ? 0 : 1
-        viewerModeSeg.addTarget(self, action: #selector(viewerModeSegmentedControlValueChanged(sender:)), for: .valueChanged)
-        let viewerReadDirectionSeg = UISegmentedControl(items: ["Left to Right", "Right to Left"])
-        viewerReadDirectionSeg.selectedSegmentIndex = Defaults.Viewer.readDirection == .L2R ? 0 : 1
-        viewerReadDirectionSeg.addTarget(self, action: #selector(viewerReadDirectionSegmentedControlValueChanged(sender:)), for: .valueChanged)
-        stackView.addRow(viewerModeSeg)
-        stackView.addRow(viewerReadDirectionSeg)
         
-        let readPageLabel = createSubTitleLabel("DoublePage")
-        let viewerReadPageSeg = UISwitch()
-        viewerReadPageSeg.isOn = Defaults.Viewer.pageType
-        viewerReadPageSeg.addTarget(self, action: #selector(viewerPageTypeValueChanged(sender:)), for: .valueChanged)
-        stackView.addRow(createStackView([readPageLabel, viewerReadPageSeg]))
+        stackView.addRow(UISegmentedControl(items: ["Horizontal", "Vertical"]).then {[unowned self] in
+            $0.selectedSegmentIndex = Defaults.Viewer.mode == .horizontal ? 0 : 1
+            $0.addTarget(self, action: #selector(viewerModeSegmentedControlValueChanged(sender:)), for: .valueChanged)
+        })
         
-        let showPageSkipLabel = createSubTitleLabel("Show PageSkip")
-        let pageSkipSwitch = UISwitch()
-        pageSkipSwitch.isOn = !Defaults.List.isHidePageSkip
-        pageSkipSwitch.addTarget(self, action: #selector(listPageSkipSwitchVauleChanged), for: .valueChanged)
-        stackView.addRow(createStackView([showPageSkipLabel, pageSkipSwitch]))
+        stackView.addRow(UISegmentedControl(items: ["Left to Right", "Right to Left"]).then {[unowned self] in
+            $0.selectedSegmentIndex = Defaults.Viewer.readDirection == .L2R ? 0 : 1
+            $0.addTarget(self, action: #selector(viewerReadDirectionSegmentedControlValueChanged(sender:)), for: .valueChanged)
+        })
         
-        let tapToScrollLabel = createSubTitleLabel("Tap To Scroll")
-        let tapToScrollSwitch = UISwitch()
-        tapToScrollSwitch.isOn = Defaults.Viewer.tapToScroll
-        tapToScrollSwitch.addTarget(self, action: #selector(viewerTapToScrollValueChanged), for: .valueChanged)
-        stackView.addRow(createStackView([tapToScrollLabel, tapToScrollSwitch]))
+        stackView.addRow(createStackView([createSubTitleLabel("DoublePage"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.Viewer.pageType
+            $0.addTarget(self, action: #selector(viewerPageTypeValueChanged(sender:)), for: .valueChanged)
+        }]))
         
-        let showAuthorListLabel = createSubTitleLabel("Show AuthorList")
-        let authorListSwitch = UISwitch()
-        authorListSwitch.isOn = Defaults.List.isShowAuthorList
-        authorListSwitch.addTarget(self, action: #selector(listAuthorListSwitchVauleChanged), for: .valueChanged)
-        stackView.addRow(createStackView([showAuthorListLabel, authorListSwitch]))
+        stackView.addRow(createStackView([createSubTitleLabel("Show PageSkip"), UISwitch().then {[unowned self] in
+            $0.isOn = !Defaults.List.isHidePageSkip
+            $0.addTarget(self, action: #selector(listPageSkipSwitchVauleChanged), for: .valueChanged)
+        }]))
+        
+        stackView.addRow(createStackView([createSubTitleLabel("Tap To Scroll"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.Viewer.tapToScroll
+            $0.addTarget(self, action: #selector(viewerTapToScrollValueChanged), for: .valueChanged)
+        }]))
+        
+        stackView.addRow(createStackView([createSubTitleLabel("Show AuthorList"), UISwitch().then {[unowned self] in
+            $0.isOn = Defaults.List.isShowAuthorList
+            $0.addTarget(self, action: #selector(listAuthorListSwitchVauleChanged), for: .valueChanged)
+        }]))
         
 //        let downLoadDelay = createTextField("Download Delay")
 //        downLoadDelay.text =  String.init(format: "%.2lf", Defaults.Download.downloadDalay)
@@ -166,6 +163,17 @@ class SettingVC: BaseViewController {
 
         //Cache+
         addTitle("Cache")
+        
+        
+        let clearHistory = createSubTitleLabel("Clear Search History")
+        clearHistory.isUserInteractionEnabled = true
+        stackView.addRow(clearHistory)
+        stackView.setTapHandler(forRow: clearHistory) { [weak self] _ in
+            RealmManager.shared.deleteAllSearchHistory()
+            SVProgressHUD.showSuccess(withStatus: nil)
+        }
+        
+        
         let cacheSizeLable = createSubTitleLabel("size: counting...")
         stackView.addRow(cacheSizeLable)
         DispatchQueue.global(qos: .userInteractive).async {

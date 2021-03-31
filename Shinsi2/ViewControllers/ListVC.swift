@@ -75,7 +75,7 @@ class ListVC: BaseViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
-        searchController.searchBar.showsCancelButton = false
+        searchController.searchBar.showsCancelButton = true
         searchController.searchBar.enablesReturnKeyAutomatically = false
         searchController.searchBar.tintColor = view.tintColor
         definesPresentationContext = true
