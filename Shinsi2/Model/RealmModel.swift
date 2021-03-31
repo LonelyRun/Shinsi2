@@ -20,7 +20,6 @@ class Doujinshi: Object, HandyJSON {
     @objc dynamic var url = ""
     @objc dynamic var pageCount = ""
 
-
     let pages = List<Page>()
     @objc dynamic var gdata: GData?
     @objc dynamic var isFavorite = false
@@ -75,11 +74,14 @@ class Doujinshi: Object, HandyJSON {
     override static func ignoredProperties() -> [String] {
         return ["comments", "commentScrollPosition", "perPageCount"]
     }
+    
+    override required init() {}
 }
 
 class Page: Object {
     @objc dynamic var thumbUrl = ""
     @objc dynamic var url = ""
+    
     var photo: SSPhoto!
     var localUrl: URL {
         return documentURL.appendingPathComponent(thumbUrl)
@@ -116,6 +118,8 @@ class Author: Object, HandyJSON {
                 return result
             })
     }
+    
+    override required init() {}
 }
 
 class GData: Object {

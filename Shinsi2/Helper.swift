@@ -13,7 +13,7 @@ extension String {
                 }
             }
             return rs
-        } catch let error {
+        } catch _ {
             return []
         }
     }

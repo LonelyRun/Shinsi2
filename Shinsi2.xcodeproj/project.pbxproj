@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		49BB7FF6260F5D5100DACF03 /* ExCookie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BB7FF5260F5D5100DACF03 /* ExCookie.swift */; };
 		540D1FED20DA3EB60044EC55 /* InsetLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540D1FEC20DA3EB60044EC55 /* InsetLabel.swift */; };
 		542362F521940916004619F3 /* BsaeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542362F421940916004619F3 /* BsaeViewController.swift */; };
 		542362F721945C49004619F3 /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542362F621945C49004619F3 /* WebVC.swift */; };
@@ -41,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		07CE087BB77CAC2F3F8A5D79 /* Pods-Shinsi2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Shinsi2.release.xcconfig"; path = "Pods/Target Support Files/Pods-Shinsi2/Pods-Shinsi2.release.xcconfig"; sourceTree = "<group>"; };
+		49BB7FF5260F5D5100DACF03 /* ExCookie.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExCookie.swift; sourceTree = "<group>"; };
 		540D1FEC20DA3EB60044EC55 /* InsetLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsetLabel.swift; sourceTree = "<group>"; };
 		542362F421940916004619F3 /* BsaeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BsaeViewController.swift; sourceTree = "<group>"; };
 		542362F621945C49004619F3 /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 		54405C932197182F00D613BD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				49BB7FF5260F5D5100DACF03 /* ExCookie.swift */,
 				5466638C1F1DE44D003B9E36 /* RealmModel.swift */,
 				5466638A1F1DE44D003B9E36 /* SSPhoto.swift */,
 			);
@@ -339,6 +342,7 @@
 				546663971F1DE511003B9E36 /* DownloadManager.swift in Sources */,
 				5466638D1F1DE509003B9E36 /* RequestManager.swift in Sources */,
 				546663961F1DE511003B9E36 /* Cells.swift in Sources */,
+				49BB7FF6260F5D5100DACF03 /* ExCookie.swift in Sources */,
 				546663951F1DE511003B9E36 /* ViewerVC.swift in Sources */,
 				5466638F1F1DE511003B9E36 /* GalleryVC.swift in Sources */,
 				5460470C25CCE6BD00860780 /* FileAppManager.swift in Sources */,
@@ -493,8 +497,8 @@
 				DEVELOPMENT_TEAM = 37P57H34PQ;
 				INFOPLIST_FILE = Shinsi2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.7.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer1;
+				MARKETING_VERSION = 1.8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -513,8 +517,8 @@
 				DEVELOPMENT_TEAM = 37P57H34PQ;
 				INFOPLIST_FILE = Shinsi2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.7.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer1;
+				MARKETING_VERSION = 1.8.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shinsi.ehviewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
