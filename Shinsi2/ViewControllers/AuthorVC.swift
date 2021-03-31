@@ -8,6 +8,7 @@
 
 import UIKit
 import Then
+import Kingfisher
 
 
 let LabelHeight = 50.0
@@ -40,6 +41,8 @@ class AuthorVC: UITableViewController {
         tableView.register(AuthorTableViewCell.self, forCellReuseIdentifier: "cell")
         backGesture = InteractiveBackGesture(viewController: self, toView: tableView)
 
+        KingfisherManager.shared.downloader.sessionConfiguration = URLSessionConfiguration.default
+        
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name.init(kUDViewerReloadData), object: nil)
         
@@ -157,7 +160,8 @@ private class AuthorCollectionViewCell: UICollectionViewCell {
     var cover: String? {
         didSet {
             if let imageCover = cover {
-                coverImage.kf.setImage(with: URL.init(string: imageCover), placeholder: nil, options: [.waitForCache], completionHandler: nil)
+                print(imageCover)
+                coverImage.kf.setImage(with: URL.init(string: imageCover), placeholder: nil, options: [.requestModifier(ImageManager.shared.modifier)], completionHandler: nil)
             }
         }
     }
