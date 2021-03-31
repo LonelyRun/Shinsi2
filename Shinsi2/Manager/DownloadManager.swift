@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
-import SDWebImage
 import Alamofire
+import Kingfisher
 
 class SSOperation: Operation {
     enum State {
@@ -58,18 +58,24 @@ class PageDownloadOperation: SSOperation {
             if let imageUrl = imageUrl {
                 let documentsURL = URL(fileURLWithPath: self.folderPath)
                 let fileURL = documentsURL.appendingPathComponent(String(format: "%04d.jpg", self.pageNumber))
-                let destination: DownloadRequest.DownloadFileDestination = { _, _ in
+                let destination: DownloadRequest.Destination = { _, _ in
                     return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
                 }
-                Alamofire.download(imageUrl, to: destination).response { _ in
-                    self.state = .finished
-                    if let image = UIImage(contentsOfFile: fileURL.path) {
-                        SDWebImageManager.shared().imageCache?.store(image, forKey: imageUrl, completion: nil)
+                AF.download(imageUrl, to: destination).response { response in
+                    switch response.result {
+                    case .success(_):
+                        self.state = .finished
+                        if let image = UIImage(contentsOfFile: fileURL.path) {
+                            ImageCache.default.store(image, forKey: imageUrl)
+                        }
+                    case .failure(_):
+                        self.main()
                     }
                     if self.isCancelled {
                         try? FileManager.default.removeItem(at: documentsURL)
                     }
                 }
+
             } else {
                 self.state = .finished
             }

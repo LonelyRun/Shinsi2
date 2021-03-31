@@ -1,5 +1,5 @@
 import UIKit
-import SDWebImage
+import Kingfisher
 import RealmSwift
 import SVProgressHUD
 
@@ -47,10 +47,11 @@ class ListVC: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView)
         }
+        ImageDownloader.default.downloadTimeout = 30;
+        
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(ges:)))
         longPressGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressGesture)
@@ -352,7 +353,19 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
-    } 
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let doujinshi = items[indexPath.item]
+        let cell = cell as! ListCell
+        
+        if doujinshi.isDownloaded, let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
+            cell.imageView.image = image
+            cell.loadingView?.hide(animated: false)
+        }else {
+            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(ImageManager.shared.modifier),.processor(ListCell.downProcessor),.cacheOriginalImage])
+        }
+    }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ListCell
@@ -361,15 +374,9 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         cell.imageView.hero.id = "image_\(doujinshi.id)_0"
         cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
         cell.imageView.contentMode = .scaleAspectFill
-        cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
+        cell.imageView.kf.indicatorType = .activity
         
-        if doujinshi.isDownloaded {
-            if let image = UIImage(contentsOfFile: documentURL.appendingPathComponent(doujinshi.coverUrl).path) {
-                cell.imageView.image = image
-            }
-        } else {
-            cell.imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies], completed: nil)
-        }
+        cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
         
         if mode == .download {
             cell.pageCountLabel.text = "\(doujinshi.pages.count)"
@@ -405,7 +412,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard mode != .download else {return}
-        let urls = indexPaths.map { URL(string: items[$0.item].coverUrl)! }
+        let urls = indexPaths.compactMap { URL(string: items[$0.item].coverUrl)! }
         ImageManager.shared.prefetch(urls: urls)
     }
     
@@ -413,6 +420,10 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         let vc = storyboard!.instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
         vc.doujinshi = items[indexPath.item]
         navigationController?.pushViewController(vc, animated: true)
+    }
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let cell = cell as! ListCell
+        cell.imageView.kf.cancelDownloadTask()
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

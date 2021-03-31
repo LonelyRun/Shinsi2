@@ -1,4 +1,5 @@
 import UIKit
+import Kingfisher
 
 class DownloadBubble: UIView {
     static let shared = DownloadBubble()
@@ -9,7 +10,17 @@ class DownloadBubble: UIView {
     private var lineWidth = CGFloat(4)
     private var observingQueue: OperationQueue?
     weak var viewController: UIViewController?
-    
+    let modifier = AnyModifier { request in
+        var re = request
+        re.httpShouldHandleCookies = true;
+        re.setValue(Defaults.URL.host, forHTTPHeaderField: "Referer")
+        var array = Array<String>()
+        for cookie in HTTPCookieStorage.shared.cookies(for: URL(string: Defaults.URL.host)!)! {
+            array.append("\(cookie.name)=\(cookie.value)")
+        }
+        re.setValue(array.joined(separator: ";"), forHTTPHeaderField: "Cookie")
+        return re
+    }
     init() {
         super.init(frame: .zero)
         setup()
@@ -141,7 +152,7 @@ class DownloadBubble: UIView {
     
     func observerNextQueue() {
         if let queue = DownloadManager.shared.queues.first, let doujinshi = DownloadManager.shared.books[queue.name!] {
-            imageView.sd_setImage(with: URL(string: doujinshi.coverUrl), placeholderImage: nil, options: [.handleCookies])
+            imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.requestModifier(modifier)])
             observingQueue = queue
             queue.addObserver(self, forKeyPath: "operationCount", options: [.new], context: nil)
             updateBadge()

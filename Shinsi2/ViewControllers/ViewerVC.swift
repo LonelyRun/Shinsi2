@@ -1,6 +1,6 @@
 import UIKit
 import Hero
-import SDWebImage
+import Kingfisher
 import Photos
 
 class ViewerVC: UICollectionViewController {
@@ -133,23 +133,51 @@ class ViewerVC: UICollectionViewController {
             let item = getPage(for: indexPath)
             if !doujinshi.isDownloaded && item.photo.underlyingImage == nil {return}
             let image = doujinshi.isDownloaded ? item.localImage! : item.photo.underlyingImage!
-            
-            let alert = UIAlertController(title: "Save to camera roll", message: nil, preferredStyle: .alert)
-            let ok = UIAlertAction(title: "OK", style: .default) { _ in
-                PHPhotoLibrary.requestAuthorization({ s in
-                    if s == .authorized {
-                        PHPhotoLibrary.shared().performChanges({
-                            PHAssetChangeRequest.creationRequestForAsset(from: image)
-                        }, completionHandler: nil)
-                    }
-                })
-
+            let action = UIAlertController(title: "Menu", message: nil, preferredStyle: .actionSheet)
+            let save = UIAlertAction(title: "Save", style: .default) { [weak self] (_) in
+                self?.save(indexPath: indexPath, image: image)
+            }
+            let refresh = UIAlertAction(title: "Refresh", style: .default) { [weak self] (_) in
+                self?.refresh(indexPath: indexPath, item: item)
             }
             let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            alert.addAction(ok)
-            alert.addAction(cancel)
-            present(alert, animated: true, completion: nil)
+            action.addAction(save)
+            action.addAction(refresh)
+            action.addAction(cancel)
+            present(action, animated: true, completion: nil)
         }
+    }
+    
+    func refresh (indexPath:IndexPath, item: Page) {
+        let cell = collectionView.cellForItem(at: indexPath) as! ScrollingImageCell
+        if item.url.count > 0 {
+            RequestManager.shared.getPageImageUrl(url: item.url) { (imageUrl) in
+                if let imageUrl = imageUrl {
+                    KF.url(URL(string: imageUrl))
+                        .fade(duration: 0.1)
+                        .forceRefresh()
+                        .set(to: cell.imageView)
+                }
+            }
+        }
+    }
+    
+    func save (indexPath:IndexPath, image: UIImage) {
+        let alert = UIAlertController(title: "Save to camera roll", message: nil, preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default) {  _ in
+            PHPhotoLibrary.requestAuthorization({ s in
+                if s == .authorized {
+                    PHPhotoLibrary.shared().performChanges({
+                        PHAssetChangeRequest.creationRequestForAsset(from: image)
+                    }, completionHandler: nil)
+                }
+            })
+
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(ok)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
     }
     
     @objc func tap(ges: UITapGestureRecognizer) {
@@ -239,10 +267,18 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
         cell.imageView.hero.id = heroID(for: indexPath)
         cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
         cell.imageView.isOpaque = true
+        cell.imageView.kf.indicatorType = .activity
         
         let page = getPage(for: indexPath)
         if doujinshi.isDownloaded {
-            cell.image = page.localImage
+            if let image = page.localImage as UIImage? {
+                cell.imageView.image = image
+            }else {
+                KF.url(URL(string: page.url))
+                    .fade(duration: 0.1)
+                    .loadDiskFileSynchronously()
+                    .set(to: cell.imageView)
+            }
         } else {
             let photo = page.photo!
             if let image = photo.underlyingImage {
@@ -251,8 +287,11 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
                 if let image = ImageManager.shared.getCache(forKey: page.thumbUrl) { 
                     cell.image = image
                 } else {
-                    cell.imageView.sd_setImage(with: URL(string: page.thumbUrl), placeholderImage: nil, options: [.handleCookies])
-                } 
+                    KF.url(URL(string: page.url))
+                        .fade(duration: 0.1)
+                        .loadDiskFileSynchronously()
+                        .set(to: cell.imageView)
+                }
                 photo.loadUnderlyingImageAndNotify()
             }
         }
@@ -271,7 +310,7 @@ extension ViewerVC: UICollectionViewDelegateFlowLayout {
     } 
     
     func convertIndexPath(from indexPath: IndexPath) -> IndexPath {
-        var i = indexPath.item
+        let i = indexPath.item
         return IndexPath(item: i, section: indexPath.section)
     }
 

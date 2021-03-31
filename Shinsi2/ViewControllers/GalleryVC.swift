@@ -1,6 +1,6 @@
 import UIKit
 import Hero
-import SDWebImage
+import Kingfisher
 import SVProgressHUD
 import SafariServices
 
@@ -20,7 +20,6 @@ class GalleryVC: BaseViewController {
     @IBOutlet weak var loadingView: LoadingView!
     private var scrollBar: QuickScrollBar!
     weak var delegate: GalleryVCPreviewActionDelegate?
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = doujinshi.gdata?.getTitle() ?? doujinshi.title
@@ -281,7 +280,7 @@ class GalleryVC: BaseViewController {
     func downloadAll() {
         downloadButton.isEnabled = false
         DownloadManager.shared.download(doujinshi: doujinshi)
-        DownloadBubble.shared.show(on: navigationController!)
+        DownloadBubble.shared.show(on: (navigationController)!)
     }
     
     func downloadSelectedPage() {
@@ -301,7 +300,7 @@ class GalleryVC: BaseViewController {
         new.gdata!.filecount = selectedIndexPaths.count
         new.coverUrl = new.pages.first!.thumbUrl
         DownloadManager.shared.download(doujinshi: new)
-        DownloadBubble.shared.show(on: navigationController!)
+        DownloadBubble.shared.show(on: (navigationController)!)
         
         isPartDownloading = false
     }
@@ -380,21 +379,40 @@ UICollectionViewDataSourcePrefetching {
         return doujinshi.pages.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImageCell
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let page = doujinshi.pages[indexPath.item]
+        let cell = cell as! ImageCell
+        
         if doujinshi.isDownloaded {
-            cell.imageView.image = page.localImage
-            cell.loadingView?.hide(animated: false)
+            cell.imageView.kf.setImage(with: LocalFileImageDataProvider(fileURL: page.localUrl, cacheKey: page.thumbUrl), options: [.processor(ImageCell.downProcessor)]) { result in
+                if case .failure(_) = result {
+                    cell.imageView.kf.setImage(with: URL(string: page.url), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(ImageManager.shared.modifier),.processor(ImageCell.downProcessor),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
+                        cell.loadingView?.hide(animated: false)
+                    }
+                }else {
+                    cell.loadingView?.hide(animated: false)
+                }
+            }
         } else {
             if let image = ImageManager.shared.getCache(forKey: page.url) {
                 cell.imageView.image = image
                 cell.loadingView?.hide(animated: false)
             } else {
-                cell.imageView.sd_setImage(with: URL(string: page.thumbUrl), placeholderImage: nil, options: [.handleCookies])
-                cell.loadingView?.show(animated: false)
+                cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(ImageManager.shared.modifier),.processor(ImageCell.downProcessor),.loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
+                    switch result {
+                    case .success(_):
+                        cell.loadingView?.hide(animated: false)
+                    case .failure(_) :
+                        cell.loadingView?.show(animated: false)
+                    }
+                }
             }
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! ImageCell
+        
         cell.imageView.hero.id = "image_\(doujinshi.id)_\(indexPath.item)"
         cell.imageView.hero.modifiers = [.arc(intensity: 1)]
         cell.imageView.alpha = isPartDownloading ? (isIndexPathSelected(indexPath: indexPath) ? 1 : 0.5) : 1
@@ -413,7 +431,7 @@ UICollectionViewDataSourcePrefetching {
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard !doujinshi.isDownloaded else {return}
-        let urls = indexPaths.map({URL(string: doujinshi.pages[$0.item].thumbUrl)!})
+        let urls = indexPaths.compactMap({URL(string: doujinshi.pages[$0.item].thumbUrl)!})
         ImageManager.shared.prefetch(urls: urls)
     }
     
@@ -430,7 +448,10 @@ UICollectionViewDataSourcePrefetching {
             c.imageView.alpha = 1
         }
     }
-    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let cell = cell as! ImageCell
+        cell.imageView.kf.cancelDownloadTask()
+    }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if isPartDownloading {
             let c = collectionView.cellForItem(at: indexPath) as! ImageCell

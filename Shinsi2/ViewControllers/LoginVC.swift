@@ -37,12 +37,18 @@ class LoginVC: UIViewController {
         }
         guard let name = userNameField.text , let pw = passwordField.text else { return }
         SVProgressHUD.show()
-        RequestManager.shared.login(username: name, password: pw) {
+        RequestManager.shared.login(username: name, password: pw) { response in
+            switch response.result {
+            case.success(_):
             if self.checkCookie() {
                 SVProgressHUD.dismiss()
                 self.copyCookiesForEx()
                 self.pustToList()
             } else {
+                SVProgressHUD.showError(withStatus: "Login failed")
+                SVProgressHUD.dismiss(withDelay: 3)
+            }
+            case.failure(_):
                 SVProgressHUD.showError(withStatus: "Login failed")
                 SVProgressHUD.dismiss(withDelay: 3)
             }
