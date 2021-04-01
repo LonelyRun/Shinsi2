@@ -9,8 +9,11 @@ class RequestManager {
         let categoryFilters = Defaults.Search.categories.map {"f_\($0)=\(UserDefaults.standard.bool(forKey: $0) ? 1 : 0)"}.joined(separator: "&")
         var url = Defaults.URL.host + "/?"
         url += "\(categoryFilters)&f_apply=Apply+Filter" //Apply category filters
-        url += "&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2" //Advance search
+        url += "&advsearch=1&f_sname=on&f_stags=on&f_sh=on" //Advance search
         url += "&inline_set=dm_t" //Set mode to Thumbnail View
+        if let minimunrating = Defaults.List.minimumRating {
+            url += "&f_sr=on&f_srdd=\(minimunrating)"
+        }
         
         var cacheFavoritesTitles = false
         if var keyword = keyword?.lowercased() {

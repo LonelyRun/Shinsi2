@@ -23,6 +23,8 @@ let kUDListHidePageSkip = "kUDListHidePageSkip"
 let kUDShowAuthorListSkip = "kUDShowAuthorListSkip"
 let kUDListFavoriteTitles = "kUDListFavoriteTitles"
 let kUDListFavoriteList = "kUDListFavoriteList"
+let kUDListMinimumRating = "kUDListMinimumRating"
+
 
 let kUDGalleryCellWidth = "kUDGalleryCellWidth"
 let kUDGalleryQuickScroll = "kUDGalleryQuickScroll"
@@ -82,6 +84,10 @@ class Defaults {
         static var isShowFavoriteList: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDListFavoriteList) }
             set { UserDefaults.standard.set(newValue, forKey: kUDListFavoriteList) }
+        }
+        static var minimumRating: String? {
+            get { return UserDefaults.standard.string(forKey: kUDListMinimumRating)}
+            set { UserDefaults.standard.set(newValue, forKey: kUDListMinimumRating)}
         }
         static var lastSearchKeyword: String {
             get { return UserDefaults.standard.string(forKey: kUDListLastSearchKeyword) ?? "" }

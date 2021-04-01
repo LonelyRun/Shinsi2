@@ -100,6 +100,17 @@ class SettingVC: BaseViewController {
             $0.isOn = Defaults.List.isShowFavoriteList
             $0.addTarget(self, action: #selector(listFavoriteSwitchVauleChanged(sender:)), for: .valueChanged)
         }]))
+        
+        
+        addSubTitle("Minimum Rating")
+        stackView.addRow(UISegmentedControl(items: ["2", "3", "4", "5", "ALL"]).then {[unowned self] in
+            if let minimumRating = Defaults.List.minimumRating {
+                $0.selectedSegmentIndex = (["2", "3", "4", "5"] as NSArray).index(of: minimumRating)
+            } else {
+                $0.selectedSegmentIndex = 4
+            }
+            $0.addTarget(self, action: #selector(minimunRatingSegmentedControlValueChanged(sender:)), for: .valueChanged)
+        })
 
         
         //Gallery
@@ -278,6 +289,14 @@ class SettingVC: BaseViewController {
     
     @objc func galleryAutoScrollToHistorySwitchVauleChanged(sender: UISwitch) {
         Defaults.Gallery.isAutomaticallyScrollToHistory = sender.isOn
+    }
+    
+    @objc func minimunRatingSegmentedControlValueChanged(sender: UISegmentedControl) {
+        if (sender.selectedSegmentIndex == 4) {
+            Defaults.List.minimumRating = nil
+        } else {
+            Defaults.List.minimumRating = ["2", "3", "4", "5"][sender.selectedSegmentIndex]
+        }
     }
     
     @objc func viewerModeSegmentedControlValueChanged(sender: UISegmentedControl) {
