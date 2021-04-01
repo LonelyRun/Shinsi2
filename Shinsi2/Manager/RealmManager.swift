@@ -4,7 +4,7 @@ import RealmSwift
 class RealmManager {
     static let shared = RealmManager()
     let realm: Realm = {
-        let config = Realm.Configuration( schemaVersion: 9, migrationBlock: { migration, oldSchemaVersion in
+        let config = Realm.Configuration( schemaVersion: 13, migrationBlock: { migration, oldSchemaVersion in
             if oldSchemaVersion < 8 {
                 
             }
