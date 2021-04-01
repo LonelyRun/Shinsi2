@@ -1,5 +1,6 @@
 import UIKit
 import Kingfisher
+import Cosmos
 
 class ImageCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
@@ -17,6 +18,7 @@ class ListCell: ImageCell {
     @IBOutlet weak var titleLabel: UILabel?
     @IBOutlet weak var pageCountLabel: UILabel!
     @IBOutlet weak var containerView: UIView!
+    @IBOutlet weak var starView: CosmosView!
 }
 
 class CommentCell: UITableViewCell {

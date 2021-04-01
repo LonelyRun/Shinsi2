@@ -1,6 +1,7 @@
 PODS:
   - Alamofire (5.4.1)
   - AloeStackView (1.2.0)
+  - Cosmos (23.0.0)
   - HandyJSON (5.0.2)
   - Hero (1.6.1)
   - Kanna (5.2.4)
@@ -16,6 +17,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire
   - AloeStackView
+  - Cosmos (~> 23.0)
   - HandyJSON
   - Hero
   - Kanna
@@ -28,6 +30,7 @@ SPEC REPOS:
   trunk:
     - Alamofire
     - AloeStackView
+    - Cosmos
     - HandyJSON
     - Hero
     - Kanna
@@ -40,6 +43,7 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
   AloeStackView: 8a4ce0efa08128dd78d538372f60c76c224034bb
+  Cosmos: b5c6a9a637e28a061b54c8f8b1d8529d7d4db73f
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   Hero: 215865ba3ae41dd9bb08cd6c60a645529c6fc94b
   Kanna: b9d00d7c11428308c7f95e1f1f84b8205f567a8f
@@ -49,6 +53,6 @@ SPEC CHECKSUMS:
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
 
-PODFILE CHECKSUM: 8d93b735be3d4afe80f1bef07505d5087d04dd7f
+PODFILE CHECKSUM: fa29749848bff7c2c50edb5e71d625854ce5440b
 
 COCOAPODS: 1.10.1
