@@ -1,14 +1,18 @@
 import UIKit
-import Kingfisher
 import RealmSwift
 import SVProgressHUD
+import Kingfisher
+
+//缓存gdata
+var cachedGdatas = [String: GData]()
+private var checkingDoujinshi = [Int]()
 
 class ListVC: BaseViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     private(set) lazy var searchController: UISearchController = {
-        return UISearchController(searchResultsController: searchHistoryVC)
+        return UISearchController(searchResultsController: historyVC)
     }()
-    private lazy var searchHistoryVC: SearchHistoryVC = {
+    private lazy var historyVC: SearchHistoryVC = {
         return self.storyboard!.instantiateViewController(withIdentifier: "SearchHistoryVC") as! SearchHistoryVC
     }()
     private var items: [Doujinshi] = []
@@ -45,6 +49,8 @@ class ListVC: BaseViewController {
         return text == "favorites" ? -1 : Int(text.replacingOccurrences(of: "favorites", with: ""))
     }
     
+    private var existedIds = [Int]()    //缓存已获取的画廊id
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         if traitCollection.forceTouchCapability == .available {
@@ -65,8 +71,8 @@ class ListVC: BaseViewController {
             Defaults.List.lastSearchKeyword = searchController.searchBar.text ?? ""
             backGesture = InteractiveBackGesture(viewController: self, toView: collectionView)
         }
-        searchHistoryVC.searchController = searchController
-        searchHistoryVC.selectBlock = {[unowned self] text in
+        historyVC.searchController = searchController
+        historyVC.selectBlock = {[unowned self] text in
             self.searchController.isActive = false
             self.searchController.searchBar.text = text
             self.reloadData()
@@ -75,7 +81,7 @@ class ListVC: BaseViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.delegate = self
-        searchController.searchBar.showsCancelButton = false
+        searchController.searchBar.showsCancelButton = true
         searchController.searchBar.enablesReturnKeyAutomatically = false
         searchController.searchBar.tintColor = view.tintColor
         definesPresentationContext = true
@@ -107,6 +113,7 @@ class ListVC: BaseViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         let indexPath = collectionView.indexPathsForVisibleItems.first
+        
         collectionView?.collectionViewLayout.invalidateLayout()
         coordinator.animate(alongsideTransition: { _ in
             if let indexPath = indexPath {
@@ -164,6 +171,8 @@ class ListVC: BaseViewController {
     }
 
     func reloadData(pageIndex: Int = -1) {
+        checkingDoujinshi.removeAll()   //清除正在获取gdata数据的id
+        existedIds.removeAll()          //清楚已获取的id
         currentPage = pageIndex
         loadingPage = pageIndex
         let deleteIndexPaths = items.enumerated().map { IndexPath(item: $0.offset, section: 0)}
@@ -173,6 +182,52 @@ class ListVC: BaseViewController {
         }, completion: { _ in
             self.loadNextPage()
         })
+    }
+    
+    func checkGData(indexPath: IndexPath, completeBlock block: (() -> Void)?) {
+        let index = indexPath.item
+        guard items.count >= index, !checkingDoujinshi.contains(items[index].id) else { return }
+        
+        if items[index].isDownloaded || items[index].gdata != nil {
+            return
+        } else {
+            
+            let doujinshi = items[index]
+            
+            //Temp cover
+            doujinshi.pages.removeAll()
+            if !doujinshi.coverUrl.isEmpty {
+                let coverPage = Page()
+                coverPage.thumbUrl = doujinshi.coverUrl
+                doujinshi.pages.append(coverPage)
+            }
+            
+            if let gdata = cachedGdatas["\(doujinshi.id)"] {
+                doujinshi.gdata = gdata
+                block?()
+                return
+            }
+            //保存需要请求的id
+            checkingDoujinshi.append(doujinshi.id)
+            
+            RequestManager.shared.getGData(doujinshi: doujinshi) { [weak self] gdata in
+                
+                //网络请求有延迟，如果当前页面快速切换，需要判断当前画廊是否还存在
+                guard let gdata = gdata else { return }
+                cachedGdatas["\(doujinshi.id)"] = gdata  //缓存 gdata
+                guard let self = self,
+                    self.items.count >= index,
+                    doujinshi.id == self.items[index].id,
+                    checkingDoujinshi.contains(doujinshi.id)
+                    else { return }
+                
+                doujinshi.gdata = gdata
+                //删除已请求的id
+                let temp = checkingDoujinshi.filter { return $0 != doujinshi.id }
+                checkingDoujinshi = temp
+                block?()
+            }
+        }
     }
     
     @IBAction func setPage(_ sender: Any) {
@@ -365,6 +420,11 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         }else {
             cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(ImageManager.shared.modifier),.processor(ListCell.downProcessor),.cacheOriginalImage])
         }
+        
+        checkGData(indexPath: indexPath) { [weak cell, weak self] in
+            guard let c = cell, c.tag == doujinshi.id else { return }
+            self?.configCellItem(cell: c, doujinshi: doujinshi)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -375,14 +435,10 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         cell.imageView.hero.modifiers = [.arc(intensity: 1), .forceNonFade]
         cell.imageView.contentMode = .scaleAspectFill
         cell.imageView.kf.indicatorType = .activity
+        cell.tag = doujinshi.id
         
         cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
         
-        if mode == .download {
-            cell.pageCountLabel.text = "\(doujinshi.pages.count)"
-        } else {
-            cell.pageCountLabel.text = doujinshi.pageCount
-        }
         cell.pageCountLabel.layer.cornerRadius = cell.pageCountLabel.bounds.height/2
         
         if let language = doujinshi.title.language {
@@ -401,6 +457,8 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
             cell.conventionLabel.isHidden = true
         }
         
+        configCellItem(cell: cell, doujinshi: doujinshi)
+        
         cell.titleLabel?.text = doujinshi.title
         cell.titleLabel?.isHidden = Defaults.List.isHideTitle
         
@@ -411,16 +469,24 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        guard mode != .download else {return}
-        let urls = indexPaths.compactMap { URL(string: items[$0.item].coverUrl)! }
+        guard mode != .download, items.count > 0 else {return}
+        
+        let tempItems = indexPaths.map { $0.item }
+        let exceed = tempItems.filter { return $0 >= items.count }.count > 0
+        guard !exceed else { return }
+        
+        let urls = indexPaths.map { URL(string: self.items[$0.item].coverUrl)! }
         ImageManager.shared.prefetch(urls: urls)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = storyboard!.instantiateViewController(withIdentifier: "GalleryVC") as! GalleryVC
-        vc.doujinshi = items[indexPath.item]
+        let item = items[indexPath.item]
+        vc.doujinshi = item
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let cell = cell as! ListCell
         cell.imageView.kf.cancelDownloadTask()
@@ -430,6 +496,43 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
         let width = (collectionView.bounds.width - flowLayout.sectionInset.left - flowLayout.sectionInset.right - flowLayout.minimumInteritemSpacing * CGFloat((rowCount - 1))) / CGFloat(rowCount)
         return CGSize(width: width, height: width * paperRatio)
+    }
+    
+    
+    func configCellItem(cell: ListCell, doujinshi: Doujinshi) {
+        if let rating = doujinshi.gdata?.rating, rating > 0 {
+            cell.ratingLabel.text = "⭐️\(rating)"
+            cell.ratingLabel.isHidden = Defaults.List.isHideTag
+            cell.ratingLabel.layer.cornerRadius = cell.ratingLabel.bounds.height/2
+        } else {
+            cell.ratingLabel.isHidden = true
+        }
+        
+        if let category = doujinshi.gdata?.category {
+            cell.categoryLabel.isHidden = Defaults.List.isHideTag
+            cell.categoryLabel.text = category
+            cell.categoryLabel.layer.cornerRadius = cell.categoryLabel.bounds.height/2
+        } else {
+            cell.categoryLabel.isHidden = true
+        }
+        
+        if let time = doujinshi.gdata?.posted {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd HH:mm"
+            let date = Date(timeIntervalSince1970: TimeInterval(integerLiteral: Int64(time)!))
+            let timeStr = formatter.string(from: date)
+            cell.timeLabel.text = timeStr
+            cell.timeLabel.isHidden = true
+        } else {
+            cell.timeLabel.isHidden = true
+        }
+        
+        if let fileCount = doujinshi.gdata?.filecount {
+            cell.pageCountLabel.text = "\(fileCount) pages"
+            cell.pageCountLabel.isHidden = false
+        } else {
+            cell.pageCountLabel.isHidden = true
+        }
     }
 }
 
