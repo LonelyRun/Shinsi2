@@ -22,6 +22,42 @@ class ListCell: ImageCell {
     
     @IBOutlet weak var pageCountLabel: UILabel!
     @IBOutlet weak var containerView: UIView!
+    
+    func configCellItem(doujinshi: Doujinshi) {
+        if let rating = doujinshi.gdata?.rating, rating > 0 {
+            ratingLabel.text = "⭐️\(rating)"
+            ratingLabel.isHidden = Defaults.List.isHideTag
+            ratingLabel.layer.cornerRadius = ratingLabel.bounds.height/2
+        } else {
+            ratingLabel.isHidden = true
+        }
+        
+        if let category = doujinshi.gdata?.category {
+            categoryLabel.isHidden = Defaults.List.isHideTag
+            categoryLabel.text = category
+            categoryLabel.layer.cornerRadius = categoryLabel.bounds.height/2
+        } else {
+            categoryLabel.isHidden = true
+        }
+        
+        if let time = doujinshi.gdata?.posted {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd HH:mm"
+            let date = Date(timeIntervalSince1970: TimeInterval(integerLiteral: Int64(time)!))
+            let timeStr = formatter.string(from: date)
+            timeLabel.text = timeStr
+            timeLabel.isHidden = true
+        } else {
+            timeLabel.isHidden = true
+        }
+        
+        if let fileCount = doujinshi.gdata?.filecount {
+            pageCountLabel.text = "\(fileCount) pages"
+            pageCountLabel.isHidden = false
+        } else {
+            pageCountLabel.isHidden = true
+        }
+    }
 }
 
 class CommentCell: UITableViewCell {
