@@ -38,4 +38,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         SVProgressHUD.setMinimumDismissTimeInterval(3)
         SVProgressHUD.setImageViewSize(CGSize(width: 44, height: 44))
     }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        SecurityView.hide()
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        SecurityView.show()
+    }
 }
