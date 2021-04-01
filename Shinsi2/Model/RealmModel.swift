@@ -133,6 +133,7 @@ class GData: Object {
         return title_jpn.isEmpty ? title : title_jpn
     }
     @objc dynamic var coverUrl = ""
+    @objc dynamic var uploader = ""
     let tags = List<Tag>()
     lazy var gTag: GTag = {
         var g = GTag()
