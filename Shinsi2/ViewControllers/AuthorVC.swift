@@ -160,7 +160,6 @@ private class AuthorCollectionViewCell: UICollectionViewCell {
     var cover: String? {
         didSet {
             if let imageCover = cover {
-                print(imageCover)
                 coverImage.kf.setImage(with: URL.init(string: imageCover), placeholder: nil, options: [.requestModifier(ImageManager.shared.modifier)], completionHandler: nil)
             }
         }

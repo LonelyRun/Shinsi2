@@ -67,7 +67,7 @@ extension String {
         if let match = self.matches(for: pattern).first?.removeSymbol() {
             return match
         } else {
-            let ls = ["albanian", "arabic", "bengali", "catalan", "chinese", "czech", "danish", "dutch", "english", "esperanto",
+            let ls = ["albanian", "arabic", "bengali", "catalan", "chinese", "czech", "danish", "dutch", "english", "eng", "esperanto",
                       "estonian", "finnish", "french", "german", "greek", "hebrew", "hindi", "hungarian", "indonesian", "italian",
                       "japanese", "korean", "latin", "mongolian", "polish", "portuguese", "romanian", "russian", "slovak",
                       "slovenian", "spanish", "swedish", "tagalog", "thai", "turkish", "ukrainian", "vietnamese"]
