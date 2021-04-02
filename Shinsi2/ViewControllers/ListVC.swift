@@ -462,7 +462,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         } else {
             cell.conventionLabel.isHidden = true
         }
-        cell.configCellItem(doujinshi: doujinshi)
+                
         cell.titleLabel?.text = doujinshi.title
         cell.titleLabel?.isHidden = Defaults.List.isHideTitle
         
