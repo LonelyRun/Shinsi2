@@ -184,7 +184,13 @@ class ListVC: BaseViewController {
         })
     }
     
-    func checkGData(indexPath: IndexPath, completeBlock block: (() -> Void)?) {
+    private func prefetchGData(indexPaths: Array<IndexPath>) -> Void {
+        for index in indexPaths {
+            self.checkGData(indexPath: index, completeBlock: nil)
+        }
+    }
+    
+    private func checkGData(indexPath: IndexPath, completeBlock block: (() -> Void)?) {
         let index = indexPath.item
         guard items.count >= index, !checkingDoujinshi.contains(items[index].id) else { return }
         
@@ -421,9 +427,9 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
             cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(ImageManager.shared.modifier),.processor(ListCell.downProcessor),.cacheOriginalImage])
         }
         
-        checkGData(indexPath: indexPath) { [weak cell, weak self] in
+        checkGData(indexPath: indexPath) { [weak cell] in
             guard let c = cell, c.tag == doujinshi.id else { return }
-            self?.configCellItem(cell: c, doujinshi: doujinshi)
+            c.configCellItem(doujinshi: doujinshi)
         }
     }
     
@@ -456,9 +462,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         } else {
             cell.conventionLabel.isHidden = true
         }
-        
-        configCellItem(cell: cell, doujinshi: doujinshi)
-        
+        cell.configCellItem(doujinshi: doujinshi)
         cell.titleLabel?.text = doujinshi.title
         cell.titleLabel?.isHidden = Defaults.List.isHideTitle
         
@@ -477,6 +481,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         
         let urls = indexPaths.map { URL(string: self.items[$0.item].coverUrl)! }
         ImageManager.shared.prefetch(urls: urls)
+        self.prefetchGData(indexPaths: indexPaths)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -499,41 +504,6 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
     }
     
     
-    func configCellItem(cell: ListCell, doujinshi: Doujinshi) {
-        if let rating = doujinshi.gdata?.rating, rating > 0 {
-            cell.ratingLabel.text = "⭐️\(rating)"
-            cell.ratingLabel.isHidden = Defaults.List.isHideTag
-            cell.ratingLabel.layer.cornerRadius = cell.ratingLabel.bounds.height/2
-        } else {
-            cell.ratingLabel.isHidden = true
-        }
-        
-        if let category = doujinshi.gdata?.category {
-            cell.categoryLabel.isHidden = Defaults.List.isHideTag
-            cell.categoryLabel.text = category
-            cell.categoryLabel.layer.cornerRadius = cell.categoryLabel.bounds.height/2
-        } else {
-            cell.categoryLabel.isHidden = true
-        }
-        
-        if let time = doujinshi.gdata?.posted {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd HH:mm"
-            let date = Date(timeIntervalSince1970: TimeInterval(integerLiteral: Int64(time)!))
-            let timeStr = formatter.string(from: date)
-            cell.timeLabel.text = timeStr
-            cell.timeLabel.isHidden = true
-        } else {
-            cell.timeLabel.isHidden = true
-        }
-        
-        if let fileCount = doujinshi.gdata?.filecount {
-            cell.pageCountLabel.text = "\(fileCount) pages"
-            cell.pageCountLabel.isHidden = false
-        } else {
-            cell.pageCountLabel.isHidden = true
-        }
-    }
 }
 
 extension ListVC: UIViewControllerPreviewingDelegate {

@@ -144,6 +144,15 @@ class ViewerVC: UICollectionViewController {
             action.addAction(save)
             action.addAction(refresh)
             action.addAction(cancel)
+            
+            if UIDevice.current.model == "iPad" || UIDevice.current.userInterfaceIdiom == .pad {
+                action.modalPresentationStyle = .popover
+                if let presenter = action.popoverPresentationController {
+                    presenter.sourceView = self.view;
+                    let point = ges.location(in: self.view)
+                    presenter.sourceRect = CGRect(x: point.x, y: point.y, width: 0, height: 0);
+                }
+            }
             present(action, animated: true, completion: nil)
         }
     }
