@@ -160,10 +160,13 @@ class ListVC: BaseViewController {
                 guard books.count > 0 else {return}
                 let lastIndext = max(0, self.items.count - 1)
                 let insertIndexPaths = books.enumerated().map { IndexPath(item: $0.offset + lastIndext, section: 0) }
+                
                 self.items += books
                 self.collectionView.performBatchUpdates({
                     self.collectionView.insertItems(at: insertIndexPaths)
-                }, completion: nil)
+                }) { (_) in
+                    self.prefetchGData(indexPaths: insertIndexPaths)
+                }
                 self.currentPage += 1
                 self.loadingPage = -1
             }
@@ -195,6 +198,7 @@ class ListVC: BaseViewController {
         guard items.count >= index, !checkingDoujinshi.contains(items[index].id) else { return }
         
         if items[index].isDownloaded || items[index].gdata != nil {
+            block?()
             return
         } else {
             
@@ -225,7 +229,10 @@ class ListVC: BaseViewController {
                     self.items.count >= index,
                     doujinshi.id == self.items[index].id,
                     checkingDoujinshi.contains(doujinshi.id)
-                    else { return }
+                    else {
+                    block?()
+                    return
+                }
                 
                 doujinshi.gdata = gdata
                 //删除已请求的id
@@ -445,30 +452,10 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         
         cell.containerView.hero.modifiers = [.arc(intensity: 1), .fade, .source(heroID: "image_\(doujinshi.id)_0")]
         
-        cell.pageCountLabel.layer.cornerRadius = cell.pageCountLabel.bounds.height/2
-        
-        if let language = doujinshi.title.language {
-            cell.languageLabel.isHidden = Defaults.List.isHideTag
-            cell.languageLabel.text = language.capitalized
-            cell.languageLabel.layer.cornerRadius = cell.languageLabel.bounds.height/2
-        } else {
-            cell.languageLabel.isHidden = true
+        checkGData(indexPath: indexPath) { [weak cell] in
+            guard let c = cell, c.tag == doujinshi.id else { return }
+            c.configCellItem(doujinshi: doujinshi)
         }
-
-        if let convent = doujinshi.title.conventionName {
-            cell.conventionLabel.isHidden = Defaults.List.isHideTag
-            cell.conventionLabel.text = convent
-            cell.conventionLabel.layer.cornerRadius = cell.conventionLabel.bounds.height/2
-        } else {
-            cell.conventionLabel.isHidden = true
-        }
-        cell.configCellItem(doujinshi: doujinshi)
-        cell.titleLabel?.text = doujinshi.title
-        cell.titleLabel?.isHidden = Defaults.List.isHideTitle
-        
-        cell.layer.shouldRasterize = true
-        cell.layer.rasterizationScale = UIScreen.main.scale
-        
         return cell
     }
     
@@ -481,7 +468,6 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
         
         let urls = indexPaths.map { URL(string: self.items[$0.item].coverUrl)! }
         ImageManager.shared.prefetch(urls: urls)
-        self.prefetchGData(indexPaths: indexPaths)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

@@ -23,11 +23,22 @@ class ListCell: ImageCell {
     @IBOutlet weak var pageCountLabel: UILabel!
     @IBOutlet weak var containerView: UIView!
     
+    override func awakeFromNib() {
+        ratingLabel.layer.cornerRadius = ratingLabel.bounds.height/2
+        conventionLabel.layer.cornerRadius = conventionLabel.bounds.height/2
+        languageLabel.layer.cornerRadius = languageLabel.bounds.height/2
+        categoryLabel.layer.cornerRadius = categoryLabel.bounds.height/2
+        pageCountLabel.layer.cornerRadius = pageCountLabel.bounds.height/2
+        timeLabel.layer.cornerRadius = timeLabel.bounds.height/2
+        
+        layer.shouldRasterize = true
+        layer.rasterizationScale = UIScreen.main.scale
+    }
+    
     func configCellItem(doujinshi: Doujinshi) {
         if let rating = doujinshi.gdata?.rating, rating > 0 {
             ratingLabel.text = "⭐️\(rating)"
             ratingLabel.isHidden = Defaults.List.isHideTag
-            ratingLabel.layer.cornerRadius = ratingLabel.bounds.height/2
         } else {
             ratingLabel.isHidden = true
         }
@@ -35,7 +46,6 @@ class ListCell: ImageCell {
         if let category = doujinshi.gdata?.category {
             categoryLabel.isHidden = Defaults.List.isHideTag
             categoryLabel.text = category
-            categoryLabel.layer.cornerRadius = categoryLabel.bounds.height/2
         } else {
             categoryLabel.isHidden = true
         }
@@ -51,12 +61,27 @@ class ListCell: ImageCell {
             timeLabel.isHidden = true
         }
         
+        if let convent = doujinshi.title.conventionName {
+            conventionLabel.isHidden = Defaults.List.isHideTag
+            conventionLabel.text = convent
+        } else {
+            conventionLabel.isHidden = true
+        }
+        
+        if let language = doujinshi.title.language {
+            languageLabel.isHidden = Defaults.List.isHideTag
+            languageLabel.text = language.capitalized
+        } else {
+            languageLabel.isHidden = true
+        }
         if let fileCount = doujinshi.gdata?.filecount {
             pageCountLabel.text = "\(fileCount) pages"
             pageCountLabel.isHidden = false
         } else {
             pageCountLabel.isHidden = true
         }
+        titleLabel?.text = doujinshi.title
+        titleLabel?.isHidden = Defaults.List.isHideTitle
     }
 }
 
