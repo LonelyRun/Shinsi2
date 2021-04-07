@@ -24,6 +24,7 @@ class ListCell: ImageCell {
     @IBOutlet weak var containerView: UIView!
     
     override func awakeFromNib() {
+        super.awakeFromNib()
         ratingLabel.layer.cornerRadius = ratingLabel.bounds.height/2
         conventionLabel.layer.cornerRadius = conventionLabel.bounds.height/2
         languageLabel.layer.cornerRadius = languageLabel.bounds.height/2
