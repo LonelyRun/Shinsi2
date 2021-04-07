@@ -165,13 +165,19 @@ class SettingVC: BaseViewController {
             $0.addTarget(self, action: #selector(listAuthorListSwitchVauleChanged), for: .valueChanged)
         }]))
         
-//        let downLoadDelay = createTextField("Download Delay")
-//        downLoadDelay.text =  String.init(format: "%.2lf", Defaults.Download.downloadDalay)
-//        stackView.addRow(downLoadDelay)
-//        downLoadDelay.rx.text.orEmpty.subscribe(onNext: { (string) in
-//            Defaults.Download.downloadDalay = self.StringToFloat(str: string)
-//        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: DisposeBag())
-
+        addTitle("Download")
+        stackView.addRow(createStackView([createSubTitleLabel("Download Delay"), UITextField().then {[unowned self] in
+            $0.text = String.init(format: "%.2lf", Defaults.Download.delay)
+            $0.keyboardType = .decimalPad
+            $0.textAlignment = .right
+            $0.addTarget(self, action: #selector(DownloadDelayVauleChanged), for: .editingDidEnd)
+        }]))
+        stackView.addRow(createStackView([createSubTitleLabel("Download Tasks Number"), UITextField().then {[unowned self] in
+            $0.text = String.init(format: "%ld", Defaults.Download.tasks)
+            $0.keyboardType = .numberPad
+            $0.textAlignment = .right
+            $0.addTarget(self, action: #selector(DownloadTasksVauleChanged), for: .editingDidEnd)
+        }]))
         //Cache+
         addTitle("Cache")
         
@@ -179,7 +185,7 @@ class SettingVC: BaseViewController {
         let clearHistory = createSubTitleLabel("Clear Search History")
         clearHistory.isUserInteractionEnabled = true
         stackView.addRow(clearHistory)
-        stackView.setTapHandler(forRow: clearHistory) { [weak self] _ in
+        stackView.setTapHandler(forRow: clearHistory) { _ in
             RealmManager.shared.deleteAllSearchHistory()
             SVProgressHUD.showSuccess(withStatus: nil)
         }
@@ -277,6 +283,18 @@ class SettingVC: BaseViewController {
     @objc func listPageSkipSwitchVauleChanged(sender: UISwitch) {
         Defaults.List.isHidePageSkip = !sender.isOn
         NotificationCenter.default.post(name: .settingChanged, object: nil)
+    }
+    
+    @objc func DownloadDelayVauleChanged(sender: UITextField) {
+        if let text = sender.text {
+            Defaults.Download.delay = Double(text)!
+        }
+    }
+    
+    @objc func DownloadTasksVauleChanged(sender: UITextField) {
+        if let text = sender.text {
+            Defaults.Download.tasks = Int(text)!
+        }
     }
     
     @objc func galleryQuickScrollSwitchVauleChanged(sender: UISwitch) {

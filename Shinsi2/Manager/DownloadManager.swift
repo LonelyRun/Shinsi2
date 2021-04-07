@@ -64,7 +64,9 @@ class PageDownloadOperation: SSOperation {
                 AF.download(imageUrl, to: destination).response { response in
                     switch response.result {
                     case .success(_):
-                        self.state = .finished
+                        DispatchQueue.main.asyncAfter(deadline: .now() + Defaults.Download.delay) {
+                            self.state = .finished
+                        }
                         if let image = UIImage(contentsOfFile: fileURL.path) {
                             ImageCache.default.store(image, forKey: imageUrl)
                         }
@@ -94,12 +96,12 @@ class DownloadManager: NSObject {
         let path = documentURL.appendingPathComponent(folderName).path
         
         let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 3
+        queue.maxConcurrentOperationCount = Defaults.Download.tasks
         queue.isSuspended = queues.count != 0
         queue.name = gdata.gid
         queues.append(queue)
         books[gdata.gid] = doujinshi
-        
+        print(Defaults.Download.tasks)
         for (i, p) in doujinshi.pages.enumerated() {
             let o = PageDownloadOperation(url: p.url, folderPath: path, pageNumber: i)
             queue.addOperation(o)

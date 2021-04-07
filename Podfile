@@ -13,4 +13,6 @@ target 'Shinsi2' do
     pod 'Then'
     pod 'HandyJSON'
     pod 'Kingfisher'
+    pod 'Tiercel'
+    pod 'IQKeyboardManagerSwift'
 end
