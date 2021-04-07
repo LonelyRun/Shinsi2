@@ -166,7 +166,7 @@ class SettingVC: BaseViewController {
         }]))
         
         addTitle("Download")
-        stackView.addRow(createStackView([createSubTitleLabel("Download Delay"), UITextField().then {[unowned self] in
+        stackView.addRow(createStackView([createSubTitleLabel("Download Delay(second)"), UITextField().then {[unowned self] in
             $0.text = String.init(format: "%.2lf", Defaults.Download.delay)
             $0.keyboardType = .decimalPad
             $0.textAlignment = .right
