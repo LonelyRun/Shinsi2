@@ -19,6 +19,8 @@ let kUDListCellWidth = "kUDListCellWidth"
 let kUDListLastSearchKeyword = "kUDListLastSearchKeyword"
 let kUDListHideTag = "kUDListHideTag"
 let kUDListHideTitle = "kUDListHideTitle"
+let kUDListFilterLanguage = "kUDListFilterLanguage"
+let kUDListLanguage = "kUDListLanguage"
 let kUDListHidePageSkip = "kUDListHidePageSkip"
 let kUDShowAuthorListSkip = "kUDShowAuthorListSkip"
 let kUDListFavoriteTitles = "kUDListFavoriteTitles"
@@ -76,6 +78,14 @@ class Defaults {
         static var isHidePageSkip: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDListHidePageSkip) }
             set { UserDefaults.standard.set(newValue, forKey: kUDListHidePageSkip) }
+        }
+        static var isFilterLanguage: Bool {
+            get { return UserDefaults.standard.bool(forKey: kUDListFilterLanguage) }
+            set { UserDefaults.standard.set(newValue, forKey: kUDListFilterLanguage) }
+        }
+        static var listLanguage: String {
+            get { return UserDefaults.standard.string(forKey: kUDListLanguage) ?? ""}
+            set { UserDefaults.standard.set(newValue, forKey: kUDListLanguage)}
         }
         static var isShowAuthorList: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDShowAuthorListSkip) }

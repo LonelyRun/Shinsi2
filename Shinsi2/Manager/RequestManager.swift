@@ -38,6 +38,9 @@ class RequestManager {
                     keyword = keyword.replacingOccurrences(of: s, with: "")
                     skipPage = p
                 }
+                if Defaults.List.isFilterLanguage && !Defaults.List.listLanguage.isEmpty {
+                    keyword = "\(keyword) language:\(Defaults.List.listLanguage)"
+                }
                 url += "&f_search=\(keyword.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)"
                 url += "&page=\(page + skipPage)"
             }

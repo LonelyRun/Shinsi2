@@ -64,6 +64,28 @@ class SettingVC: BaseViewController {
             }
         })
         
+        addSubTitle("Minimum Rating")
+        stackView.addRow(UISegmentedControl(items: ["2", "3", "4", "5", "ALL"]).then {[unowned self] in
+            if let minimumRating = Defaults.List.minimumRating {
+                $0.selectedSegmentIndex = (["2", "3", "4", "5"] as NSArray).index(of: minimumRating)
+            } else {
+                $0.selectedSegmentIndex = 4
+            }
+            $0.addTarget(self, action: #selector(minimunRatingSegmentedControlValueChanged(sender:)), for: .valueChanged)
+        })
+        
+        
+        addSubTitle("Language")
+        stackView.addRow(createStackView([UITextField().then {
+            $0.text = Defaults.List.listLanguage
+            $0.placeholder = "language"
+            $0.addTarget(self, action: #selector(languageVauleChanged), for: .editingDidEnd)
+        }, UISwitch().then{[unowned self] in
+            $0.isOn = Defaults.List.isFilterLanguage
+            $0.addTarget(self, action: #selector(listFilterLanguageVauleChanged(sender:)), for: .valueChanged)
+        }]))
+        
+        
         // Settings
         addTitle("My Settings")
         
@@ -100,17 +122,6 @@ class SettingVC: BaseViewController {
             $0.isOn = Defaults.List.isShowFavoriteList
             $0.addTarget(self, action: #selector(listFavoriteSwitchVauleChanged(sender:)), for: .valueChanged)
         }]))
-        
-        
-        addSubTitle("Minimum Rating")
-        stackView.addRow(UISegmentedControl(items: ["2", "3", "4", "5", "ALL"]).then {[unowned self] in
-            if let minimumRating = Defaults.List.minimumRating {
-                $0.selectedSegmentIndex = (["2", "3", "4", "5"] as NSArray).index(of: minimumRating)
-            } else {
-                $0.selectedSegmentIndex = 4
-            }
-            $0.addTarget(self, action: #selector(minimunRatingSegmentedControlValueChanged(sender:)), for: .valueChanged)
-        })
 
         
         //Gallery
@@ -265,6 +276,17 @@ class SettingVC: BaseViewController {
         Defaults.List.isHideTag = sender.isOn
         NotificationCenter.default.post(name: .settingChanged, object: nil)
     }
+    
+    @objc func listFilterLanguageVauleChanged(sender: UISwitch) {
+        Defaults.List.isFilterLanguage = sender.isOn
+    }
+    
+    @objc func languageVauleChanged(sender: UITextField) {
+        if let text = sender.text {
+            Defaults.List.listLanguage = text
+        }
+    }
+
     
     @objc func listTitleSwitchVauleChanged(sender: UISwitch) {
         Defaults.List.isHideTitle = sender.isOn
