@@ -119,8 +119,8 @@
                                                 <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lWs-RE-DKd" userLabel="Container View">
                                                     <rect key="frame" x="0.0" y="0.0" width="132" height="137"/>
                                                     <subviews>
-                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chinese　" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hDY-7k-p70" customClass="InsetLabel" customModule="Shinsi2" customModuleProvider="target">
-                                                            <rect key="frame" x="2" y="28" width="49.666666666666664" height="12"/>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Chinese" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hDY-7k-p70" customClass="InsetLabel" customModule="Shinsi2" customModuleProvider="target">
+                                                            <rect key="frame" x="2" y="28" width="39" height="12"/>
                                                             <color key="backgroundColor" red="0.80000000000000004" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -211,8 +211,8 @@
                                                                 </userDefinedRuntimeAttribute>
                                                             </userDefinedRuntimeAttributes>
                                                         </label>
-                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="4.5" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GQO-D7-6gm" userLabel="ratingLabel" customClass="InsetLabel" customModule="Shinsi2" customModuleProvider="target">
-                                                            <rect key="frame" x="2" y="15" width="32" height="12"/>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4.5" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GQO-D7-6gm" userLabel="ratingLabel" customClass="InsetLabel" customModule="Shinsi2" customModuleProvider="target">
+                                                            <rect key="frame" x="2.0000000000000009" y="15" width="15.333333333333336" height="12"/>
                                                             <color key="backgroundColor" red="0.80000000000000004" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -232,8 +232,8 @@
                                                                 </userDefinedRuntimeAttribute>
                                                             </userDefinedRuntimeAttributes>
                                                         </label>
-                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="2012.12.11" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8MJ-ih-KQU" userLabel="timeLabel" customClass="InsetLabel" customModule="Shinsi2" customModuleProvider="target">
-                                                            <rect key="frame" x="2" y="41" width="60" height="12"/>
+                                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2012.12.11" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8MJ-ih-KQU" userLabel="timeLabel" customClass="InsetLabel" customModule="Shinsi2" customModuleProvider="target">
+                                                            <rect key="frame" x="2" y="41" width="49.333333333333336" height="12"/>
                                                             <color key="backgroundColor" red="0.80000000000000004" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -259,11 +259,15 @@
                                                         <constraint firstItem="8MJ-ih-KQU" firstAttribute="top" secondItem="hDY-7k-p70" secondAttribute="bottom" constant="1" id="016-WR-vAD"/>
                                                         <constraint firstAttribute="bottom" secondItem="ptR-dm-vYh" secondAttribute="bottom" id="0l3-hh-54M"/>
                                                         <constraint firstItem="ptR-dm-vYh" firstAttribute="leading" secondItem="lWs-RE-DKd" secondAttribute="leading" id="3Bd-Gl-Zsc"/>
+                                                        <constraint firstItem="SqT-c6-4eA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="J3p-lI-L6G" secondAttribute="trailing" constant="8" symbolic="YES" id="8tN-ge-rDH"/>
                                                         <constraint firstItem="ZTW-EI-t44" firstAttribute="top" secondItem="SqT-c6-4eA" secondAttribute="bottom" constant="1" id="Bz1-22-cgQ"/>
+                                                        <constraint firstItem="ZTW-EI-t44" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="GQO-D7-6gm" secondAttribute="trailing" constant="8" symbolic="YES" id="Duz-Ez-KcU"/>
                                                         <constraint firstItem="J3p-lI-L6G" firstAttribute="leading" secondItem="lWs-RE-DKd" secondAttribute="leading" constant="2" id="I0K-rd-rFo"/>
                                                         <constraint firstItem="GQO-D7-6gm" firstAttribute="leading" secondItem="J3p-lI-L6G" secondAttribute="leading" id="Ker-sn-n9f"/>
                                                         <constraint firstItem="GQO-D7-6gm" firstAttribute="top" secondItem="J3p-lI-L6G" secondAttribute="bottom" constant="1" id="Kfj-HV-ahL"/>
+                                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="8MJ-ih-KQU" secondAttribute="trailing" constant="20" symbolic="YES" id="RGX-BP-EEY"/>
                                                         <constraint firstAttribute="trailing" secondItem="SqT-c6-4eA" secondAttribute="trailing" id="U8k-bu-FMN"/>
+                                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="hDY-7k-p70" secondAttribute="trailing" constant="20" symbolic="YES" id="VMB-c8-TRq"/>
                                                         <constraint firstAttribute="trailing" secondItem="ptR-dm-vYh" secondAttribute="trailing" id="ZGY-4L-agJ"/>
                                                         <constraint firstItem="SqT-c6-4eA" firstAttribute="top" secondItem="lWs-RE-DKd" secondAttribute="top" id="aNn-mZ-z5Z"/>
                                                         <constraint firstItem="J3p-lI-L6G" firstAttribute="top" secondItem="lWs-RE-DKd" secondAttribute="top" constant="2" id="aSP-ah-4ER"/>

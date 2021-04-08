@@ -1,5 +1,6 @@
 import UIKit
 import SVProgressHUD
+import IQKeyboardManagerSwift
 
 @UIApplicationMain
 
@@ -11,7 +12,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setDefaultAppearance()
         setDefaultHudAppearance()
         Defaults.Search.categories.map { [$0: true] }.forEach { UserDefaults.standard.register(defaults: $0) }
-        
+        IQKeyboardManager.shared.enable = true
         #if DEBUG
         //RealmManager.shared.deleteSearchHistory()
         //SDImageCache.shared().clearMemory()
