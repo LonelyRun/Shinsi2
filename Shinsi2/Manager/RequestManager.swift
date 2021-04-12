@@ -11,6 +11,9 @@ class RequestManager {
         url += "\(categoryFilters)&f_apply=Apply+Filter" //Apply category filters
         url += "&advsearch=1&f_sname=on&f_stags=on&f_sh=on" //Advance search
         url += "&inline_set=dm_t" //Set mode to Thumbnail View
+        if !Defaults.List.minimumPages.isEmpty || !Defaults.List.maximumPages.isEmpty {
+            url += "&f_sp=o&f_spf=\(Defaults.List.minimumPages)&f_spt=\(Defaults.List.maximumPages)"
+        }
         if let minimunrating = Defaults.List.minimumRating {
             url += "&f_sr=on&f_srdd=\(minimunrating)"
         }

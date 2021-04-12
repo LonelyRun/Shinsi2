@@ -86,6 +86,28 @@ class SettingVC: BaseViewController {
         }]))
         
         
+        addSubTitle("Pages")
+        stackView.addRow(createStackView([
+            createSubTitleLabel("Between  "),
+            UITextField().then {[unowned self] in
+                $0.keyboardType = .numberPad
+                $0.placeholder = "minimum"
+                $0.text = Defaults.List.minimumPages
+                $0.textAlignment = .center
+                $0.addTarget(self, action: #selector(minimumVauleChanged(sender:)), for: .editingDidEnd)
+            },
+            createSubTitleLabel("  and  "),
+            UITextField().then {[unowned self] in
+                $0.keyboardType = .numberPad
+                $0.placeholder = "maximum"
+                $0.text = Defaults.List.maximumPages
+                $0.textAlignment = .center
+                $0.addTarget(self, action: #selector(maximumVauleChanged(sender:)), for: .editingDidEnd)
+            },
+            createSubTitleLabel("  pages")
+        ]))
+        
+        
         // Settings
         addTitle("My Settings")
         
@@ -281,13 +303,25 @@ class SettingVC: BaseViewController {
         Defaults.List.isFilterLanguage = sender.isOn
     }
     
+    @objc func minimumVauleChanged(sender: UITextField) {
+        if let text = sender.text {
+            Defaults.List.minimumPages = text
+        }
+    }
+    
+    @objc func maximumVauleChanged(sender: UITextField) {
+        if let text = sender.text {
+            Defaults.List.maximumPages = text
+        }
+    }
+
+    
     @objc func languageVauleChanged(sender: UITextField) {
         if let text = sender.text {
             Defaults.List.listLanguage = text
         }
     }
 
-    
     @objc func listTitleSwitchVauleChanged(sender: UISwitch) {
         Defaults.List.isHideTitle = sender.isOn
         NotificationCenter.default.post(name: .settingChanged, object: nil)

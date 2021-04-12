@@ -26,7 +26,8 @@ let kUDShowAuthorListSkip = "kUDShowAuthorListSkip"
 let kUDListFavoriteTitles = "kUDListFavoriteTitles"
 let kUDListFavoriteList = "kUDListFavoriteList"
 let kUDListMinimumRating = "kUDListMinimumRating"
-
+let kUDListMinimunPages = "kUDListMinimunPages"
+let kUDListMaximumPages = "kUDListMaximumPages"
 
 let kUDGalleryCellWidth = "kUDGalleryCellWidth"
 let kUDGalleryQuickScroll = "kUDGalleryQuickScroll"
@@ -98,6 +99,14 @@ class Defaults {
         static var minimumRating: String? {
             get { return UserDefaults.standard.string(forKey: kUDListMinimumRating)}
             set { UserDefaults.standard.set(newValue, forKey: kUDListMinimumRating)}
+        }
+        static var minimumPages: String {
+            get { return UserDefaults.standard.string(forKey: kUDListMinimunPages) ?? ""}
+            set { UserDefaults.standard.set(newValue, forKey: kUDListMinimunPages)}
+        }
+        static var maximumPages: String {
+            get { return UserDefaults.standard.string(forKey: kUDListMaximumPages) ?? ""}
+            set { UserDefaults.standard.set(newValue, forKey: kUDListMaximumPages)}
         }
         static var lastSearchKeyword: String {
             get { return UserDefaults.standard.string(forKey: kUDListLastSearchKeyword) ?? "" }
