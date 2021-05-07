@@ -51,25 +51,6 @@ class Doujinshi: Object, HandyJSON {
         return false
     }
     
-    
-    var author: String {
-        do {
-            var regex = try NSRegularExpression(pattern: "\\[.+?\\]", options: [])
-            guard let outRange = regex.matches(in: title, options: [], range: NSMakeRange(0, title.count)).first?.range else {
-                return ""
-            }
-            let string = (title as NSString).substring(with: NSMakeRange(outRange.location + 1, outRange.length - 2))
-            regex = try NSRegularExpression(pattern: "\\(.+?\\)", options: [])
-            guard let innerRange = regex.matches(in: string, options: [], range: NSMakeRange(0, string.count)).first?.range else {
-                return string
-            }
-            return (string as NSString).substring(with: NSMakeRange(innerRange.location + 1, innerRange.length - 2))
-        }
-        catch {
-            return ""
-        }
-    }
-    
     override static func ignoredProperties() -> [String] {
         return ["comments", "commentScrollPosition", "perPageCount"]
     }

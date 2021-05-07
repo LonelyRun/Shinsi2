@@ -318,10 +318,10 @@ class ListVC: BaseViewController {
         let title = mode == .download ? "Delete" : "Action"
         let actionTitle = mode == .download ? "Delete" : "Remove"
         guard mode == .download || mode == .favorite else {
-            if Defaults.List.isShowAuthorList {
+            if Defaults.List.isShowAuthorList && doujinshi.title.artist != nil {
                 let addAlert = UIAlertController(title: "AddToAuthor", message: nil, preferredStyle: .alert)
                 addAlert.addTextField {(textFeild) in
-                    textFeild.text = doujinshi.author.lowercased()
+                    textFeild.text = doujinshi.title.artist?.lowercased()
                 }
                 addAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                 addAlert.addAction(UIAlertAction(title: "Sure", style: .default, handler: {(_) in

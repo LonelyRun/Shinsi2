@@ -56,7 +56,7 @@ class RealmManager {
     
     
     func saveAuthor(doujinshi: Doujinshi) {
-        let title = doujinshi.author
+        let title = doujinshi.title.artist?.lowercased() ?? ""
         let cover = doujinshi.coverUrl
         let list = realm.objects(Author.self).filter("author = '\(title)'")
         if list.count > 0 {
