@@ -366,6 +366,8 @@ class ListVC: BaseViewController {
             vc.popoverPresentationController?.sourceView = collectionView
             vc.popoverPresentationController?.sourceRect = cell.frame
             let shareAction = UIAlertAction(title: "Share", style: .default) { (_) in
+                UIPasteboard.general.string = doujinshi.title
+                SVProgressHUD.showSuccess(withStatus: "Title Copyed")
                 self.present(vc, animated: true, completion: nil)
             }
             alert.addAction(shareAction)
@@ -431,7 +433,9 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
             cell.imageView.image = image
             cell.loadingView?.hide(animated: false)
         }else {
-            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(ImageManager.shared.modifier),.processor(ListCell.downProcessor),.cacheOriginalImage])
+            cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(ImageManager.shared.modifier),
+//                                                                                        .processor(ListCell.downProcessor),
+                                                                                        .cacheOriginalImage])
         }
         
         checkGData(indexPath: indexPath) { [weak cell] in
