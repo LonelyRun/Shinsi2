@@ -4,7 +4,9 @@ import Kingfisher
 class ImageCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var  loadingView: LoadingView?
-    static let downProcessor = DownsamplingImageProcessor(size: .init(width: 200, height: CGFloat.infinity))
+//    static let downProcessor = DownsamplingImageProcessor(size: .init(width: 200, height: CGFloat.infinity))
+    static let downProcessor = ResizingImageProcessor(referenceSize: .init(width: 200, height: 2000), mode: .aspectFill)
+
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.kf.cancelDownloadTask()

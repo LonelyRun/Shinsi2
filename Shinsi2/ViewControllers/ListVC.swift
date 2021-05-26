@@ -434,7 +434,7 @@ extension ListVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollec
             cell.loadingView?.hide(animated: false)
         }else {
             cell.imageView.kf.setImage(with: URL(string: doujinshi.coverUrl), options: [.transition(ImageTransition.fade(0.8)), .requestModifier(ImageManager.shared.modifier),
-//                                                                                        .processor(ListCell.downProcessor),
+                                                                                        .processor(ListCell.downProcessor),
                                                                                         .cacheOriginalImage])
         }
         

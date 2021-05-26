@@ -399,7 +399,7 @@ UICollectionViewDataSourcePrefetching {
                 cell.loadingView?.hide(animated: false)
             } else {
                 cell.imageView.kf.setImage(with: URL(string: page.thumbUrl), placeholder: nil, options: [.transition(ImageTransition.fade(0.5)), .requestModifier(ImageManager.shared.modifier),
-//                                                                                                         .processor(ImageCell.downProcessor),
+                                                                                                         .processor(ImageCell.downProcessor),
                                                                                                          .loadDiskFileSynchronously,.cacheOriginalImage], progressBlock: nil) { (result) in
                     switch result {
                     case .success(_):
