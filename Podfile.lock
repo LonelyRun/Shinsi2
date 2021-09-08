@@ -1,19 +1,19 @@
 PODS:
-  - Alamofire (5.4.1)
+  - Alamofire (5.4.3)
   - AloeStackView (1.2.0)
   - HandyJSON (5.0.2)
   - Hero (1.6.1)
   - IQKeyboardManagerSwift (6.5.6)
-  - Kanna (5.2.4)
-  - Kingfisher (6.2.1)
-  - Realm (10.7.2):
-    - Realm/Headers (= 10.7.2)
-  - Realm/Headers (10.7.2)
-  - RealmSwift (10.7.2):
-    - Realm (= 10.7.2)
+  - Kanna (5.2.7)
+  - Kingfisher (6.3.1)
+  - Realm (10.14.0):
+    - Realm/Headers (= 10.14.0)
+  - Realm/Headers (10.14.0)
+  - RealmSwift (10.14.0):
+    - Realm (= 10.14.0)
   - SVProgressHUD (2.2.5)
   - Then (2.7.0)
-  - Tiercel (3.2.1)
+  - Tiercel (3.2.3)
 
 DEPENDENCIES:
   - Alamofire
@@ -44,19 +44,19 @@ SPEC REPOS:
     - Tiercel
 
 SPEC CHECKSUMS:
-  Alamofire: 2291f7d21ca607c491dd17642e5d40fdcda0e65c
+  Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
   AloeStackView: 8a4ce0efa08128dd78d538372f60c76c224034bb
   HandyJSON: 9e4e236f5d2dbefad5155a77417bbea438201c03
   Hero: 215865ba3ae41dd9bb08cd6c60a645529c6fc94b
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
-  Kanna: b9d00d7c11428308c7f95e1f1f84b8205f567a8f
-  Kingfisher: e71c6fac2aebb1262888cabc2cb13d313362a48f
-  Realm: e523da9ade306c5ae87e85dc09fdef148d3e1cc1
-  RealmSwift: 4f6758c3adbdcc87f7b7777107226532a077f61c
+  Kanna: 01cfbddc127f5ff0963692f285fcbc8a9d62d234
+  Kingfisher: 016c8b653a35add51dd34a3aba36b580041acc74
+  Realm: 95a120db10fa66d0f1d10bee4ce828177ae00090
+  RealmSwift: 4937e1b6f9b87bc25dc23883198807bf69e8cb76
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
-  Tiercel: 94b817f76bcdb7c86290b3dbd945048e94c6c153
+  Tiercel: 912fdb367950c356eb2100279920bce9f5ebc453
 
-PODFILE CHECKSUM: e18f33ac29032372d600a653796ffbe1ac2ce09d
+PODFILE CHECKSUM: ca14de0d25f985522ae1b76c30a10bd6999e3d25
 
 COCOAPODS: 1.10.1
