@@ -3,14 +3,24 @@ import Kanna
 
 class RequestManager {
     static let shared = RequestManager()
+    
+    var next: String?
 
     func getList(page: Int, search keyword: String? = nil, completeBlock block: (([Doujinshi], Int) -> Void)?) {
+        
+        if page == 0 {
+            next = ""
+        }
+        guard let next = next else {
+            return
+        }
         
         let categoryFilters = Defaults.Search.categories.map {"f_\($0)=\(UserDefaults.standard.bool(forKey: $0) ? 1 : 0)"}.joined(separator: "&")
         var url = Defaults.URL.host + "/?"
         url += "\(categoryFilters)&f_apply=Apply+Filter" //Apply category filters
-        url += "&advsearch=1&f_sname=on&f_stags=on&f_sh=on" //Advance search
+        url += "&advsearch=1&f_sname=on&f_stags=on" //Advance search
         url += "&inline_set=dm_t" //Set mode to Thumbnail View
+        url += "&next=\(next)"
         if !Defaults.List.minimumPages.isEmpty || !Defaults.List.maximumPages.isEmpty {
             url += "&f_sp=o&f_spf=\(Defaults.List.minimumPages)&f_spt=\(Defaults.List.maximumPages)"
         }
@@ -21,48 +31,45 @@ class RequestManager {
         var cacheFavoritesTitles = false
         if var keyword = keyword?.lowercased() {
             if keyword.contains("favorites") {
-                url = Defaults.URL.host + "/favorites.php?page=\(page)"
+                url = Defaults.URL.host + "/favorites.php?next=\(next)&inline_set=dm_t"
                 if let number = Int(keyword.replacingOccurrences(of: "favorites", with: "")) {
                     url += "&favcat=\(number)"
                 }
                 cacheFavoritesTitles = page == 0
             } else if keyword.contains("popular") {
                 if page == 0 {
-                    url = Defaults.URL.host + "/popular"
+                    url = Defaults.URL.host + "/popular?next=\(next)&inline_set=dm_t"
                 } else {
                     block?([], 0)
                     return
                 }
             } else if keyword.contains("watched") {
-                 url = Defaults.URL.host + "/watched?page=\(page)"
+                 url = Defaults.URL.host + "/watched?next=\(next)&inline_set=dm_t"
             } else {
-                var skipPage = 0
-                if let s = keyword.matches(for: "p:[0-9]+").first, let p = Int(s.replacingOccurrences(of: "p:", with: "")) {
-                    keyword = keyword.replacingOccurrences(of: s, with: "")
-                    skipPage = p
-                }
                 if Defaults.List.isFilterLanguage && !Defaults.List.listLanguage.isEmpty {
                     keyword = "\(keyword) language:\(Defaults.List.listLanguage)"
                 }
                 url += "&f_search=\(keyword.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)"
-                url += "&page=\(page + skipPage)"
             }
-        } else {
-            url += "&page=\(page)"
         }
     
-        AF.request(url, method: .get).responseString { response in
+        AF.request(url, method: .get).responseString {[unowned self] response in
             switch response.result {
             case .success(let value):
                 let html = value
                 if let doc = try? Kanna.HTML(html: html, encoding: .utf8) {
                     var items: [Doujinshi] = []
-                    var lastLabel: Int = 0
-                    
-                    let tdNode = doc.xpath("//table //td")
-                    if (tdNode.count > 2) {
-                        let countNode = tdNode[tdNode.count - 2]
-                        lastLabel = Int(countNode.text ?? "") ?? 0
+//                    var lastLabel: Int = 0
+                    self.next = nil
+                    for navNode in doc.xpath("//div [@class='searchnav']") {
+                        if let nextSrc = navNode.at_css("div a[id='unext']")?["href"], let urlComponent = URLComponents(string: nextSrc), let queryItems = urlComponent.queryItems {
+                            
+                            for item in queryItems {
+                                if item.name == "next", let value = item.value {
+                                    self.next = value
+                                }
+                            }
+                        }
                     }
                     
                     for link in doc.xpath("//div [@class='gl1t']") {
@@ -73,7 +80,7 @@ class RequestManager {
                         }
                     }
                     
-                    block?(items, lastLabel)
+                    block?(items, 0)
                     if cacheFavoritesTitles {
                         DispatchQueue.global(qos: .userInteractive).async {
                             let favTitles = doc.xpath("//option [contains(@value, 'fav')]").filter { $0.text != nil }.map { $0.text! }

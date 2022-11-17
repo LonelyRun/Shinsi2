@@ -99,7 +99,7 @@ class ListVC: BaseViewController {
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
         view.layoutIfNeeded()
         collectionView.collectionViewLayout.invalidateLayout()
-        findPageButton.isHidden = Defaults.List.isHidePageSkip
+//        findPageButton.isHidden = Defaults.List.isHidePageSkip
         authorButton.isHidden = !Defaults.List.isShowAuthorList
     }
     
@@ -408,7 +408,7 @@ class ListVC: BaseViewController {
     
     @objc func settingChanged(notification: Notification) {
         collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
-        findPageButton.isHidden = Defaults.List.isHidePageSkip
+//        findPageButton.isHidden = Defaults.List.isHidePageSkip
         authorButton.isHidden = !Defaults.List.isShowAuthorList
     }
     

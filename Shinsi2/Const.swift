@@ -76,10 +76,10 @@ class Defaults {
             get { return UserDefaults.standard.bool(forKey: kUDListHideTag) }
             set { UserDefaults.standard.set(newValue, forKey: kUDListHideTag) }
         }
-        static var isHidePageSkip: Bool {
-            get { return UserDefaults.standard.bool(forKey: kUDListHidePageSkip) }
-            set { UserDefaults.standard.set(newValue, forKey: kUDListHidePageSkip) }
-        }
+//        static var isHidePageSkip: Bool {
+//            get { return UserDefaults.standard.bool(forKey: kUDListHidePageSkip) }
+//            set { UserDefaults.standard.set(newValue, forKey: kUDListHidePageSkip) }
+//        }
         static var isFilterLanguage: Bool {
             get { return UserDefaults.standard.bool(forKey: kUDListFilterLanguage) }
             set { UserDefaults.standard.set(newValue, forKey: kUDListFilterLanguage) }

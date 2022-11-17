@@ -183,10 +183,10 @@ class SettingVC: BaseViewController {
             $0.addTarget(self, action: #selector(viewerPageTypeValueChanged(sender:)), for: .valueChanged)
         }]))
         
-        stackView.addRow(createStackView([createSubTitleLabel("Show PageSkip"), UISwitch().then {[unowned self] in
-            $0.isOn = !Defaults.List.isHidePageSkip
-            $0.addTarget(self, action: #selector(listPageSkipSwitchVauleChanged), for: .valueChanged)
-        }]))
+//        stackView.addRow(createStackView([createSubTitleLabel("Show PageSkip"), UISwitch().then {[unowned self] in
+//            $0.isOn = !Defaults.List.isHidePageSkip
+//            $0.addTarget(self, action: #selector(listPageSkipSwitchVauleChanged), for: .valueChanged)
+//        }]))
         
         stackView.addRow(createStackView([createSubTitleLabel("Tap To Scroll"), UISwitch().then {[unowned self] in
             $0.isOn = Defaults.Viewer.tapToScroll
@@ -336,10 +336,10 @@ class SettingVC: BaseViewController {
         NotificationCenter.default.post(name: .settingChanged, object: nil)
     }
     
-    @objc func listPageSkipSwitchVauleChanged(sender: UISwitch) {
-        Defaults.List.isHidePageSkip = !sender.isOn
-        NotificationCenter.default.post(name: .settingChanged, object: nil)
-    }
+//    @objc func listPageSkipSwitchVauleChanged(sender: UISwitch) {
+//        Defaults.List.isHidePageSkip = !sender.isOn
+//        NotificationCenter.default.post(name: .settingChanged, object: nil)
+//    }
     
     @objc func DownloadDelayVauleChanged(sender: UITextField) {
         if let text = sender.text {
